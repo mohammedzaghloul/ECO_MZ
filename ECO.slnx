@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Src/">
+    <Project Path="ECO.Api/ECO.Api.csproj" />
+    <Project Path="ECO.Core/ECO.Core.csproj" />
+    <Project Path="ECO.Infrastructuer/ECO.Infrastructuer.csproj" />
+  </Folder>
+</Solution>
