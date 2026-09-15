@@ -1,8 +1,7 @@
-using ECO.Core.Interfaces;
-using ECO.Infrastructuer;
-using ECO.Infrastructuer.Data;
-using ECO.Infrastructuer.Repostories;
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using ECO.Api.Middleware;
+using ECO.BLL;
+using ECO.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +10,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add the database context to the service collection
+// Add DAL services (DbContext, Repositories)
 builder.Services.AddInfrastractionConfiguration(builder.Configuration);
 
+// Add BLL services (Business Logic)
+builder.Services.AddApplicationServices();
+
+
 var app = builder.Build();
+
+// Global Exception Handling Middleware
+app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -23,6 +29,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseAuthorization();
 

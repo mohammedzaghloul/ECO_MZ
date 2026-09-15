@@ -1,7 +1,7 @@
 <Solution>
   <Folder Name="/Src/">
     <Project Path="ECO.Api/ECO.Api.csproj" />
-    <Project Path="ECO.Core/ECO.Core.csproj" />
-    <Project Path="ECO.Infrastructuer/ECO.Infrastructuer.csproj" />
+    <Project Path="ECO.BLL/ECO.BLL.csproj" />
+    <Project Path="ECO.DAL/ECO.DAL.csproj" />
   </Folder>
 </Solution>
