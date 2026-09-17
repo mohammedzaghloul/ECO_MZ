@@ -10,15 +10,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add DAL services (DbContext, Repositories)
+// Add DAL services 
 builder.Services.AddInfrastractionConfiguration(builder.Configuration);
 
-// Add BLL services (Business Logic)
+// Add BLL services 
 builder.Services.AddApplicationServices();
-
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
-
+// Error Handling Middleware
+app.UseStatusCodePagesWithReExecute("/error/{0}");
 // Global Exception Handling Middleware
 app.UseMiddleware<ExceptionMiddleware>();
 
