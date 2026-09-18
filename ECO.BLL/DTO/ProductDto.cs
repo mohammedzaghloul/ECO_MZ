@@ -8,5 +8,6 @@ namespace ECO.BLL.DTO
         public decimal OldPrice { get; set; }
         public int CategoryId { get; set; }
         public List<string> Photos { get; set; } = new List<string>();
+        public string Description { get; set; } 
     }
 }

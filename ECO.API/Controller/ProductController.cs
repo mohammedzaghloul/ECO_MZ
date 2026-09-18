@@ -1,6 +1,7 @@
 using ECO.Api.Helper;
 using ECO.BLL.DTO;
-using ECO.BLL.Services;
+using ECO.BLL.Services.ProductServices;
+using ECO.DAL.Sharing;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECO.Api.Controller
@@ -14,11 +15,22 @@ namespace ECO.Api.Controller
             _productService = productService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll([FromQuery] ProductParams? productParams)
         {
-            var products = await _productService.GetAllAsync();
-            return Ok(new GenericResponseApi<IReadOnlyList<ProductDto>>(200, "Products retrieved successfully", products));
+            var products = await _productService.GetAllAsync(productParams);
+
+            var totalCount = await _productService.GetCountAsync(productParams);
+
+            var pageNumber = productParams?.PageNumber ?? 1;
+            var pageSize = productParams?.PageSize ?? 10;
+
+            return Ok(new Pagination<ProductDto>(
+                pageNumber,
+                totalCount,
+                pageSize,
+                products
+            ));
         }
 
         [HttpGet("{id}")]

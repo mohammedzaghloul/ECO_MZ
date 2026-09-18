@@ -42,26 +42,6 @@ namespace ECO.DAL.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Electronic devices and gadgets",
-                            Name = "Electronics"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Apparel and fashion items",
-                            Name = "Clothing"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Books and literature",
-                            Name = "Books"
-                        });
                 });
 
             modelBuilder.Entity("ECO.DAL.Entites.Product.Photo", b =>
@@ -74,7 +54,8 @@ namespace ECO.DAL.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -118,26 +99,6 @@ namespace ECO.DAL.Data.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            Description = "Description for Product 1",
-                            Name = "Product 1",
-                            NewPrice = 10.99m,
-                            OldPrice = 15.99m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 1,
-                            Description = "Description for Product 2",
-                            Name = "Product 2",
-                            NewPrice = 19.99m,
-                            OldPrice = 25.99m
-                        });
                 });
 
             modelBuilder.Entity("ECO.DAL.Entites.Product.Photo", b =>

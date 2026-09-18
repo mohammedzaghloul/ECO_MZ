@@ -15,7 +15,7 @@ namespace ECO.Api.Controller
             _categoryService = categoryService;
         }
 
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
             var categories = await _categoryService.GetAllAsync();

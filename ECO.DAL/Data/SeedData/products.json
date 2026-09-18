@@ -1,0 +1,352 @@
+﻿[
+  {
+    "Name": "Wireless Noise-Canceling Headphones",
+    "Description": "Premium over-ear headphones with active noise cancellation and 30-hour battery life",
+    "NewPrice": 149.99,
+    "OldPrice": 199.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Smart Fitness Watch",
+    "Description": "Waterproof smartwatch with heart rate monitor, GPS, and sleep tracking",
+    "NewPrice": 79.99,
+    "OldPrice": 99.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Classic Cotton T-Shirt",
+    "Description": "100% breathable organic cotton slim fit t-shirt in various sizes",
+    "NewPrice": 19.99,
+    "OldPrice": 29.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Casual Denim Jacket",
+    "Description": "Vintage-inspired denim jacket with durable stitching and warm lining",
+    "NewPrice": 59.99,
+    "OldPrice": 89.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Clean Code & Architecture Guide",
+    "Description": "Comprehensive handbook on software engineering best practices and design patterns",
+    "NewPrice": 34.99,
+    "OldPrice": 44.99,
+    "CategoryId": 3
+  },
+  {
+    "Name": "Mini Bluetooth Speaker",
+    "Description": "Compact wireless speaker with deep bass, 12-hour battery life, and waterproof design",
+    "NewPrice": 39.99,
+    "OldPrice": 59.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Mechanical Gaming Keyboard",
+    "Description": "RGB mechanical keyboard with hot-swappable switches and low-latency wireless connection",
+    "NewPrice": 89.99,
+    "OldPrice": 129.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Premium Wireless Mouse",
+    "Description": "Ergonomic wireless mouse with precision tracking and quiet clicks for everyday productivity",
+    "NewPrice": 45.99,
+    "OldPrice": 69.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "4K Smart TV",
+    "Description": "Ultra sharp 4K smart television with cinematic contrast and built-in streaming apps",
+    "NewPrice": 699.99,
+    "OldPrice": 849.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Portable SSD Drive",
+    "Description": "Fast and rugged external SSD for storing media, editing projects, and backups",
+    "NewPrice": 119.99,
+    "OldPrice": 149.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "USB-C Fast Charger",
+    "Description": "Dual-port wall charger engineered for fast charging tablets, phones, and earbuds",
+    "NewPrice": 29.99,
+    "OldPrice": 39.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Drone with 4K Camera",
+    "Description": "Foldable drone with real-time video feed, GPS tracking, and stabilized aerial footage",
+    "NewPrice": 449.99,
+    "OldPrice": 599.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Ceramic Espresso Machine",
+    "Description": "Compact espresso maker with rich crema control, steam wand, and sleek countertop appeal",
+    "NewPrice": 199.99,
+    "OldPrice": 249.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Air Fryer Pro",
+    "Description": "Crispy cooking appliance with digital controls and healthy low-oil preparation",
+    "NewPrice": 129.99,
+    "OldPrice": 169.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Smart Home Hub",
+    "Description": "Centralized home automation hub to control lights, locks, and sensors from one app",
+    "NewPrice": 99.99,
+    "OldPrice": 139.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Digital Camera Kit",
+    "Description": "All-in-one travel camera pack with 24MP sensor, lens bundle, and memory card",
+    "NewPrice": 559.99,
+    "OldPrice": 699.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Noise Reduction Earbuds",
+    "Description": "Wireless earbuds with adaptive sound, clear calls, and sweat-resistant comfort",
+    "NewPrice": 59.99,
+    "OldPrice": 89.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Everyday Hoodie",
+    "Description": "Soft brushed fleece hoodie designed for warmth, comfort, and everyday layering",
+    "NewPrice": 39.99,
+    "OldPrice": 54.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Slim Fit Oxford Shirt",
+    "Description": "Crisp cotton Oxford shirt with tailored fit and polished everyday styling",
+    "NewPrice": 49.99,
+    "OldPrice": 69.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Leather Travel Backpack",
+    "Description": "Durable premium backpack with padded laptop sleeve and organized storage pockets",
+    "NewPrice": 99.99,
+    "OldPrice": 129.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Running Sneakers",
+    "Description": "Lightweight performance runners built with responsive cushioning and breathable mesh",
+    "NewPrice": 79.99,
+    "OldPrice": 109.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Wool Knit Sweater",
+    "Description": "Classic knit sweater with premium texture, cozy warmth, and versatile layering",
+    "NewPrice": 69.99,
+    "OldPrice": 89.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Casual Chino Pants",
+    "Description": "Relaxed-fit chino trousers tailored for comfort with smart everyday versatility",
+    "NewPrice": 54.99,
+    "OldPrice": 74.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Lightweight Summer Dress",
+    "Description": "Flowing summer dress with soft fabric and an elegant flattering silhouette",
+    "NewPrice": 42.99,
+    "OldPrice": 62.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Premium Sunglasses",
+    "Description": "Modern UV-protective sunglasses with a classic frame and all-day comfort",
+    "NewPrice": 34.99,
+    "OldPrice": 49.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Weekend Canvas Tote",
+    "Description": "Sturdy everyday tote bag with roomy compartments and a clean minimalist look",
+    "NewPrice": 24.99,
+    "OldPrice": 34.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Modern Desk Lamp",
+    "Description": "Adjustable LED desk lamp with warm lighting and a sleek minimal silhouette",
+    "NewPrice": 54.99,
+    "OldPrice": 74.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Classic Leather Wallet",
+    "Description": "Handcrafted leather wallet with slim profile and durable stitched edges",
+    "NewPrice": 39.99,
+    "OldPrice": 59.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Minimalist Wall Clock",
+    "Description": "Simple wall clock with refined detailing and a modern neutral finish",
+    "NewPrice": 27.99,
+    "OldPrice": 39.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Home Office Chair",
+    "Description": "Ergonomic mesh chair with lumbar support and premium comfort for long workdays",
+    "NewPrice": 179.99,
+    "OldPrice": 229.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Memory Foam Pillow",
+    "Description": "Supportive memory foam pillow that keeps your neck aligned all night long",
+    "NewPrice": 32.99,
+    "OldPrice": 49.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Premium Throw Blanket",
+    "Description": "Soft woven throw with a plush finish and elegant texture for cozy evenings",
+    "NewPrice": 44.99,
+    "OldPrice": 64.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Stainless Steel Water Bottle",
+    "Description": "Vacuum-insulated bottle that keeps drinks cold for 24 hours and hot for 12 hours",
+    "NewPrice": 22.99,
+    "OldPrice": 32.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Organic Cotton Pajamas",
+    "Description": "Breathable cotton sleep set designed for softness, stretch, and restful nights",
+    "NewPrice": 28.99,
+    "OldPrice": 39.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Chef's Knife Set",
+    "Description": "Professional knife set with balanced weight and premium stainless-steel blades",
+    "NewPrice": 99.99,
+    "OldPrice": 139.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Compact Coffee Grinder",
+    "Description": "Precision coffee grinder for fresh, flavorful brews at home every morning",
+    "NewPrice": 64.99,
+    "OldPrice": 89.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Indoor Plant Pot Set",
+    "Description": "Decorative planters set with premium ceramic finish and drainage-friendly design",
+    "NewPrice": 31.99,
+    "OldPrice": 44.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Yoga Mat Pro",
+    "Description": "Ultra-cushioned yoga mat offering maximum comfort, grip, and stability during workouts",
+    "NewPrice": 49.99,
+    "OldPrice": 69.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Weighted Fitness Dumbbell",
+    "Description": "Adjustable dumbbell for strength training, conditioning, and rehabilitation routines",
+    "NewPrice": 89.99,
+    "OldPrice": 119.99,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Power Bank 20000mAh",
+    "Description": "High-capacity portable charger with fast charging support for daily mobile use",
+    "NewPrice": 49.99,
+    "OldPrice": 69.99,
+    "CategoryId": 1
+  },
+  {
+    "Name": "The Pragmatic Programmer",
+    "Description": "A practical guide to software craftsmanship, engineering habits, and career growth",
+    "NewPrice": 24.99,
+    "OldPrice": 34.99,
+    "CategoryId": 3
+  },
+  {
+    "Name": "Deep Work",
+    "Description": "A focused strategy for delivering meaningful output in a distracted digital world",
+    "NewPrice": 18.99,
+    "OldPrice": 26.99,
+    "CategoryId": 3
+  },
+  {
+    "Name": "Atomic Habits",
+    "Description": "A life-changing book about building good habits, breaking bad ones, and improving daily systems",
+    "NewPrice": 21.99,
+    "OldPrice": 29.99,
+    "CategoryId": 3
+  },
+  {
+    "Name": "Clean Architecture",
+    "Description": "A powerful guide to designing software systems that remain maintainable and testable",
+    "NewPrice": 31.99,
+    "OldPrice": 42.99,
+    "CategoryId": 3
+  },
+  {
+    "Name": "JavaScript The Definitive Guide",
+    "Description": "A comprehensive reference for JavaScript fundamentals, browser APIs, and modern patterns",
+    "NewPrice": 36.99,
+    "OldPrice": 49.99,
+    "CategoryId": 3
+  },
+  {
+    "Name": "The Psychology of Money",
+    "Description": "An insightful exploration of how financial behavior and mindset shape wealth over time",
+    "NewPrice": 19.99,
+    "OldPrice": 28.99,
+    "CategoryId": 3
+  },
+  {
+    "Name": "Design Patterns",
+    "Description": "A classic text covering reusable solutions for common problems in software design",
+    "NewPrice": 29.99,
+    "OldPrice": 39.99,
+    "CategoryId": 3
+  },
+  {
+    "Name": "The Alchemist",
+    "Description": "A timeless novel about purpose, destiny, and following your personal journey",
+    "NewPrice": 16.99,
+    "OldPrice": 22.99,
+    "CategoryId": 3
+  },
+  {
+    "Name": "Product Management Handbook",
+    "Description": "A practical framework for building products, prioritizing features, and delivering value",
+    "NewPrice": 27.99,
+    "OldPrice": 37.99,
+    "CategoryId": 3
+  },
+  {
+    "Name": "Digital Marketing Playbook",
+    "Description": "A strategy-rich guide covering SEO, content planning, campaigns, and modern brand growth",
+    "NewPrice": 23.99,
+    "OldPrice": 33.99,
+    "CategoryId": 3
+  }
+]

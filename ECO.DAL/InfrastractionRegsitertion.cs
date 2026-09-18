@@ -4,6 +4,7 @@ using ECO.DAL.Repostories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace ECO.DAL
 {
@@ -15,8 +16,12 @@ namespace ECO.DAL
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddDbContext<AppDbContext>(options =>
                      options.UseSqlServer(configuration.GetConnectionString("EcoDataBase")));
-            
-            
+
+            services.AddSingleton<IConnectionMultiplexer>(r =>
+            {
+                var config = ConfigurationOptions.Parse(configuration.GetConnectionString("redis"));
+                return ConnectionMultiplexer.Connect(config);
+            });
             return services;
         }
 

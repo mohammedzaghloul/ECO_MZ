@@ -1,0 +1,33 @@
+.account-page {
+  min-height: 55vh;
+  display: grid;
+  place-items: center;
+  padding: 3rem 1rem;
+}
+
+.account-card {
+  width: min(100%, 34rem);
+  padding: 2.5rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 1.25rem;
+  background: #fff;
+  box-shadow: 0 16px 35px rgba(15, 23, 42, 0.08);
+  text-align: center;
+}
+
+.account-eyebrow {
+  color: #2563eb;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.account-card h1 {
+  margin: 0.6rem 0 0.75rem;
+}
+
+.account-card p {
+  margin-bottom: 1.5rem;
+  color: #64748b;
+}

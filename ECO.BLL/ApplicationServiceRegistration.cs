@@ -1,8 +1,8 @@
 using ECO.BLL.AutoMapper;
-using ECO.BLL.Services;
 using ECO.BLL.Services.CategorySer;
+using ECO.BLL.Services.ProductServices;
+using ECO.BLL.Services.Upload;
 using ECO.DAL.Entites.Product;
-using ECO.DAL.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 

@@ -1,0 +1,131 @@
+<section class="pd-page">
+  <div class="container">
+
+    <!-- Back Link -->
+    <a routerLink="/shop" class="pd-back-link">
+      <i class="material-icons" aria-hidden="true">arrow_back</i>
+      <span>Back to shop</span>
+    </a>
+
+    <!-- Loading Skeleton -->
+    @if (loading()) {
+      <div class="pd-card pd-skeleton">
+        <div class="pd-img-col skeleton-block"></div>
+        <div class="pd-info-col">
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line title"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-line price"></div>
+          <div class="skeleton-line btn-line"></div>
+        </div>
+      </div>
+    }
+
+    <!-- Product Card -->
+    @else if (product()) {
+      <div class="pd-card">
+
+        <!-- Image Column -->
+        <div class="pd-img-col">
+          @if (calculateDiscount() > 0) {
+            <span class="pd-discount-badge">-{{ calculateDiscount() }}%</span>
+          }
+          <div class="pd-img-wrapper">
+            <img
+              [src]="getImageUrl()"
+              [alt]="product()!.name"
+              class="pd-img"
+              (error)="$any($event.target).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI2YxZjVmOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE2IiBmaWxsPSIjOTRhM2I4Ij5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='"
+            />
+          </div>
+        </div>
+
+        <!-- Info Column -->
+        <div class="pd-info-col">
+          <span class="pd-eyebrow">Product Details</span>
+          <h1 class="pd-title">{{ product()!.name }}</h1>
+
+          <!-- Price -->
+          <div class="pd-price-row">
+            <span class="pd-new-price">\${{ product()!.newPrice.toFixed(2) }}</span>
+            @if (product()!.oldPrice > product()!.newPrice) {
+              <span class="pd-old-price">\${{ product()!.oldPrice.toFixed(2) }}</span>
+              <span class="pd-savings">
+                You save \${{ (product()!.oldPrice - product()!.newPrice).toFixed(2) }}
+              </span>
+            }
+          </div>
+
+          <!-- Description -->
+          @if (product()!.description) {
+            <div class="pd-section">
+              <h3 class="pd-section-title">About this product</h3>
+              <p class="pd-description">{{ product()!.description }}</p>
+            </div>
+          }
+
+          <!-- Delivery Info -->
+          <div class="pd-features">
+            <div class="pd-feature">
+              <i class="material-icons" aria-hidden="true">local_shipping</i>
+              <div>
+                <span class="pd-feature-label">Free Delivery</span>
+                <span class="pd-feature-sub">Delivered in 3–5 business days</span>
+              </div>
+            </div>
+            <div class="pd-feature">
+              <i class="material-icons" aria-hidden="true">autorenew</i>
+              <div>
+                <span class="pd-feature-label">Easy Returns</span>
+                <span class="pd-feature-sub">30-day hassle-free return policy</span>
+              </div>
+            </div>
+            <div class="pd-feature">
+              <i class="material-icons" aria-hidden="true">verified_user</i>
+              <div>
+                <span class="pd-feature-label">Secure Payment</span>
+                <span class="pd-feature-sub">Your payment info is always protected</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="pd-actions">
+            <a routerLink="/shop" class="pd-btn-outline">
+              <i class="material-icons" aria-hidden="true">store</i>
+              Continue Shopping
+            </a>
+          </div>
+        </div>
+
+      </div>
+    }
+
+    <!-- Error State -->
+    @else if (errorMessage()) {
+      <div class="pd-state-card pd-error">
+        <div class="pd-state-icon">
+          <i class="material-icons">error_outline</i>
+        </div>
+        <h3>Something went wrong</h3>
+        <p>{{ errorMessage() }}</p>
+        <a routerLink="/shop" class="pd-btn-primary">Back to Shop</a>
+      </div>
+    }
+
+    <!-- Not Found State -->
+    @else {
+      <div class="pd-state-card">
+        <div class="pd-state-icon">
+          <i class="material-icons">search_off</i>
+        </div>
+        <h3>Product not found</h3>
+        <p>The product you're looking for doesn't exist or has been removed.</p>
+        <a routerLink="/shop" class="pd-btn-primary">Browse All Products</a>
+      </div>
+    }
+
+  </div>
+</section>

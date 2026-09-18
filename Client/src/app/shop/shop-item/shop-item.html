@@ -1,0 +1,44 @@
+<article class="product-card" [attr.aria-label]="product.name">
+  <!-- Discount Badge -->
+  @if (calculateDiscount() > 0) {
+    <span class="discount-badge">-{{ calculateDiscount() }}%</span>
+  }
+
+  <!-- Product Image -->
+  <div class="product-img-wrapper">
+    <img
+      [src]="imageUrl"
+      [alt]="product.name"
+      class="product-img"
+      loading="lazy"
+      (error)="onImageError($event)"
+    />
+  </div>
+
+  <!-- Card Body -->
+  <div class="card-body">
+    <span class="product-category">{{ categoryName }}</span>
+    <h3 class="card-title" [title]="product.name">{{ product.name }}</h3>
+    <p class="card-text" title="{{ product.description }}">{{ product.description }}</p>
+
+    <div class="card-footer">
+      <!-- Price -->
+      <div class="price-group">
+        <span class="price-new">\${{ product.newPrice.toFixed(2) }}</span>
+        @if (product.oldPrice > product.newPrice) {
+          <span class="price-old">\${{ product.oldPrice.toFixed(2) }}</span>
+        }
+      </div>
+
+      <!-- View Details Button -->
+      <a
+        class="btn-view"
+        [routerLink]="['/shop/product', product.id]"
+        aria-label="View details for {{ product.name }}"
+      >
+        <i class="material-icons" aria-hidden="true">arrow_forward</i>
+        View details
+      </a>
+    </div>
+  </div>
+</article>

@@ -72,7 +72,7 @@ namespace ECO.Api.Middleware
             });
             if (dateNow - timestamp < _RateLimitWindow)
             {
-                if (count >= 8)
+                if (count >= 60)
                 {
                     return false;
                 }

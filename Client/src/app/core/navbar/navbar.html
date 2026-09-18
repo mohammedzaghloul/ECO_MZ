@@ -1,0 +1,96 @@
+<nav class="navbar" aria-label="Main navigation">
+  <div class="container">
+    <a routerLink="/" class="brand-lockup" aria-label="Eco home">
+      <span class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" class="logo-svg" role="img" aria-label="Eco logo">
+          <rect x="7" y="7" width="50" height="50" rx="16"></rect>
+          <path d="M20 18.5h24v7H28v6.5h13.5v6.5H28v7.5h16v7H20v-34Z"></path>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <span class="brand-name">Eco</span>
+        <span class="brand-tagline">Premium Store</span>
+      </div>
+    </a>
+
+    <ul class="navbar-nav main-nav" aria-label="Primary navigation">
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Home
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/shop" routerLinkActive="active">Shop</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/best-sellers" routerLinkActive="active">Best Sellers</a>
+      </li>
+    </ul>
+
+    <div class="nav-actions">
+      <form class="nav-search" (submit)="$event.preventDefault()" aria-label="Search products">
+        <i class="material-icons search-leading" aria-hidden="true">search</i>
+        <input
+          type="search"
+          placeholder="Search products..."
+          [ngModel]="shopService.searchTerm()"
+          (ngModelChange)="onNavbarSearch($event)"
+          name="navbarSearch"
+          aria-label="Search products"
+        />
+      </form>
+
+      <a class="nav-icon-button cart-button" routerLink="/" title="Cart" aria-label="Shopping cart">
+        <i class="material-icons" aria-hidden="true">shopping_bag</i>
+        <span class="cart-badge">2</span>
+      </a>
+
+      <div class="user-menu">
+        <button
+          type="button"
+          class="nav-icon-button user-button"
+          (click)="ToggleDropDown(); $event.stopPropagation()"
+          [attr.aria-expanded]="visibale"
+          aria-haspopup="true"
+          aria-label="Account menu"
+        >
+          <i class="material-icons" aria-hidden="true">person_outline</i>
+          <i class="material-icons chevron" aria-hidden="true">expand_more</i>
+        </button>
+
+        <div class="dropdown-menu" [class.show]="visibale" role="menu" aria-label="Account actions">
+          <a class="dropdown-item" routerLink="/login" (click)="visibale = false" role="menuitem">
+            <span class="dropdown-icon"><i class="fa fa-user" aria-hidden="true"></i></span>
+            <span>Login</span>
+          </a>
+          <a
+            class="dropdown-item"
+            routerLink="/register"
+            (click)="visibale = false"
+            role="menuitem"
+          >
+            <span class="dropdown-icon"><i class="fa fa-user-plus" aria-hidden="true"></i></span>
+            <span>Register</span>
+          </a>
+          <a
+            class="dropdown-item"
+            routerLink="/my-order"
+            (click)="visibale = false"
+            role="menuitem"
+          >
+            <span class="dropdown-icon"><i class="fa fa-list" aria-hidden="true"></i></span>
+            <span>My Orders</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

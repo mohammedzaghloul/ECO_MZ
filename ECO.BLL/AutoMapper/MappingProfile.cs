@@ -16,7 +16,9 @@ namespace ECO.BLL.AutoMapper
             CreateMap<Category, AddCategoryDto>().ReverseMap();
 
             // Product -> ProductDto
-            CreateMap<Product, ProductDto>().ReverseMap();
+            CreateMap<Product, ProductDto>()
+                .ForMember(dest => dest.Photos, opt => opt.MapFrom(src => src.Photos.Select(p => p.Name).ToList()))
+                .ReverseMap();
 
 
             // Product -> AddProductDto

@@ -1,0 +1,195 @@
+<div class="main-content">
+  <div class="container">
+    <!-- Header Section -->
+    <div class="shop-header row align-items-end mb-4" id="about" tabindex="-1">
+      <div class="col-md-6">
+        <span class="shop-eyebrow">Curated for everyday life</span>
+        <h1 class="fw-bold text-dark mb-2">Find your next favorite</h1>
+        <p class="text-muted mb-0">Discover quality products, thoughtfully selected for you.</p>
+      </div>
+      <div class="col-md-6 text-md-end mt-3 mt-md-0">
+        <span class="shop-header-badge">
+          <i class="fa fa-cubes me-1"></i>
+          {{ products().length }} Products Available
+        </span>
+      </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="row mb-4">
+      <aside class="col-md-3">
+        <div class="shop-sidebar">
+          <div class="shop-sidebar-heading">
+            <span class="shop-eyebrow">Browse</span>
+            <h2>Shopping</h2>
+          </div>
+
+          <!-- Sorting -->
+          <h5 class="filter-label">Sorting</h5>
+          <div class="shop-sort-field mb-4">
+            <i class="fa fa-sort"></i>
+            <select
+              class="form-select shop-select"
+              [ngModel]="selectedSort()"
+              (ngModelChange)="onSortChange($event)"
+              aria-label="Sort products"
+            >
+              <option value="name">Name</option>
+              <option value="priceAsc">Price: Min to Max</option>
+              <option value="priceDesc">Price: Max to Min</option>
+            </select>
+          </div>
+
+          <!-- Categories -->
+          <h5 class="filter-label">Categories</h5>
+          <ul class="list-group category-list">
+            <li
+              class="list-group-item list-group-item-action"
+              [class.active]="selectedCategory() === null"
+              style="cursor: pointer"
+              (click)="onCategorySelected(null)"
+            >
+              <i class="fa fa-th-large me-2"></i>All
+            </li>
+            @for (category of categories(); track category.id) {
+              <li
+                class="list-group-item list-group-item-action"
+                [class.active]="selectedCategory() === category.id"
+                style="cursor: pointer"
+                (click)="onCategorySelected(category.id)"
+              >
+                <i class="fa {{ getCategoryIcon(category.name) }} me-2"></i>{{ category.name }}
+              </li>
+            }
+          </ul>
+        </div>
+      </aside>
+
+      <div class="col-md-9">
+        <!-- Search Bar -->
+        <div class="shop-toolbar">
+          <div class="shop-search">
+            <i class="material-icons search-icon">search</i>
+            <input
+              type="search"
+              class="shop-search-input"
+              placeholder="Search products..."
+              [ngModel]="shopService.searchTerm()"
+              (ngModelChange)="onSearchInput($event)"
+            />
+            <button type="button" class="shop-search-btn" (click)="onSearch()" aria-label="Search">
+              <i class="material-icons">search</i>
+            </button>
+          </div>
+
+          <div class="shop-toolbar-meta">
+            @if (
+              shopService.searchTerm() || selectedCategory() !== null || selectedSort() !== 'name'
+            ) {
+              <button type="button" class="shop-reset-btn" (click)="onReset()">
+                <i class="material-icons">refresh</i>
+                <span>Reset filters</span>
+              </button>
+            }
+            <div class="results-badge">
+              <span class="results-count">{{ products().length }}</span>
+              <span class="results-text">of {{ totalCount() }} products</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        @if (loading() && products().length === 0) {
+          <div class="row g-4">
+            @for (skeleton of [1, 2, 3, 4]; track skeleton) {
+              <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card product-card border-0 shadow-sm h-100 placeholder-glow">
+                  <div class="card-img-placeholder placeholder w-100" style="height: 220px"></div>
+                  <div class="card-body p-3">
+                    <span class="placeholder col-4 mb-2"></span>
+                    <h5 class="card-title placeholder col-8 mb-2"></h5>
+                    <p class="placeholder col-12 mb-1"></p>
+                    <div class="placeholder col-6 mt-3"></div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        @else if (products().length > 0) {
+          <div class="products-shell" id="best-sellers" tabindex="-1">
+            @if (loading()) {
+              <div class="products-refreshing" aria-live="polite">
+                <span class="refresh-spinner" aria-hidden="true"></span>
+                <span>Updating products...</span>
+              </div>
+            }
+
+            <div class="row g-4" [class.loading-grid]="loading()">
+              @for (item of products(); track item.id) {
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                  <app-shop-item
+                    [product]="item"
+                    [categoryName]="getCategoryName(item.categoryId)"
+                    [imageUrl]="getImageUrl(item.photos)"
+                  ></app-shop-item>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="pagination-wrap d-flex justify-content-center mt-4">
+            <nav class="shop-pagination" aria-label="Product pagination">
+              <button
+                type="button"
+                class="page-link page-nav"
+                [disabled]="currentPage() === 1"
+                (click)="goToPage(currentPage() - 1)"
+              >
+                ‹
+              </button>
+
+              @for (page of pageNumbers(); track page) {
+                <button
+                  type="button"
+                  class="page-link"
+                  [class.active]="page === currentPage()"
+                  (click)="goToPage(page)"
+                >
+                  {{ page }}
+                </button>
+              }
+
+              <button
+                type="button"
+                class="page-link page-nav"
+                [disabled]="currentPage() >= totalPages()"
+                (click)="goToPage(currentPage() + 1)"
+              >
+                ›
+              </button>
+            </nav>
+          </div>
+        }
+
+        <!-- Empty State -->
+        @else {
+          <div class="text-center py-5 my-5">
+            <div class="empty-icon-wrapper mb-3">
+              <i class="fa fa-shopping-bag fa-4x text-muted opacity-50"></i>
+            </div>
+            <h4 class="fw-bold text-secondary">No Products Found</h4>
+            <p class="text-muted">There are currently no products available to display.</p>
+            <button
+              class="btn btn-outline-primary rounded-pill px-4 mt-2"
+              (click)="getAllProduct()"
+            >
+              <i class="fa fa-refresh me-1"></i> Refresh Products
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
