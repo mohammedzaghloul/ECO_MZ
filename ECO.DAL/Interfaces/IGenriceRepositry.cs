@@ -1,21 +1,13 @@
-using ECO.DAL.Sharing;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
-
 namespace ECO.DAL.Interfaces
 {
-    public  interface IGenericRepository<T> where T : class
+    public interface IGenericRepository<T> where T : class
     {
-        Task<IReadOnlyList<T>> GetAllAsync(ProductParams? productParams);
-        Task<IReadOnlyList<T>> GetAllAsync(params Expression<Func<T, object>>[] includes);
-        Task<T?> GetByIdAsync(int id);
-        Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes);
-
-        Task AddAsync(T entity);
-        Task UpdateAsync(T entity); 
-        Task DeleteAsync(int id);
-        Task<int> CountAsync();
+        Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<T?> FirstOrDefaultAsync(ISpecification<T> specification, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<T>> ListAsync(ISpecification<T>? specification = null, CancellationToken cancellationToken = default);
+        Task<int> CountAsync(ISpecification<T>? specification = null, CancellationToken cancellationToken = default);
+        Task AddAsync(T entity, CancellationToken cancellationToken = default);
+        Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
+        Task DeleteAsync(int id, CancellationToken cancellationToken = default);
     }
 }

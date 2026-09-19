@@ -18,7 +18,7 @@ namespace ECO.DAL.Sharing
         }
 
 
-        public int MaxPageSize { get; set; } = 15;
+        public int MaxPageSize { get; set; } = 100;
 
         public string? Search { get; set; }
 

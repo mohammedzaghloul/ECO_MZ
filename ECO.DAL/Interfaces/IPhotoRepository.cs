@@ -1,4 +1,4 @@
-﻿using ECO.DAL.Entites.Product;
+using ECO.DAL.Entities.Product;
 using System;
 using System.Collections.Generic;
 using System.Text;
