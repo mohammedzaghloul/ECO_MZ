@@ -23,20 +23,21 @@ A full-stack e-commerce platform built with **Angular 21** and **.NET 10**, cove
 - Centralized exception-handling middleware
 
 ### Payments & Discounts
-- Stripe Payment Intents integration
+- Stripe Payment Intents integration and cash on delivery
 - Coupons and discount system applied to orders
 
 ### Admin Dashboard
 - Sales dashboard with KPIs and analytics
 - Product, category, and inventory management (stock tracking, dimensions)
-- Customer and order management
-- Discounts, delivery methods, and city shipping settings
-- Store settings with customizable SMTP email settings
+- Customer and order management (order status workflow)
+- Discounts, delivery methods, and Egypt governorate/city shipping settings
+- Store settings with SMTP configuration
+- **Email designer**: customize transactional emails (colors, Arabic Google Fonts, text) right from the dashboard — with live preview and test sending, no code needed
 - **Landing-page builder**: create public product landing pages with customization, visit analytics, events, and outgoing webhooks
 
 ### Notifications & Email
-- In-app notifications
-- Transactional emails (order confirmation, activation, password reset) with customizable email appearance/text/theme settings
+- In-app notifications (unread badge, mark as read)
+- Transactional emails (order confirmation, activation, password reset) with a dashboard-driven email designer (appearance, text, and theme)
 
 ## Tech Stack
 
