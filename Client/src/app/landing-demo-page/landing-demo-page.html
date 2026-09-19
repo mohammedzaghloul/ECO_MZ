@@ -1,0 +1,496 @@
+<!-- ════════════════════════════════════════════════════════════
+     Demo Landing Page – Pro X7 Wireless Headphones
+     ════════════════════════════════════════════════════════════ -->
+
+<div class="dlp" dir="rtl">
+
+  <!-- ╔═══════════════╗ STICKY HEADER ╔═══════════════╗ -->
+  <header class="dlp-header">
+    <div class="dlp-header__inner dlp-container">
+      <div class="dlp-header__brand">
+        <span class="dlp-header__logo">🎧 SoundPro</span>
+        <span class="dlp-header__tagline">متجر السماعات المحترفة</span>
+      </div>
+      <div class="dlp-header__trust">
+        <span><i class="material-icons">local_shipping</i> شحن سريع</span>
+        <span><i class="material-icons">payments</i> الدفع عند الاستلام</span>
+        <span><i class="material-icons">verified</i> ضمان سنة</span>
+      </div>
+      <button type="button" class="dlp-header__cta" (click)="scrollToOrder()">
+        اطلب الآن
+        <i class="material-icons">arrow_back</i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ╔═══════════════╗ HERO ╔═══════════════╗ -->
+  <section class="dlp-hero dlp-container">
+
+    <!-- LEFT: Media -->
+    <div class="dlp-hero__media">
+      <!-- Main image -->
+      <div class="dlp-hero__main-photo">
+        <span class="dlp-badge dlp-badge--fire">🔥 {{ product.badge }}</span>
+        <span class="dlp-badge dlp-badge--discount">خصم {{ product.discount }}%</span>
+        <img
+          [src]="product.photos[activePhoto()]"
+          [alt]="product.name"
+          class="dlp-hero__photo" />
+        @if (product.photos.length > 1) {
+          <button type="button" class="dlp-photo-nav dlp-photo-nav--prev" (click)="prevPhoto()">
+            <i class="material-icons">chevron_right</i>
+          </button>
+          <button type="button" class="dlp-photo-nav dlp-photo-nav--next" (click)="nextPhoto()">
+            <i class="material-icons">chevron_left</i>
+          </button>
+        }
+      </div>
+      <!-- Thumbnails -->
+      <div class="dlp-hero__thumbs">
+        @for (photo of product.photos; track $index) {
+          <button
+            type="button"
+            class="dlp-thumb"
+            [class.is-active]="activePhoto() === $index"
+            (click)="selectPhoto($index)">
+            <img [src]="photo" [alt]="'صورة ' + ($index + 1)" />
+          </button>
+        }
+      </div>
+      <!-- Proof strip under photos -->
+      <div class="dlp-hero__proof-strip">
+        <div class="dlp-proof-item">
+          <i class="material-icons">star</i>
+          <div>
+            <strong>{{ product.rating }}</strong>
+            <span>{{ product.reviewCount }} تقييم</span>
+          </div>
+        </div>
+        <div class="dlp-proof-item">
+          <i class="material-icons">verified</i>
+          <div>
+            <strong>{{ product.stockCount }}+</strong>
+            <span>طلب هذا الأسبوع</span>
+          </div>
+        </div>
+        <div class="dlp-proof-item">
+          <i class="material-icons">loop</i>
+          <div>
+            <strong>14 يوم</strong>
+            <span>استرجاع مجاني</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Copy -->
+    <div class="dlp-hero__copy">
+      <span class="dlp-eyebrow">
+        <i class="material-icons">headphones</i>
+        سماعات لاسلكية احترافية
+      </span>
+
+      <h1 class="dlp-hero__title">{{ product.name }}</h1>
+
+      <div class="dlp-hero__rating">
+        <div class="dlp-stars">
+          @for (s of stars(5); track $index) {
+            <i class="material-icons" [class.dlp-star--off]="!s">star</i>
+          }
+        </div>
+        <span class="dlp-hero__rating-text">{{ product.rating }} / 5 • {{ product.reviewCount }} مشترٍ راضٍ</span>
+      </div>
+
+      <p class="dlp-hero__desc">{{ product.subheadline }}</p>
+
+      <!-- Price block -->
+      <div class="dlp-price-block">
+        <div class="dlp-price-block__main">
+          <span class="dlp-price-block__current">{{ product.newPrice }} جنيه</span>
+          <span class="dlp-price-block__old">{{ product.oldPrice }} جنيه</span>
+        </div>
+        <div class="dlp-price-block__saving">
+          وفرت <strong>{{ product.oldPrice - product.newPrice }} جنيه</strong>
+          ({{ product.discount }}% خصم)
+        </div>
+        <div class="dlp-price-block__cod">
+          <i class="material-icons">payments</i>
+          الدفع كاش عند الاستلام — لا دفع مسبق
+        </div>
+      </div>
+
+      <!-- Quick specs -->
+      <div class="dlp-quick-specs">
+        @for (spec of product.specs.slice(0, 3); track $index) {
+          <div class="dlp-quick-spec">
+            <i class="material-icons">{{ spec.icon }}</i>
+            <div>
+              <strong>{{ spec.label }}</strong>
+              <span>{{ spec.value }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- CTA buttons -->
+      <div class="dlp-hero__actions">
+        <button type="button" class="dlp-btn dlp-btn--primary dlp-btn--lg" (click)="scrollToOrder()">
+          <i class="material-icons">shopping_bag</i>
+          اطلب الآن — الدفع عند الاستلام
+        </button>
+        <a
+          href="https://wa.me/201000000000?text=أريد%20طلب%20سماعات%20Pro%20X7"
+          target="_blank"
+          rel="noopener"
+          class="dlp-btn dlp-btn--whatsapp">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+            <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m0 1.67c4.57 0 8.24 3.67 8.24 8.24s-3.67 8.24-8.24 8.24c-1.48 0-2.93-.39-4.19-1.14l-.3-.17-3.12.82.84-3.07-.19-.31C4.12 14.88 3.8 13.41 3.8 11.91c.01-4.57 3.68-8.24 8.24-8.24"/>
+          </svg>
+          واتساب مباشر
+        </a>
+      </div>
+
+      <!-- Trust pills -->
+      <div class="dlp-trust-pills">
+        <span><i class="material-icons">local_shipping</i> شحن خلال 2–4 أيام</span>
+        <span><i class="material-icons">verified</i> معاينة قبل الدفع</span>
+        <span><i class="material-icons">replay</i> استرجاع 14 يوم</span>
+        <span><i class="material-icons">security</i> ضمان سنة كاملة</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔═══════════════╗ TRUST BAR ╔═══════════════╗ -->
+  <div class="dlp-trustbar">
+    <div class="dlp-container dlp-trustbar__row">
+      <div class="dlp-trustbar__item">
+        <i class="material-icons">local_shipping</i>
+        <span>شحن لجميع محافظات مصر</span>
+      </div>
+      <div class="dlp-trustbar__item">
+        <i class="material-icons">payments</i>
+        <span>الدفع كاش عند الاستلام</span>
+      </div>
+      <div class="dlp-trustbar__item">
+        <i class="material-icons">verified</i>
+        <span>منتج أصلي 100% بضمان</span>
+      </div>
+      <div class="dlp-trustbar__item">
+        <i class="material-icons">support_agent</i>
+        <span>دعم واتساب 7 أيام</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔═══════════════╗ FEATURES ╔═══════════════╗ -->
+  <section class="dlp-features" id="why">
+    <div class="dlp-container">
+      <span class="dlp-section-eyebrow">المميزات</span>
+      <h2 class="dlp-section-title">ليه Pro X7 هي الأفضل؟</h2>
+      <p class="dlp-section-sub">تقنية لا تجدها في منتجات بضعف السعر</p>
+      <div class="dlp-features__grid">
+        @for (f of features; track $index) {
+          <div class="dlp-feature-card">
+            <div class="dlp-feature-card__icon">
+              <i class="material-icons">{{ f.icon }}</i>
+            </div>
+            <h3>{{ f.title }}</h3>
+            <p>{{ f.desc }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔═══════════════╗ PRODUCT DETAILS ╔═══════════════╗ -->
+  <section class="dlp-details dlp-container">
+    <div class="dlp-details__tabs">
+      <button
+        type="button"
+        class="dlp-tab"
+        [class.is-active]="activeTab() === 'description'"
+        (click)="activeTab.set('description')">
+        وصف المنتج
+      </button>
+      <button
+        type="button"
+        class="dlp-tab"
+        [class.is-active]="activeTab() === 'specs'"
+        (click)="activeTab.set('specs')">
+        المواصفات التقنية
+      </button>
+    </div>
+    <div class="dlp-details__content">
+      @if (activeTab() === 'description') {
+        <div class="dlp-description" [innerHTML]="product.description"></div>
+      }
+      @if (activeTab() === 'specs') {
+        <div class="dlp-specs-grid">
+          @for (spec of product.specs; track $index) {
+            <div class="dlp-spec-row">
+              <div class="dlp-spec-row__icon">
+                <i class="material-icons">{{ spec.icon }}</i>
+              </div>
+              <div class="dlp-spec-row__body">
+                <strong>{{ spec.label }}</strong>
+                <span>{{ spec.value }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ╔═══════════════╗ REVIEWS ╔═══════════════╗ -->
+  <section class="dlp-reviews" id="reviews">
+    <div class="dlp-container">
+      <span class="dlp-section-eyebrow">آراء العملاء</span>
+      <h2 class="dlp-section-title">{{ product.reviewCount }}+ مشترٍ راضٍ</h2>
+      <div class="dlp-reviews__summary">
+        <div class="dlp-reviews__score">
+          <span class="dlp-reviews__big-score">{{ product.rating }}</span>
+          <div class="dlp-stars dlp-stars--lg">
+            @for (s of stars(5); track $index) {
+              <i class="material-icons">star</i>
+            }
+          </div>
+          <span>من أصل 5</span>
+        </div>
+        <div class="dlp-reviews__bars">
+          @for (bar of [90, 8, 1, 0, 1]; track $index) {
+            <div class="dlp-bar-row">
+              <span>{{ 5 - $index }} <i class="material-icons">star</i></span>
+              <div class="dlp-bar"><div class="dlp-bar__fill" [style.width.%]="bar"></div></div>
+              <span>{{ bar }}%</span>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="dlp-reviews__grid">
+        @for (r of reviews; track $index) {
+          <div class="dlp-review-card">
+            <div class="dlp-review-card__header">
+              <div class="dlp-review-card__avatar">{{ r.name[0] }}</div>
+              <div>
+                <strong class="dlp-review-card__name">{{ r.name }}</strong>
+                <span class="dlp-review-card__city">{{ r.city }}</span>
+              </div>
+              @if (r.verified) {
+                <span class="dlp-verified-badge">
+                  <i class="material-icons">verified</i>
+                  مشترٍ مؤكد
+                </span>
+              }
+            </div>
+            <div class="dlp-stars dlp-stars--sm">
+              @for (s of stars(r.rating); track $index) {
+                <i class="material-icons" [class.dlp-star--off]="!s">star</i>
+              }
+            </div>
+            <p class="dlp-review-card__text">{{ r.text }}</p>
+            <span class="dlp-review-card__date">{{ r.date }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔═══════════════╗ ORDER FORM ╔═══════════════╗ -->
+  <section class="dlp-order" id="order-section">
+    <div class="dlp-container dlp-container--narrow">
+      <span class="dlp-section-eyebrow">اطلب الآن</span>
+      <h2 class="dlp-section-title">طلبك في 2 دقيقة</h2>
+      <p class="dlp-order__sub">بيانات التوصيل فقط — والدفع لما يوصلك المنتج وتعاينه</p>
+
+      <div class="dlp-order-card">
+
+        @if (submitted()) {
+          <!-- SUCCESS STATE -->
+          <div class="dlp-order-success">
+            <div class="dlp-order-success__icon">✅</div>
+            <h3>تم استلام طلبك!</h3>
+            <p>رقم تتبع طلبك:</p>
+            <div class="dlp-order-success__code">{{ trackingCode() }}</div>
+            <p class="dlp-order-success__note">
+              فريقنا سيتواصل معك هاتفياً خلال 24 ساعة لتأكيد موعد التوصيل.
+              متوسط التوصيل 2–4 أيام عمل.
+            </p>
+            <a href="https://wa.me/201000000000" target="_blank" rel="noopener" class="dlp-btn dlp-btn--whatsapp dlp-btn--block">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2"/>
+              </svg>
+              تابع طلبك على واتساب
+            </a>
+          </div>
+        } @else {
+          <!-- PRODUCT SUMMARY BAR -->
+          <div class="dlp-order-card__summary">
+            <img [src]="product.photos[0]" [alt]="product.name" class="dlp-order-card__img" />
+            <div class="dlp-order-card__meta">
+              <h4>{{ product.name }}</h4>
+              <div class="dlp-order-card__price-row">
+                <strong>{{ product.newPrice }} جنيه</strong>
+                <del>{{ product.oldPrice }} جنيه</del>
+                <span class="dlp-discount-chip">وفر {{ product.discount }}%</span>
+              </div>
+            </div>
+            <div class="dlp-order-card__qty-controls">
+              <button type="button" class="dlp-qty-btn" (click)="dec()">−</button>
+              <span class="dlp-qty-val">{{ quantity() }}</span>
+              <button type="button" class="dlp-qty-btn" (click)="inc()">+</button>
+            </div>
+          </div>
+          <div class="dlp-order-card__total-row">
+            <span>الإجمالي ({{ quantity() }} قطعة)</span>
+            <strong class="dlp-order-card__total">{{ total }} جنيه</strong>
+            <span class="dlp-order-card__saving-note">وفرت {{ savings }} جنيه 🎉</span>
+          </div>
+
+          <!-- FORM FIELDS -->
+          <div class="dlp-form">
+            <div class="dlp-form__row">
+              <div class="dlp-form__field">
+                <label class="dlp-form__label">
+                  <i class="material-icons">person_outline</i>
+                  الاسم بالكامل <span class="dlp-req">*</span>
+                </label>
+                <input
+                  [(ngModel)]="form.name"
+                  type="text"
+                  class="dlp-form__input"
+                  placeholder="مثال: محمد أحمد علي" />
+              </div>
+              <div class="dlp-form__field">
+                <label class="dlp-form__label">
+                  <i class="material-icons">phone_android</i>
+                  رقم الموبايل <span class="dlp-req">*</span>
+                </label>
+                <input
+                  [(ngModel)]="form.phone"
+                  type="tel"
+                  inputmode="numeric"
+                  class="dlp-form__input"
+                  placeholder="01xxxxxxxxx" />
+              </div>
+            </div>
+
+            <div class="dlp-form__row">
+              <div class="dlp-form__field">
+                <label class="dlp-form__label">
+                  <i class="material-icons">location_city</i>
+                  المحافظة <span class="dlp-req">*</span>
+                </label>
+                <div class="dlp-select-wrap">
+                  <select [(ngModel)]="form.governorate" class="dlp-form__select">
+                    <option value="">اختر المحافظة</option>
+                    @for (gov of governorates; track $index) {
+                      <option [value]="gov">{{ gov }}</option>
+                    }
+                  </select>
+                  <i class="material-icons dlp-select-icon">expand_more</i>
+                </div>
+              </div>
+              <div class="dlp-form__field">
+                <label class="dlp-form__label">
+                  <i class="material-icons">place</i>
+                  المدينة / المنطقة
+                </label>
+                <input
+                  [(ngModel)]="form.city"
+                  type="text"
+                  class="dlp-form__input"
+                  placeholder="مثال: مدينة نصر، المعادي" />
+              </div>
+            </div>
+
+            <div class="dlp-form__field dlp-form__field--full">
+              <label class="dlp-form__label">
+                <i class="material-icons">home</i>
+                العنوان بالتفصيل <span class="dlp-req">*</span>
+              </label>
+              <input
+                [(ngModel)]="form.address"
+                type="text"
+                class="dlp-form__input"
+                placeholder="الشارع، رقم البناية، الدور، الشقة أو علامة مميزة" />
+            </div>
+
+            <div class="dlp-form__field dlp-form__field--full">
+              <label class="dlp-form__label">
+                <i class="material-icons">edit_note</i>
+                ملاحظات للمندوب (اختياري)
+              </label>
+              <input
+                [(ngModel)]="form.notes"
+                type="text"
+                class="dlp-form__input"
+                placeholder="مثال: اتصل بي قبل الحضور" />
+            </div>
+          </div>
+
+          <!-- CONFIRM BUTTON -->
+          <div class="dlp-order-card__actions">
+            <button
+              type="button"
+              class="dlp-btn dlp-btn--confirm dlp-btn--block"
+              (click)="submit()"
+              [disabled]="submitting()">
+              @if (submitting()) {
+                <span class="dlp-spinner-sm"></span>
+                <span>جارٍ إرسال طلبك...</span>
+              } @else {
+                <i class="material-icons">check_circle</i>
+                <span>تأكيد الطلب — {{ total }} جنيه (عند الاستلام)</span>
+              }
+            </button>
+
+            <div class="dlp-order-card__guarantees">
+              <span><i class="material-icons">lock</i> بيانات آمنة تماماً</span>
+              <span><i class="material-icons">verified</i> معاينة قبل الدفع</span>
+              <span><i class="material-icons">replay</i> استرجاع 14 يوم</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔═══════════════╗ FAQ ╔═══════════════╗ -->
+  <section class="dlp-faq" id="faq">
+    <div class="dlp-container dlp-container--narrow">
+      <span class="dlp-section-eyebrow">الأسئلة الشائعة</span>
+      <h2 class="dlp-section-title">لديك سؤال؟</h2>
+      <div class="dlp-faq__list">
+        @for (faq of faqs; track $index) {
+          <div class="dlp-faq__item" [class.is-open]="expandedFaq() === $index">
+            <button type="button" class="dlp-faq__q" (click)="toggleFaq($index)">
+              <span>{{ faq.question }}</span>
+              <i class="material-icons dlp-faq__chevron">
+                {{ expandedFaq() === $index ? 'expand_less' : 'expand_more' }}
+              </i>
+            </button>
+            @if (expandedFaq() === $index) {
+              <div class="dlp-faq__a">{{ faq.answer }}</div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔═══════════════╗ FOOTER ╔═══════════════╗ -->
+  <footer class="dlp-footer">
+    <div class="dlp-container dlp-footer__inner">
+      <strong>🎧 SoundPro</strong>
+      <nav>
+        <a href="#why" (click)="$event.preventDefault()">المميزات</a>
+        <a href="#reviews" (click)="$event.preventDefault()">التقييمات</a>
+        <a href="#faq" (click)="$event.preventDefault()">الأسئلة</a>
+        <a href="#order-section" (click)="$event.preventDefault(); scrollToOrder()">اطلب الآن</a>
+      </nav>
+      <small>© 2025 SoundPro — جميع الحقوق محفوظة</small>
+    </div>
+  </footer>
+
+</div>

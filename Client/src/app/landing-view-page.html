@@ -1,0 +1,640 @@
+<div class="lp-page lp-template--{{ landingTemplate() }}" [dir]="isArabic() ? 'rtl' : 'ltr'" [style.--lp-accent]="accentColor()" [style.--lp-font]="fontStack()">
+
+  @if (loading()) {
+    <div class="lp-loading">
+      <span class="lp-spinner"></span>
+    </div>
+  } @else if (notFound()) {
+    <div class="lp-missing">
+      <i class="material-icons">link_off</i>
+      <h2>الصفحة غير موجودة</h2>
+      <p>هذه الصفحة غير متاحة حالياً أو تم إلغاء نشرها.</p>
+      <a routerLink="/" class="lp-btn lp-btn--primary">العودة للمتجر</a>
+    </div>
+  } @else {
+
+    <!-- Minimal Header -->
+    <header class="lp-header" [dir]="isArabic() ? 'rtl' : 'ltr'">
+      <div class="lp-container lp-header__inner">
+        <div class="lp-header__brand">
+          <img class="lp-header__logo-image" [src]="brandLogoUrl()" [alt]="text('شعار المتجر', 'Store logo')" (error)="onImageError($event)" />
+          <span class="lp-header__logo">{{ brandName() }}</span>
+        </div>
+        <nav class="lp-header__nav" aria-label="التنقل داخل الصفحة">
+          <a href="#why" (click)="$event.preventDefault(); scrollToSection('why')">{{ text('المميزات', 'Benefits') }}</a>
+          <a href="#reviews" (click)="$event.preventDefault(); scrollToSection('reviews')">{{ text('آراء العملاء', 'Reviews') }}</a>
+          <a href="#faq" (click)="$event.preventDefault(); scrollToSection('faq')">{{ text('الأسئلة الشائعة', 'FAQ') }}</a>
+        </nav>
+        <div class="lp-header__guarantees">
+          <span><i class="material-icons">local_shipping</i> {{ text('شحن سريع', 'Fast delivery') }}</span>
+          <span class="lp-header__sep">•</span>
+          <span><i class="material-icons">verified</i> {{ text('معاينة قبل الدفع', 'Inspect before paying') }}</span>
+        </div>
+        <div class="lp-header__actions">
+          <button type="button" class="lp-btn lp-btn--language" (click)="toggleLanguage()">{{ isArabic() ? 'EN' : 'عربي' }}</button>
+          <button type="button" class="lp-btn lp-btn--header" (click)="scrollToOrderForm()">
+            {{ text('اطلب الآن', 'Shop now') }}
+          </button>
+        </div>
+      </div>
+    </header>
+
+    @if (sections().length === 0) {
+      <div class="lp-empty">
+        <i class="material-icons">visibility_off</i>
+        <h2>هذه الصفحة لا تحتوي على أقسام ظاهرة</h2>
+        <p>افتح الصفحة من لوحة التحكم واضغط على أيقونة العين لإظهار قسم واحد على الأقل.</p>
+        <a routerLink="/" class="lp-btn lp-btn--primary">العودة للمتجر</a>
+      </div>
+    } @else {
+      @for (section of sections(); track $index) {
+      @switch (section.type) {
+
+        <!-- Hero -->
+        @case ('hero') {
+          <section class="lp-hero" [dir]="isArabic() ? 'rtl' : 'ltr'">
+            <div class="lp-container lp-hero__grid">
+              <div class="lp-hero__copy">
+                <span class="lp-eyebrow">
+                  <i class="material-icons">stars</i>
+                  {{ section.title || text('منتج مميز', 'Featured product') }}
+                </span>
+                <h1>{{ section.content.headline }}</h1>
+                @if (section.content.body) {<p class="lp-hero__desc">{{ section.content.body }}</p>}
+                @if (product(); as p) {
+                  <div class="lp-hero__offer">
+                    <strong class="lp-hero__price">{{ p.newPrice | storeCurrency }}</strong>
+                    @if (p.oldPrice > p.newPrice) {
+                      <del class="lp-hero__old-price">{{ p.oldPrice | storeCurrency }}</del>
+                      <span class="lp-discount-chip">{{ text('خصم', 'Save') }} {{ calculateDiscount() }}%</span>
+                    }
+                  </div>
+                }
+                <div class="lp-hero__proof">
+                  <span><i class="material-icons">local_shipping</i> {{ text('شحن سريع لكافة المحافظات', 'Fast delivery nationwide') }}</span>
+                  <span><i class="material-icons">verified</i> {{ text('الدفع بعد المعاينة والفحص', 'Inspect before payment') }}</span>
+                  <span><i class="material-icons">autorenew</i> {{ text('ضمان الاسترجاع 14 يوم', '14-day return guarantee') }}</span>
+                </div>
+                <div class="lp-hero__actions">
+                  <button type="button" class="lp-btn lp-btn--primary lp-btn--lg" (click)="scrollToOrderForm()">
+                    {{ section.content.buttonText || text('اطلب الآن مباشرة', 'Shop now') }}
+                    <i class="material-icons">arrow_back</i>
+                  </button>
+                  @if (whatsAppUrl()) {
+                    <a [href]="whatsAppUrl()" target="_blank" rel="noopener" class="lp-btn lp-btn--whatsapp">
+                      <i class="material-icons">chat</i>
+                      {{ text('تواصل عبر واتساب', 'WhatsApp us') }}
+                    </a>
+                  }
+                </div>
+
+              </div>
+
+              <div class="lp-hero__media">
+                <div class="lp-media-stack">
+                  @if (videoUrl()) {
+                    <div class="lp-media-tabs">
+                      <button
+                        type="button"
+                        class="lp-media-tab"
+                        [class.is-active]="mediaMode() === 'photo'"
+                        (click)="mediaMode.set('photo')">
+                        <i class="material-icons">photo_camera</i>
+                        <span>{{ text('صور المنتج', 'Photos') }}</span>
+                        @if (productPhotos().length > 1) {
+                          <span class="lp-media-tab__count">{{ productPhotos().length }}</span>
+                        }
+                      </button>
+                      <button
+                        type="button"
+                        class="lp-media-tab"
+                        [class.is-active]="mediaMode() === 'video'"
+                        (click)="mediaMode.set('video')">
+                        <i class="material-icons">play_circle_filled</i>
+                        <span>{{ text('فيديو المعاينة', 'Preview Video') }}</span>
+                      </button>
+                    </div>
+                  }
+
+                  @if (mediaMode() === 'video' && videoUrl()) {
+                    <div class="lp-video">
+                      <div class="lp-video__frame">
+                        <video controls preload="metadata" playsinline [src]="videoUrl()"></video>
+                      </div>
+                    </div>
+                  } @else if (productPhotos().length > 0) {
+                    <div class="lp-gallery" aria-label="صور المنتج">
+                      <div class="lp-gallery__frame">
+                        @if (productPhotos().length > 1) {
+                          <button type="button" class="lp-gallery__arrow lp-gallery__arrow--prev" (click)="previousPhoto()" aria-label="الصورة السابقة">‹</button>
+                        }
+                        <img [src]="displayPhoto(activePhotoIndex())" [alt]="section.content.headline || section.title" (error)="onImageError($event)" />
+                        @if (productPhotos().length > 1) {
+                          <button type="button" class="lp-gallery__arrow lp-gallery__arrow--next" (click)="nextPhoto()" aria-label="الصورة التالية">›</button>
+                        }
+                        @if (productPhotos().length > 1) {
+                          <div class="lp-gallery__dots">
+                            @for (photo of productPhotos(); track $index) {
+                              <button type="button" [class.is-active]="$index === activePhotoIndex()" (click)="selectPhoto($index)" [attr.aria-label]="'عرض الصورة ' + ($index + 1)"></button>
+                            }
+                          </div>
+                        }
+                      </div>
+                      @if (productPhotos().length > 1) {
+                        <div class="lp-gallery__thumbs" aria-label="صور المنتج المصغرة">
+                          @for (photo of productPhotos(); track $index) {
+                            <button
+                              type="button"
+                              [class.is-active]="$index === activePhotoIndex()"
+                              (mouseenter)="hoveredPhotoIndex.set($index)"
+                              (mouseleave)="hoveredPhotoIndex.set(null)"
+                              (click)="selectPhoto($index)"
+                              [attr.aria-label]="'عرض الصورة ' + ($index + 1)">
+                              <img [src]="resolveImage(photo)" alt="" (error)="onImageError($event)" />
+                            </button>
+                          }
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <div class="lp-gallery__frame lp-gallery__frame--plain">
+                      <img [src]="sectionImage(section)" [alt]="section.content.headline || section.title" (error)="onImageError($event)" />
+                    </div>
+                  }
+                </div>
+                @if (isClothing()) {
+                  <div class="lp-size-picker">
+                    <div class="lp-size-picker__heading">
+                      <strong>اختار المقاس</strong>
+                      <button type="button" (click)="showSizeGuide.set(!showSizeGuide())">دليل المقاسات</button>
+                    </div>
+                    @if (product(); as stockProduct) {
+                      @if (stockProduct.trackStock) {
+                      <small class="lp-stock-note">
+                        {{ stockProduct.stockQuantity && stockProduct.stockQuantity > 0 ? ('متبقي ' + stockProduct.stockQuantity + ' قطعة') : 'غير متوفر حاليًا' }}
+                      </small>
+                      }
+                    }
+                    <div class="lp-size-picker__options">
+                      @for (size of clothingSizes(); track size) {
+                        <button type="button" [disabled]="sizeStock(size) === 0" [class.is-selected]="selectedSize() === size" (click)="selectedSize.set(size)">
+                          {{ size }}
+                          @if (sizeStock(size) !== null) { <small>{{ sizeStock(size) }}</small> }
+                        </button>
+                      }
+                    </div>
+                    @if (showSizeGuide()) {
+                      <div class="lp-size-guide">
+                        <strong>دليل المقاسات التقريبي</strong>
+                        <table>
+                          <tr><th>المقاس</th><th>الصدر</th><th>الخصر</th></tr>
+                          <tr><td>S</td><td>86–91 سم</td><td>70–75 سم</td></tr>
+                          <tr><td>M</td><td>92–97 سم</td><td>76–81 سم</td></tr>
+                          <tr><td>L</td><td>98–103 سم</td><td>82–87 سم</td></tr>
+                          <tr><td>XL</td><td>104–110 سم</td><td>88–95 سم</td></tr>
+                        </table>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- Trust bar -->
+        @case ('trustbar') {
+          <section class="lp-trustbar" [dir]="isArabic() ? 'rtl' : 'ltr'">
+            <div class="lp-container lp-trustbar__row">
+              @for (item of section.content.items; track $index) {
+                <div class="lp-trustbar__item">
+                  <div class="lp-trustbar__icon-wrap">
+                    <i class="material-icons">{{ item.icon || 'verified' }}</i>
+                  </div>
+                  <span>{{ item.title }}</span>
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- Features -->
+        @case ('features') {
+          <section class="lp-features" id="why" [dir]="isArabic() ? 'rtl' : 'ltr'">
+            <div class="lp-container">
+              @if (section.title) {<h2 class="lp-heading">{{ section.title }}</h2>}
+              <div class="lp-features__grid">
+                @for (item of section.content.items; track $index) {
+                  <div class="lp-feature-card">
+                    <span class="lp-feature-card__icon"><i class="material-icons">{{ item.icon || 'workspace_premium' }}</i></span>
+                    <h3>{{ item.title }}</h3>
+                    @if (item.text) {<p>{{ item.text }}</p>}
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- Showcase -->
+        @case ('showcase') {
+          <section class="lp-showcase" [dir]="isArabic() ? 'rtl' : 'ltr'">
+            <div class="lp-container lp-showcase__grid">
+              <div class="lp-showcase__media">
+                <div class="lp-gallery__frame">
+                  <img [src]="sectionImage(section)" [alt]="section.content.headline || section.title" (error)="onImageError($event)" />
+                </div>
+              </div>
+              <div class="lp-showcase__copy">
+                @if (section.title) {<span class="lp-eyebrow">{{ section.title }}</span>}
+                <h2>{{ section.content.headline }}</h2>
+                @if (section.content.body) {<p>{{ section.content.body }}</p>}
+                @if (product(); as p) {
+                  <div class="lp-price-row">
+                    <strong>{{ p.newPrice | storeCurrency }}</strong>
+                    @if (p.oldPrice > p.newPrice) {<del>{{ p.oldPrice | storeCurrency }}</del>}
+                  </div>
+                }
+                @if (section.content.buttonText) {
+                  <button type="button" class="lp-btn lp-btn--primary" (click)="scrollToOrderForm()">
+                    {{ section.content.buttonText }}
+                  </button>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- Reviews -->
+        @case ('reviews') {
+          <section class="lp-reviews" id="reviews" [dir]="isArabic() ? 'rtl' : 'ltr'">
+            <div class="lp-container">
+              @if (section.title) {<h2 class="lp-heading">{{ section.title }}</h2>}
+              <div class="lp-reviews__grid">
+                @for (item of section.content.items; track $index) {
+                  <div class="lp-review-card">
+                    <div class="lp-stars">
+                      @for (s of [1, 2, 3, 4, 5]; track s) {
+                        <i class="material-icons" [class.lp-star--off]="s > (item.rating || 5)">star</i>
+                      }
+                    </div>
+                    <p class="lp-review-card__text">{{ item.text }}</p>
+                    @if (item.image || productPhotos().length > 0) {
+                      <img class="lp-review-card__photo" [src]="resolveImage(item.image || productPhotos()[$index % productPhotos().length])" [alt]="item.name || 'صورة تجربة العميل'" (error)="onImageError($event)" />
+                    }
+                    <div class="lp-review-card__meta">
+                      <span class="lp-review-card__name">{{ item.name }}</span>
+                      <span class="lp-review-card__badge"><i class="material-icons">check_circle</i> مشترٍ مؤكد</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- FAQ -->
+        @case ('faq') {
+          <section class="lp-faq" id="faq" [dir]="isArabic() ? 'rtl' : 'ltr'">
+            <div class="lp-container lp-container--narrow">
+              @if (section.title) {<h2 class="lp-heading">{{ section.title }}</h2>}
+              <div class="lp-faq__list">
+                @for (item of section.content.items; track $index) {
+                  <details class="lp-faq__item">
+                    <summary>{{ item.question }}</summary>
+                    <p>{{ item.answer }}</p>
+                  </details>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- CTA -->
+        @case ('cta') {
+          <section class="lp-cta" [dir]="isArabic() ? 'rtl' : 'ltr'">
+            <div class="lp-container lp-cta__card">
+              <h2>{{ section.content.headline }}</h2>
+              @if (section.content.body) {<p>{{ section.content.body }}</p>}
+              <button type="button" class="lp-btn lp-btn--primary lp-btn--lg" (click)="scrollToOrderForm()">
+                {{ section.content.buttonText || text('اطلب الآن مباشرة', 'Shop now') }}
+              </button>
+            </div>
+          </section>
+        }
+
+        <!-- Order form -->
+        @case ('orderform') {
+          <section class="lp-order" id="order" [dir]="isArabic() ? 'rtl' : 'ltr'">
+            <div class="lp-container lp-container--narrow" id="orderform">
+              @if (section.title) {<h2 class="lp-heading">{{ section.title }}</h2>}
+
+              <div class="lp-checkout-card">
+                @if (product(); as p) {
+                  <!-- Card Header (gradient) -->
+                  <div class="lp-checkout-header">
+                    <div class="lp-checkout-badge">
+                      <i class="material-icons">local_shipping</i>
+                      <span>{{ text('طلب سريع • الدفع عند الاستلام', 'Fast Order • Cash on Delivery') }}</span>
+                    </div>
+                    <h3>{{ text('أدخل بيانات التوصيل وسنتواصل معك فوراً', 'Enter delivery details') }}</h3>
+                    <p>{{ text('شحن سريع للمحافظات والدفع كاش بعد فحص ومعاينة المنتج 📦', 'Fast delivery, pay cash after inspecting your package') }}</p>
+                  </div>
+
+                  <!-- Card Body -->
+                  <div class="lp-checkout-body">
+
+                  @if (orderSuccess()) {
+                    <div class="lp-order__success">
+                      <div class="lp-order__success-icon">
+                        <i class="material-icons">check_circle</i>
+                      </div>
+                      <h3>{{ text('تم استلام طلبك بنجاح!', 'Order placed successfully!') }}</h3>
+                      <p>{{ text('رقم تتبع الطلب:', 'Tracking Code:') }}</p>
+                      <strong class="lp-order__tracking">{{ orderSuccess() }}</strong>
+                      <p class="lp-order__call-note">{{ text('سيتواصل معك فريق خدمة العملاء هاتفياً أو عبر واتساب لتأكيد الشحن.', 'Our team will contact you shortly to confirm delivery.') }}</p>
+                      <a routerLink="/" class="lp-btn lp-btn--outline" style="margin-top: 1.25rem;">{{ text('العودة إلى المتجر', 'Back to Store') }}</a>
+                    </div>
+                  } @else {
+                    <!-- Product Summary Bar -->
+                    <div class="lp-checkout-summary-bar">
+                      <div class="lp-checkout-product-info">
+                        <img class="lp-checkout-product-img" [src]="resolveImage(productPhotos()[0])" [alt]="p.name" (error)="onImageError($event)" />
+                        <div class="lp-checkout-product-meta">
+                          <h4 class="lp-checkout-product-title">{{ p.name }}</h4>
+                          <div class="lp-checkout-price-row">
+                            <strong class="lp-checkout-current-price">{{ p.newPrice | storeCurrency }}</strong>
+                            @if (p.oldPrice > p.newPrice) {
+                              <del class="lp-checkout-original-price">{{ p.oldPrice | storeCurrency }}</del>
+                              <span class="lp-checkout-discount-badge">{{ text('وفر', 'Save') }} {{ calculateDiscount() }}%</span>
+                            }
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="lp-checkout-controls">
+                        <div class="lp-checkout-qty-selector">
+                          <span class="lp-checkout-qty-label">{{ text('الكمية:', 'Qty:') }}</span>
+                          <div class="lp-qty-control">
+                            <button type="button" (click)="decreaseQuantity()" aria-label="تقليل الكمية">−</button>
+                            <span class="lp-qty-count">{{ quantity() }}</span>
+                            <button type="button" (click)="increaseQuantity()" aria-label="زيادة الكمية">+</button>
+                          </div>
+                        </div>
+
+                        <div class="lp-checkout-total-box">
+                          <span class="lp-checkout-total-label">{{ text('الإجمالي:', 'Total:') }}</span>
+                          <strong class="lp-checkout-total-amount">{{ orderTotal() | storeCurrency }}</strong>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Clean Friendly Form Fields -->
+                    <div class="lp-modern-form">
+                      <div class="lp-input-row">
+                        <div class="lp-field">
+                          <label class="lp-field-label">
+                            <i class="material-icons">person_outline</i>
+                            <span>{{ text('الاسم بالكامل', 'Full Name') }}</span>
+                            <span class="lp-req">*</span>
+                          </label>
+                          <input
+                            [(ngModel)]="guestOrder.customerName"
+                            (focus)="trackFormStarted()"
+                            type="text"
+                            class="lp-input"
+                            [placeholder]="text('اكتب اسمك الثلاثي', 'Your full name')" />
+                        </div>
+
+                        <div class="lp-field">
+                          <label class="lp-field-label">
+                            <i class="material-icons">phone_android</i>
+                            <span>{{ text('رقم الموبايل', 'Phone Number') }}</span>
+                            <span class="lp-req">*</span>
+                          </label>
+                          <input
+                            [(ngModel)]="guestOrder.phone"
+                            (focus)="trackFormStarted()"
+                            type="tel"
+                            inputmode="numeric"
+                            class="lp-input"
+                            placeholder="01xxxxxxxxx" />
+                        </div>
+                      </div>
+
+                      <div class="lp-input-row">
+                        <div class="lp-field">
+                          <label class="lp-field-label">
+                            <i class="material-icons">location_city</i>
+                            <span>{{ text('المحافظة', 'Governorate') }}</span>
+                            <span class="lp-req">*</span>
+                          </label>
+                          <div class="lp-select-wrap">
+                            <select [(ngModel)]="guestOrder.governorateId" (ngModelChange)="guestOrder.cityId = 0" class="lp-select">
+                              <option [ngValue]="0">{{ text('اختر المحافظة', 'Select Governorate') }}</option>
+                              @for (location of locations(); track location.id) {
+                                <option [ngValue]="location.id">{{ location.ar || location.value }}</option>
+                              }
+                            </select>
+                            <i class="material-icons lp-select-arrow">keyboard_arrow_down</i>
+                          </div>
+                        </div>
+
+                        <div class="lp-field">
+                          <label class="lp-field-label">
+                            <i class="material-icons">place</i>
+                            <span>{{ text('المدينة / المركز', 'City / Area') }}</span>
+                            <span class="lp-req">*</span>
+                          </label>
+                          <div class="lp-select-wrap">
+                            <select [(ngModel)]="guestOrder.cityId" class="lp-select">
+                              <option [ngValue]="0">{{ text('اختر المدينة', 'Select City') }}</option>
+                              @for (city of availableCities(); track city.id) {
+                                <option [ngValue]="city.id">{{ city.ar || city.value }}</option>
+                              }
+                            </select>
+                            <i class="material-icons lp-select-arrow">keyboard_arrow_down</i>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="lp-field lp-field--full">
+                        <label class="lp-field-label">
+                          <i class="material-icons">home</i>
+                          <span>{{ text('العنوان بالتفصيل', 'Detailed Address') }}</span>
+                          <span class="lp-req">*</span>
+                        </label>
+                        <input
+                          [(ngModel)]="guestOrder.address"
+                          type="text"
+                          class="lp-input"
+                          [placeholder]="text('اسم الشارع، رقم العمارة، الشقة أو علامة مميزة', 'Street, building, apartment or landmark')" />
+                      </div>
+
+                      <!-- Collapsible Delivery Notes (Optional) -->
+                      @if (showNotes()) {
+                        <div class="lp-field lp-field--full lp-field--notes">
+                          <label class="lp-field-label">
+                            <i class="material-icons">edit_note</i>
+                            <span>{{ text('ملاحظات خاصة للمندوب (اختياري)', 'Special Delivery Notes (Optional)') }}</span>
+                          </label>
+                          <input
+                            [(ngModel)]="guestOrder.notes"
+                            type="text"
+                            class="lp-input"
+                            [placeholder]="text('أي تعليمات وقت التسليم (مثال: الاتصال قبل الوصول)', 'Instructions e.g. call before arrival')" />
+                        </div>
+                      } @else {
+                        <button type="button" class="lp-toggle-notes-btn" (click)="showNotes.set(true)">
+                          <i class="material-icons">add_circle_outline</i>
+                          <span>{{ text('إضافة ملاحظات للتوصيل (اختياري)', 'Add delivery instructions (Optional)') }}</span>
+                        </button>
+                      }
+                    </div>
+
+                    <!-- Vibrant High-Converting Order Button -->
+                    <div class="lp-checkout-action-area">
+                      <button
+                        type="button"
+                        class="lp-btn lp-btn--confirm-order"
+                        (click)="submitGuestOrder()"
+                        [disabled]="orderSubmitting()">
+                        @if (orderSubmitting()) {
+                          <span class="lp-spinner-sm"></span>
+                          <span>{{ text('جارٍ تأكيد طلبك...', 'Confirming your order...') }}</span>
+                        } @else {
+                          <i class="material-icons">check_circle</i>
+                          <span>{{ text('تأكيد الطلب الآن • الدفع عند الاستلام', 'Confirm Order • Cash on Delivery') }}</span>
+                          <span class="lp-btn-amount">({{ orderTotal() | storeCurrency }})</span>
+                        }
+                      </button>
+
+                      <div class="lp-checkout-guarantee-pills">
+                        <span><i class="material-icons">verified</i> {{ text('معاينة وفحص قبل الدفع', 'Inspect Before Paying') }}</span>
+                        <span><i class="material-icons">payments</i> {{ text('دفع كاش عند الاستلام', 'Cash on Delivery') }}</span>
+                        <span><i class="material-icons">sync</i> {{ text('ضمان 14 يوم للاستبدال', '14-Day Free Exchange') }}</span>
+                      </div>
+
+                      @if (whatsAppUrl()) {
+                        <div class="lp-checkout-whatsapp-box">
+                          <a class="lp-whatsapp-action-btn" [href]="whatsAppUrl()" target="_blank" rel="noopener">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.04 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 15 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.53 7.37C9.37 7.37 9.1 7.43 8.87 7.68C8.64 7.93 8 8.53 8 9.75C8 10.97 8.89 12.14 9.02 12.31C9.14 12.48 10.74 14.95 13.2 16C13.78 16.26 14.24 16.41 14.59 16.52C15.18 16.71 15.72 16.68 16.14 16.62C16.62 16.55 17.6 16.02 17.8 15.44C18.01 14.86 18.01 14.37 17.95 14.27C17.89 14.16 17.72 14.1 17.47 13.98C17.22 13.85 15.98 13.24 15.75 13.16C15.52 13.08 15.36 13.04 15.2 13.28C15.03 13.53 14.56 14.1 14.41 14.27C14.27 14.43 14.13 14.46 13.88 14.33C13.63 14.21 12.83 13.95 11.89 13.11C11.15 12.45 10.66 11.64 10.51 11.39C10.37 11.15 10.5 11.01 10.62 10.89C10.73 10.78 10.87 10.6 11 10.45C11.13 10.3 11.17 10.19 11.26 10.02C11.34 9.86 11.3 9.71 11.24 9.6C11.18 9.48 10.68 8.26 10.48 7.76C10.28 7.27 10.07 7.34 9.92 7.33C9.77 7.33 9.65 7.37 9.53 7.37Z"/></svg>
+                            <span>{{ text('أو اطلب عبر واتساب مباشرة بنقرة واحدة', 'Or Order via WhatsApp directly') }}</span>
+                          </a>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  </div><!-- /lp-checkout-body -->
+                } @else {
+                  <!-- Inquiry / Contact Form (when landing page has no linked product) -->
+                  <div class="lp-inquiry-card">
+                    <div class="lp-order__intro">
+                      <span class="lp-eyebrow">
+                        <i class="material-icons">contact_support</i>
+                        {{ text('طلب تواصل واستفسار', 'Contact & Inquire') }}
+                      </span>
+                      <h3>{{ section.content.headline || text('أدخل بياناتك وسنتواصل معك فوراً', 'Enter your details') }}</h3>
+                      <p>{{ section.content.body || text('املأ بياناتك وسيقوم فريقنا بالرد على كافة استفساراتك وتقديم أفضل خدمة.', 'Fill in your details and our team will get back to you immediately.') }}</p>
+                    </div>
+
+                    @if (orderSuccess()) {
+                      <div class="lp-order__success">
+                        <div class="lp-order__success-icon">
+                          <i class="material-icons">check_circle</i>
+                        </div>
+                        <h3>{{ text('تم استلام طلب التواصل بنجاح!', 'Inquiry received successfully!') }}</h3>
+                        <p>{{ text('رقم المرجع:', 'Reference ID:') }} <strong class="lp-order__tracking">{{ orderSuccess() }}</strong></p>
+                        <p class="lp-order__call-note">{{ text('سيتواصل معك فريقنا هاتفياً أو عبر واتساب للإجابة عن كافة تفاصيلك.', 'Our team will contact you shortly.') }}</p>
+                        <a routerLink="/" class="lp-btn lp-btn--outline" style="margin-top: 1rem;">{{ text('العودة للمتجر', 'Back to store') }}</a>
+                      </div>
+                    } @else {
+                      <div class="lp-order__form">
+                        <div class="lp-form-group">
+                          <label>{{ text('الاسم بالكامل', 'Full Name') }} <span class="req">*</span></label>
+                          <input [(ngModel)]="guestOrder.customerName" (focus)="trackFormStarted()" type="text" [placeholder]="text('مثال: محمد أحمد', 'e.g. John Doe')" />
+                        </div>
+                        <div class="lp-form-group">
+                          <label>{{ text('رقم الموبايل (واتساب)', 'Phone / WhatsApp') }} <span class="req">*</span></label>
+                          <input [(ngModel)]="guestOrder.phone" (focus)="trackFormStarted()" type="tel" inputmode="numeric" placeholder="01xxxxxxxxx" />
+                        </div>
+                        <div class="lp-form-group">
+                          <label>{{ text('المحافظة', 'Governorate') }}</label>
+                          <select [(ngModel)]="guestOrder.governorateId">
+                            <option [ngValue]="0">{{ text('اختر المحافظة (اختياري)', 'Select Governorate (Optional)') }}</option>
+                            @for (location of locations(); track location.id) {
+                              <option [ngValue]="location.id">{{ location.ar || location.value }}</option>
+                            }
+                          </select>
+                        </div>
+                        <div class="lp-form-group">
+                          <label>{{ text('المدينة / المنطقة', 'City / Area') }}</label>
+                          <input [(ngModel)]="guestOrder.address" type="text" [placeholder]="text('المنطقة أو الحي السكني', 'Your area or neighborhood')" />
+                        </div>
+                        <div class="lp-form-group lp-form-group--full">
+                          <label>{{ text('تفاصيل الاستفسار أو الطلب', 'Inquiry or Details') }}</label>
+                          <textarea [(ngModel)]="guestOrder.notes" rows="2" [placeholder]="text('اكتب استفسارك أو التفاصيل التي تود معرفتها', 'Write your inquiry or question')"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="lp-order__actions">
+                        <button type="button" class="lp-btn lp-btn--primary lp-btn--block lp-btn--lg" (click)="submitGuestOrder()" [disabled]="orderSubmitting()">
+                          @if (orderSubmitting()) {
+                            <span class="lp-spinner-sm"></span>
+                            <span>{{ text('جارٍ الإرسال...', 'Sending...') }}</span>
+                          } @else {
+                            <i class="material-icons">send</i>
+                            <span>{{ section.content.buttonText || text('إرسال طلب التواصل الآن', 'Send Inquiry Now') }}</span>
+                          }
+                        </button>
+                      </div>
+
+                      @if (whatsAppUrl()) {
+                        <div class="lp-order__whatsapp-wrap">
+                          <a class="lp-whatsapp" [href]="whatsAppUrl()" target="_blank" rel="noopener">
+                            <i class="material-icons">chat</i>
+                            <span>{{ text('أو تواصل مباشرة عبر واتساب', 'Or Chat Directly on WhatsApp') }}</span>
+                          </a>
+                        </div>
+                      }
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+      }
+
+      }
+
+      <footer class="lp-footer" [dir]="isArabic() ? 'rtl' : 'ltr'">
+        <div class="lp-container lp-footer__inner">
+          <strong class="lp-footer__logo">{{ brandName() }}</strong>
+          <nav aria-label="روابط التذييل">
+            <a href="#why" (click)="$event.preventDefault(); scrollToSection('why')">{{ text('المميزات', 'Benefits') }}</a>
+            <a href="#reviews" (click)="$event.preventDefault(); scrollToSection('reviews')">{{ text('آراء العملاء', 'Reviews') }}</a>
+            <a href="#faq" (click)="$event.preventDefault(); scrollToSection('faq')">{{ text('الأسئلة الشائعة', 'FAQ') }}</a>
+          </nav>
+          <small>© {{ currentYear }} {{ brandName() }}. {{ text('جميع الحقوق محفوظة.', 'All rights reserved.') }}</small>
+        </div>
+      </footer>
+  }
+
+  @if (product(); as p) {
+    <aside class="lp-sticky-bar" [dir]="isArabic() ? 'rtl' : 'ltr'" aria-label="شريط الشراء السريع">
+      <div class="lp-sticky-bar__details">
+        <span class="lp-sticky-bar__title">{{ p.name }}</span>
+        <strong class="lp-sticky-bar__price">{{ p.newPrice | storeCurrency }}</strong>
+      </div>
+      <div class="lp-sticky-bar__btns">
+        <button type="button" class="lp-btn lp-btn--primary-sm" (click)="scrollToOrderForm()">
+          {{ text('اطلب الآن', 'Shop now') }}
+        </button>
+      </div>
+    </aside>
+  }
+}
+
+</div>
