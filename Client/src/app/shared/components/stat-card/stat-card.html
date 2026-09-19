@@ -1,0 +1,13 @@
+<article class="stat-card stat-card--{{ tone }}">
+  <span class="stat-card__icon"><i class="material-icons" aria-hidden="true">{{ icon }}</i></span>
+  <div class="stat-card__content">
+    <span class="stat-card__label">{{ label }}</span>
+    <strong class="stat-card__value">{{ value }}</strong>
+    @if (trend) {
+      <span class="stat-card__trend" [class.stat-card__trend--negative]="trendTone === 'negative'" [class.stat-card__trend--muted]="trendTone === 'muted'">
+        @if (trendIcon) { <i class="material-icons" aria-hidden="true">{{ trendIcon }}</i> }
+        {{ trend }}
+      </span>
+    }
+  </div>
+</article>

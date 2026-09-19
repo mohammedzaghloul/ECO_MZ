@@ -1,9 +1,30 @@
+@use '../styles/tokens' as *;
+
 .app-shell {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: $neutral-50;
+
+  &--auth {
+    background: $neutral-50;
+  }
 }
 
 .app-main {
   flex: 1;
+
+  /* room for the fixed mobile bottom nav so content/footer is never covered */
+  @media (max-width: 767px) {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+
+  &--auth {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &--landing {
+    padding-bottom: 0 !important;
+  }
 }

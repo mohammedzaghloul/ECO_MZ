@@ -1,0 +1,270 @@
+<header class="app-header" [class.app-header--scrolled]="isScrolled">
+  <div class="app-header__container">
+    <a routerLink="/" class="app-header__logo" (click)="closeMobileMenu()">
+      <img src="images/logo.png" alt="Eco" class="app-header__logo-image" width="38" height="38" />
+    </a>
+
+    <nav class="app-header__nav app-header__nav--desktop" aria-label="Main navigation">
+      <a
+        *ngFor="let link of navLinks"
+        [routerLink]="link.path"
+        [fragment]="link.fragment"
+        [class.app-header__link--active]="isLinkActive(link)"
+        class="app-header__link">
+        {{ link.key | translate }}
+      </a>
+    </nav>
+
+    <div class="app-header__actions">
+      <!-- Language toggle -->
+      <button
+        type="button"
+        class="app-header__icon-btn app-header__icon-btn--lang"
+        (click)="toggleLanguage()"
+        [attr.aria-label]="langService.currentLang() === 'en' ? 'تغيير اللغة إلى العربية' : 'Switch language to English'">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 0 1 5.08 16zm2.95-8H5.08a7.987 7.987 0 0 1 4.33-3.56A15.65 15.65 0 0 0 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/>
+        </svg>
+        <span class="lang-short">{{ langService.currentLang() === 'en' ? 'ع' : 'EN' }}</span>
+      </button>
+
+      <!-- Basket / Cart -->
+      <a class="app-header__icon-btn" routerLink="/basket" [attr.aria-label]="'NAV_CART' | translate">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 18a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm10 0a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM6.2 6h13.3l-1.6 7.3H8.3L6.2 6Zm-.7-2L4.1 4.5 3 2H1v2h1.2l2.2 9.4L7 17h12v-2H8.6l-.7-3h10.3l2-9H6.5Z"/>
+        </svg>
+        @if (basketService.itemCount() > 0) {
+          <span class="badge-count">{{ basketService.itemCount() }}</span>
+        }
+      </a>
+
+      <!-- Wishlist -->
+      <a class="app-header__icon-btn app-header__icon-btn--wishlist" routerLink="/wishlist" [attr.aria-label]="'NAV_WISHLIST' | translate">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 21.35 10.55 20C5.4 15.36 2 12.28 2 8.5A4.5 4.5 0 0 1 6.5 4c1.74 0 3.41.81 4.5 2.09A6.04 6.04 0 0 1 17.5 4 4.5 4.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35Z"/>
+        </svg>
+        @if (wishlistService.count() > 0) {
+          <span class="badge-count badge-count--wishlist">{{ wishlistService.count() }}</span>
+        }
+      </a>
+
+      @if (accountService.currentUser()) {
+        <div class="notification-wrap">
+          <button
+            type="button"
+            class="app-header__icon-btn"
+            (click)="toggleNotifications($event)"
+            [attr.aria-label]="'NAV_NOTIFICATIONS' | translate"
+            [attr.aria-expanded]="isNotificationsOpen">
+            <span class="material-icons">notifications_none</span>
+            @if (notificationService.unreadCount() > 0) {
+              <span class="badge-count badge-count--notification">{{ notificationService.unreadCount() }}</span>
+            }
+          </button>
+          @if (isNotificationsOpen) {
+            <div class="notification-dropdown" role="dialog">
+              <div class="notification-dropdown__head">
+                <div class="notification-dropdown__title">
+                  <span class="material-icons">notifications</span>
+                  <strong>{{ 'NAV_NOTIFICATIONS' | translate }}</strong>
+                </div>
+                @if (notificationService.unreadCount() > 0) {
+                  <span class="notification-dropdown__count">{{ notificationService.unreadCount() }}</span>
+                }
+                @if (notifications().length > 0) {
+                  <button type="button" class="notification-dropdown__clear" (click)="clearNotifications(); $event.stopPropagation()">
+                    {{ 'NOTIFICATIONS_CLEAR' | translate }}
+                  </button>
+                }
+              </div>
+              @if (!notifications().length) {
+                <p class="notification-dropdown__empty">{{ 'NOTIFICATIONS_EMPTY' | translate }}</p>
+              } @else {
+                @for (notification of notifications(); track notification.id) {
+                  <button
+                    type="button"
+                    class="notification-item"
+                    [class.notification-item--unread]="!notification.isRead"
+                    (click)="markNotificationAsRead(notification)">
+                    <span class="notification-item__icon material-icons">local_shipping</span>
+                    <span class="notification-item__content">
+                      <strong>{{ notificationTitle(notification) }}</strong>
+                      <span>{{ notificationMessage(notification) }}</span>
+                      <small>{{ notificationDate(notification) }}</small>
+                    </span>
+                  </button>
+                }
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Account -->
+      @if (accountService.currentUser(); as user) {
+        <div class="user-menu-wrap">
+          <button
+            type="button"
+            class="app-header__icon-btn app-header__avatar"
+            (click)="toggleUserMenu($event)"
+            [attr.aria-expanded]="isUserMenuOpen"
+            aria-haspopup="true"
+            [attr.aria-label]="'NAV_ACCOUNT' | translate">
+            <span class="app-header__avatar-initial">{{ (user.displayName || user.email || 'U').charAt(0) }}</span>
+          </button>
+          <div class="user-dropdown" [class.user-dropdown--open]="isUserMenuOpen" role="menu">
+            <div class="user-dropdown__header">
+              <div class="user-dropdown__id">
+                <span class="user-dropdown__avatar">{{ (user.displayName || user.email || 'U').charAt(0) }}</span>
+                <div class="user-dropdown__who">
+                  <span class="user-dropdown__name">{{ user.displayName || user.email }}</span>
+                  <span class="user-dropdown__badge">{{ 'ACCOUNT_MEMBER' | translate }}</span>
+                </div>
+              </div>
+              <span class="user-dropdown__email">{{ user.email }}</span>
+            </div>
+            <a class="user-dropdown__item" routerLink="/profile" (click)="isUserMenuOpen = false" role="menuitem">
+              <span class="material-icons">person</span>
+              {{ 'NAV_PROFILE' | translate }}
+            </a>
+            <a class="user-dropdown__item" routerLink="/my-order" (click)="isUserMenuOpen = false" role="menuitem">
+              <span class="material-icons">receipt_long</span>
+              {{ 'NAV_MY_ORDERS' | translate }}
+            </a>
+            @if (isAdmin()) {
+              <a class="user-dropdown__item" routerLink="/admin" (click)="isUserMenuOpen = false" role="menuitem">
+                <span class="material-icons">dashboard</span>
+                {{ 'NAV_ADMIN_DASHBOARD' | translate }}
+              </a>
+            }
+            <button type="button" class="user-dropdown__item user-dropdown__item--danger" (click)="logout()" role="menuitem">
+              <span class="material-icons">logout</span>
+              {{ 'NAV_LOGOUT' | translate }}
+            </button>
+          </div>
+        </div>
+      } @else {
+        <a class="app-header__icon-btn" routerLink="/account/login" [attr.aria-label]="'NAV_ACCOUNT' | translate">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"/>
+          </svg>
+        </a>
+      }
+
+      <!-- Mobile Hamburger -->
+      <button
+        class="app-header__hamburger"
+        type="button"
+        (click)="toggleMobileMenu()"
+        [attr.aria-expanded]="isMobileMenuOpen"
+        [attr.aria-label]="'NAV_TOGGLE_MENU' | translate">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+
+  <nav
+    class="app-header__nav app-header__nav--mobile"
+    [class.app-header__nav--mobile-open]="isMobileMenuOpen"
+    [attr.aria-label]="'NAV_MOBILE_NAV' | translate">
+    <div class="drawer-head">
+      <img src="images/logo.png" alt="Eco" class="drawer-brand-image" width="34" height="34" />
+      <button
+        type="button"
+        class="drawer-close"
+        (click)="closeMobileMenu()"
+        [attr.aria-label]="'NAV_CLOSE_MENU' | translate">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    @if (accountService.currentUser(); as user) {
+      <a class="drawer-user" routerLink="/profile" (click)="closeMobileMenu()">
+        <span class="drawer-user__avatar">{{ (user.displayName || user.email || 'U').charAt(0) }}</span>
+        <span class="drawer-user__meta">
+          <span class="drawer-user__name">{{ user.displayName || user.email }}</span>
+          <span class="drawer-user__badge">{{ 'ACCOUNT_MEMBER' | translate }}</span>
+        </span>
+        <span class="material-icons drawer-user__chevron">chevron_right</span>
+      </a>
+    }
+
+    @if (!accountService.currentUser()) {
+      <a class="drawer-user drawer-user--guest" routerLink="/account/login" (click)="closeMobileMenu()">
+        <span class="drawer-user__avatar drawer-user__avatar--guest">
+          <span class="material-icons">person</span>
+        </span>
+        <span class="drawer-user__meta">
+          <span class="drawer-user__name">{{ 'AUTH_SIGN_IN' | translate }}</span>
+          <span class="drawer-user__badge">{{ 'AUTH_LOGIN_SUB_SHORT' | translate }}</span>
+        </span>
+        <span class="material-icons drawer-user__chevron">chevron_right</span>
+      </a>
+    }
+
+    <div class="drawer-links">
+      @for (link of navLinks; track link.key) {
+        <a
+          class="drawer-link"
+          [class.drawer-link--active]="isLinkActive(link)"
+          [routerLink]="link.path"
+          [fragment]="link.fragment"
+          (click)="closeMobileMenu()">
+          <span class="drawer-link__label">{{ link.key | translate }}</span>
+          <span class="drawer-link__arrow">
+            <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+      }
+      <a class="drawer-link" routerLink="/wishlist" (click)="closeMobileMenu()">
+        <span class="drawer-link__label">{{ 'NAV_WISHLIST' | translate }}</span>
+        <span class="drawer-link__arrow">
+          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+      @if (isAdmin()) {
+        <a class="drawer-link" routerLink="/admin" (click)="closeMobileMenu()">
+          <span class="drawer-link__label">{{ 'NAV_ADMIN_DASHBOARD' | translate }}</span>
+          <span class="drawer-link__arrow">
+            <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+      }
+      @if (newArrivals().length) {
+        <div class="drawer-arrivals">
+          <span class="drawer-arrivals__label">{{ 'DRAWER_NEW_ARRIVALS' | translate }}</span>
+          <div class="drawer-arrivals__row">
+            @for (product of newArrivals(); track product.id) {
+              <a class="arrival-tile" [routerLink]="['/shop/product', product.id]" (click)="closeMobileMenu()">
+                <img [src]="productImage(product)" [alt]="product.name" loading="lazy" />
+                <span class="arrival-tile__name">{{ product.name }}</span>
+                <span class="arrival-tile__price">${{ product.newPrice.toFixed(2) }}</span>
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="drawer-foot">
+      <button type="button" class="drawer-lang" (click)="toggleLanguage()">
+        <span class="material-icons">language</span>
+        {{ langService.currentLang() === 'en' ? 'العربية' : 'English' }}
+      </button>
+      @if (accountService.currentUser()) {
+        <button type="button" class="drawer-logout" (click)="logout()">
+          <span class="material-icons">logout</span>
+          {{ 'NAV_LOGOUT' | translate }}
+        </button>
+      }
+    </div>
+  </nav>
+</header>
+
+<div
+  class="app-header__backdrop"
+  *ngIf="isMobileMenuOpen"
+  (click)="closeMobileMenu()">
+</div>

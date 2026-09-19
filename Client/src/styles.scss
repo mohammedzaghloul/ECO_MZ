@@ -1,80 +1,350 @@
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap');
+@use 'styles/tokens' as *;
+@use 'styles/admin';
 @import 'material-icons/iconfont/material-icons.css';
 
 :root {
-  --eco-bg: #f4f6f8;
-  --eco-surface: #ffffff;
-  --eco-dark: #0b1220;
-  --eco-dark-soft: #151d2e;
-  --eco-text: #0f172a;
-  --eco-muted: #64748b;
-  --eco-border: rgba(15, 23, 42, 0.08);
-  --eco-accent: #10b981;
-  --eco-accent-hover: #059669;
-  --eco-accent-soft: rgba(16, 185, 129, 0.12);
-  --eco-sky: #38bdf8;
-  --eco-gradient: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%);
-  --eco-gradient-dark: linear-gradient(135deg, #0b1220 0%, #1a2744 100%);
-  --eco-shadow-sm: 0 4px 20px rgba(15, 23, 42, 0.06);
-  --eco-shadow-md: 0 12px 40px rgba(15, 23, 42, 0.1);
-  --eco-radius: 16px;
-  --eco-radius-lg: 24px;
-  --eco-font: 'Cairo', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --eco-display: 'Cairo', 'Instrument Serif', Georgia, serif;
+  --color-primary: #{$primary-600};
+  --color-success: #{$success-600};
+  --color-warning: #{$warning-500};
+  --color-info: #{$primary-600};
+  --color-danger: #{$danger-600};
+  --color-neutral-bg: #{$neutral-50};
+  --color-neutral-border: #{$neutral-200};
+  --color-text-secondary: #{$neutral-500};
+  --font-family: #{$font-body};
+  --radius: #{$radius-md};
+  --shadow-card: #{$shadow-card};
+  --space-card: #{$space-5};
+  --space-cell: #{$space-4};
+  --eco-bg: #{$neutral-50};
+  --eco-surface: #{$white};
+  --eco-text: #{$neutral-900};
+  --eco-muted: #{$neutral-500};
+  --eco-border: #{$neutral-200};
+  --eco-primary: #{$primary-600};
+  --eco-primary-strong: #{$primary-700};
+  --eco-success: #{$success-600};
+  --eco-danger: #{$danger-600};
+  --eco-shadow: 0 4px 12px rgba($neutral-900, 0.08);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: $neutral-50;
+  color: $neutral-900;
+  font-family: var(--font-family);
+
+  /* In RTL, off-screen elements (closed mobile drawers) overflow to the LEFT
+     and create a horizontal scrollbar. `clip` kills it without creating a
+     scroll container, so `position: sticky` keeps working. */
+  overflow-x: clip;
+}
+
+/* Toasts should stay visible at the viewport edge even when the page is scrolled. */
+.toast-container {
+  position: fixed !important;
+  z-index: 1090;
+}
+
+/* Keep touch scrolling while removing the distracting mobile scrollbar. */
+@media (max-width: 767px) {
+  html,
+  body,
+  .app-shell,
+  .app-main {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  .app-shell::-webkit-scrollbar,
+  .app-main::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+/* Arabic RTL layout. Bootstrap's bundled stylesheet is LTR, so physical
+   alignment utilities and directional controls need explicit RTL treatment. */
+html[dir="rtl"],
+html[dir="rtl"] body,
+body.rtl-mode {
+  direction: rtl;
+  font-family: 'Cairo', 'Inter', -apple-system, sans-serif;
+  text-align: right;
+
+  .text-md-end {
+    text-align: right !important;
+  }
+
+  .text-md-start {
+    text-align: left !important;
+  }
+
+  .ms-1, .ms-2, .ms-3, .ms-4, .ms-5, .ms-auto {
+    margin-left: 0 !important;
+  }
+
+  .me-1, .me-2, .me-3, .me-4, .me-5, .me-auto {
+    margin-right: 0 !important;
+  }
+
+  .ms-1 { margin-right: .25rem !important; }
+  .ms-2 { margin-right: .5rem !important; }
+  .ms-3 { margin-right: 1rem !important; }
+  .ms-4 { margin-right: 1.5rem !important; }
+  .ms-5 { margin-right: 3rem !important; }
+  .ms-auto { margin-right: auto !important; }
+  .me-1 { margin-left: .25rem !important; }
+  .me-2 { margin-left: .5rem !important; }
+  .me-3 { margin-left: 1rem !important; }
+  .me-4 { margin-left: 1.5rem !important; }
+  .me-5 { margin-left: 3rem !important; }
+  .me-auto { margin-left: auto !important; }
+
+  .justify-content-between > .back-link svg,
+  .back-link svg,
+  .btn-icon,
+  .app-header__link .arrow,
+  .material-icons.arrow_forward,
+  .material-icons.arrow_back,
+  .page-nav,
+  .arrow-icon {
+    display: inline-block;
+    transform: scaleX(-1);
+  }
+
+  .dropdown-menu,
+  .shop-search-input,
+  .field__input,
+  .form-input,
+  .field-input,
+  input,
+  textarea {
+    text-align: right;
+  }
+
+  .shop-search .search-icon { right: .9rem; left: auto; }
+  .shop-search-input { padding-right: 2.5rem; padding-left: .75rem; }
+  .discount-badge { right: .85rem; left: auto; }
+  .wishlist-btn { left: .75rem; right: auto; }
+  .pd-nav-btn.prev { right: .75rem; left: auto; }
+  .pd-nav-btn.next { left: .75rem; right: auto; }
+
+  .app-header__icon-btn .badge-count {
+    left: -4px;
+    right: auto;
+  }
+
+  .app-header__nav--mobile {
+    left: 0;
+    right: auto;
+    transform: translateX(-100%);
+  }
+
+  .app-header__nav--mobile-open { transform: translateX(0); }
+
+  /* NOTE: no RTL column flip for .basket-layout — CSS Grid already mirrors
+     track order with direction:rtl, and overriding the tracks here squeezed
+     the items into the narrow summary column. */
+
+  /* Shop page: give Arabic headings enough inline space and keep the
+     count badge visually attached to the heading instead of a blank column. */
+  .shop-header h1 {
+    max-width: none;
+    line-height: 1.12;
+    letter-spacing: -0.035em;
+  }
+
+  .shop-header > .col-md-6:first-child {
+    flex: 0 0 70%;
+    max-width: 70%;
+  }
+
+  .shop-header > .col-md-6:last-child {
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
+
+  .shop-sort-field i {
+    right: .9rem;
+    left: auto;
+  }
+
+  .shop-select {
+    padding: .72rem 2.2rem .72rem .9rem;
+    text-align: right;
+  }
+
+  .product-category,
+  .card-title,
+  .rating {
+    text-align: right;
+  }
+
+  @media (max-width: 1024px) {
+    .shop-header > .col-md-6:first-child,
+    .shop-header > .col-md-6:last-child {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+
+  .basket-item__subtotal,
+  .summary-row .value,
+  .delivery-option__price {
+    text-align: left;
+  }
+
+  /* Forward-pointing arrows must progress toward the inline end (left in
+     RTL), and the pagination glyphs flip with them. CSS Grid handles layout
+     mirroring; this only mirrors the directional glyphs. */
+  .section-heading a .material-icons,
+  .category-tile .material-icons.arrow,
+  .shop-pagination .page-nav {
+    transform: scaleX(-1);
+  }
+}
+
+body {
+  line-height: $leading-normal;
 }
 
 * {
   box-sizing: border-box;
 }
 
-html {
-  font-family: var(--eco-font);
+@keyframes eco-fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-body {
-  font-family: var(--eco-font);
-  margin: 0;
-  padding: 0;
-  background-color: var(--eco-bg);
-  color: var(--eco-text);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+@keyframes eco-slide-in-start {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-body,
-button,
-input,
-select,
-textarea,
-span,
-p,
-a,
-li,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--eco-font);
+@keyframes eco-float-in {
+  from { opacity: 0; transform: translateY(24px) rotateX(5deg) rotateY(-3deg); }
+  to { opacity: 1; transform: translateY(0) rotateX(0) rotateY(0); }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.brand-name,
-.shop-header h1,
-.shop-sidebar-heading h2 {
-  font-weight: 700;
-  letter-spacing: -0.02em;
+@keyframes eco-gentle-float {
+  0%, 100% { transform: translateY(0) rotateZ(0); }
+  50% { transform: translateY(-6px) rotateZ(.25deg); }
 }
 
-::selection {
-  background: var(--eco-accent-soft);
-  color: var(--eco-text);
+@keyframes eco-soft-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes eco-badge-pop {
+  from { opacity: 0; transform: scale(.75) rotate(-6deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* ==========================================================================
+   Arabic (RTL) typography corrections.
+   Latin display styles (negative tracking, ~1.0 line-height) clip and
+   overlap Arabic glyphs, so headings get roomy leading and no tracking.
+   !important wins over component-scoped heading styles.
+   ========================================================================== */
+html[dir="rtl"],
+body.rtl-mode {
+  h1, h2, h3, h4,
+  .h1, .h2, .h3, .h4 {
+    line-height: 1.4 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .shop-header h1,
+  .shop-header-badge,
+  .shop-eyebrow {
+    letter-spacing: 0;
+  }
+}
+
+/* Print styles for invoice */
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body.is-printing-invoice > *:not(app-root) {
+    display: none !important;
+  }
+
+  body.is-printing-invoice > app-root,
+  body.is-printing-invoice > app-root > * {
+    display: block !important;
+  }
+
+  .order-modal-backdrop {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    background: white !important;
+    backdrop-filter: none !important;
+    overflow: visible !important;
+  }
+
+  .order-modal {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 24px !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    animation: none !important;
+  }
+
+  .order-modal__close,
+  .order-modal__print,
+  .detail-status-picker__arrow,
+  .detail-status-picker__menu {
+    display: none !important;
+  }
+
+  .detail-status-picker__trigger {
+    justify-content: flex-start !important;
+    padding-inline: 0 !important;
+    background: transparent !important;
+  }
+
+  .order-modal__items,
+  .order-modal__items:has(.order-modal-item:nth-child(5)) {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .order-modal-item,
+  .order-modal__summary > div {
+    break-inside: avoid;
+  }
 }

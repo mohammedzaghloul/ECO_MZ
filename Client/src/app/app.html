@@ -1,7 +1,16 @@
-<div class="app-shell">
-  <app-navbar></app-navbar>
-  <main class="app-main">
+<div class="app-shell" [class.app-shell--auth]="isAuthPage" [class.app-shell--landing]="isLandingPage">
+  <ngx-spinner type="ball-scale-multiple" bdColor="rgba(11, 18, 32, 0.22)" color="#2563eb" size="medium"></ngx-spinner>
+  
+  @if (!isAuthPage && !isAdminPage && !isLandingPage) {
+    <app-header></app-header>
+  }
+
+  <main class="app-main" [class.app-main--auth]="isAuthPage" [class.app-main--landing]="isLandingPage">
     <router-outlet></router-outlet>
   </main>
-  <app-footer></app-footer>
+
+  @if (!isAuthPage && !isAdminPage && !isLandingPage) {
+    <app-footer></app-footer>
+    <app-bottom-nav></app-bottom-nav>
+  }
 </div>

@@ -13,7 +13,10 @@
       </div>
     </a>
 
-    <ul class="navbar-nav main-nav" aria-label="Primary navigation">
+    <button type="button" class="mobile-menu-toggle" (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileMenuOpen" aria-label="Toggle navigation">
+      <i class="material-icons">{{ mobileMenuOpen ? 'close' : 'menu' }}</i>
+    </button>
+    <ul class="navbar-nav main-nav" [class.mobile-open]="mobileMenuOpen" aria-label="Primary navigation">
       <li class="nav-item">
         <a
           class="nav-link"
@@ -33,6 +36,8 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/best-sellers" routerLinkActive="active">Best Sellers</a>
       </li>
+      <li class="nav-item"><a class="nav-link" routerLink="/shop" fragment="categories">Categories</a></li>
+      <li class="nav-item"><a class="nav-link" routerLink="/about" fragment="contact">Contact</a></li>
     </ul>
 
     <div class="nav-actions">
@@ -48,9 +53,12 @@
         />
       </form>
 
-      <a class="nav-icon-button cart-button" routerLink="/" title="Cart" aria-label="Shopping cart">
-        <i class="material-icons" aria-hidden="true">shopping_bag</i>
-        <span class="cart-badge">2</span>
+      <a class="nav-icon-button cart-button" title="Cart" aria-label="Shopping cart" routerLink="/basket">
+        <i class="material-icons" aria-hidden="true">shopping_cart</i>
+        @if (basketService.itemCount()) { <span class="cart-badge">{{ basketService.itemCount() }}</span> }
+      </a>
+      <a class="nav-icon-button" title="Wishlist" aria-label="Wishlist" routerLink="/shop">
+        <i class="material-icons" aria-hidden="true">favorite_border</i>
       </a>
 
       <div class="user-menu">
@@ -67,13 +75,13 @@
         </button>
 
         <div class="dropdown-menu" [class.show]="visibale" role="menu" aria-label="Account actions">
-          <a class="dropdown-item" routerLink="/login" (click)="visibale = false" role="menuitem">
+          <a class="dropdown-item" routerLink="/account/login" (click)="visibale = false" role="menuitem">
             <span class="dropdown-icon"><i class="fa fa-user" aria-hidden="true"></i></span>
             <span>Login</span>
           </a>
           <a
             class="dropdown-item"
-            routerLink="/register"
+            routerLink="/account/register"
             (click)="visibale = false"
             role="menuitem"
           >

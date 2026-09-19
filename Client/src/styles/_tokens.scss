@@ -1,0 +1,120 @@
+// ========================================================================== 
+// Eco Premium Store — Design Tokens
+// Source of truth for colors, typography, spacing, radius, and shared UI
+// ========================================================================== 
+
+// -------------------- Colors: Primary --------------------
+$primary-700: #1D4ED8;
+$primary-600: #2563EB;
+$primary-50:  #EFF6FF;
+$primary-100: #DBEAFE;
+
+// -------------------- Colors: Accent --------------------
+$success-700: #15803D;
+$success-600: #16A34A;
+$danger-600:  #DC2626;
+$warning-500: #F59E0B;
+
+// -------------------- Colors: Neutral --------------------
+$neutral-900: #0F172A;
+$neutral-700: #334155;
+$neutral-500: #64748B;
+$neutral-400: #94A3B8;
+$neutral-300: #CBD5E1;
+$neutral-200: #E2E8F0;
+$neutral-100: #F1F5F9;
+$neutral-50:  #F8FAFC;
+$white:       #FFFFFF;
+
+// -------------------- Typography: Font Families --------------------
+$font-body:    'Inter', 'Cairo', sans-serif;
+$font-display: $font-body;
+
+// -------------------- Typography: Scale --------------------
+$text-display-xl: 56px;
+$text-heading-lg: 32px;
+$text-heading-sm: 17px;
+$text-heading-md: 20px;
+$text-body-md:    16px;
+$text-body-sm:    14px;
+$text-label-xs:   12px;
+
+$leading-tight:  1.05;
+$leading-snug:   1.2;
+$leading-normal: 1.5;
+
+$weight-regular:   400;
+$weight-medium:    500;
+$weight-semibold:  600;
+$weight-bold:      700;
+$weight-extrabold: 800;
+
+// -------------------- Spacing --------------------
+$space-3:  12px;
+$space-1:  4px;
+$space-2:  8px;
+$space-4:  16px;
+$space-5:  20px;
+$space-6:  24px;
+$space-7:  28px;
+$space-10: 40px;
+$space-8:  32px;
+$space-12: 48px;
+$space-20: 80px;
+
+// -------------------- Radius --------------------
+$radius-md:   8px;
+$radius-lg:   16px;
+$radius-full: 999px;
+
+// -------------------- Shadows --------------------
+$shadow-card:       0 1px 3px rgba($neutral-900, 0.08);
+$shadow-card-hover: 0 4px 12px rgba($neutral-900, 0.08);
+$shadow-focus-ring: 0 0 0 3px rgba($primary-600, 0.15);
+
+// -------------------- Header --------------------
+$header-bg:            $white;
+$header-height:        72px;
+$header-text:          $neutral-700;
+$header-text-active:   $primary-600;
+$header-icon-border:   $neutral-200;
+$header-icon-hover-bg: $neutral-50;
+$header-shadow:        0 1px 3px rgba($neutral-900, 0.08);
+
+// -------------------- Buttons --------------------
+$button-padding-y: 12px;
+$button-padding-x: 24px;
+
+// -------------------- Forms --------------------
+$input-border:       $neutral-200;
+$input-focus-border: $primary-600;
+$input-radius:       $radius-md;
+$input-padding-y:    12px;
+$input-padding-x:    16px;
+
+// -------------------- Product Card --------------------
+$product-card-bg:     $white;
+$product-card-border: $neutral-200;
+$product-card-radius: $radius-lg;
+
+// -------------------- Admin (tied to the Eco brand palette) --------------------
+$admin-canvas:       #F1F5F9;  // = $neutral-100 — cool slate canvas
+$admin-border:       $neutral-200;  // #E2E8F0 — same hairlines as the storefront
+$admin-thead-bg:     $neutral-50;   // #F8FAFC — table header wash
+$admin-primary:      $primary-600;  // #2563EB — the store's blue
+$admin-primary-dark: $primary-700;  // #1D4ED8
+$admin-espresso:     $neutral-900;  // #0F172A — same navy as the store header/footer
+
+// Shared semantic status colors. Components should use these instead of
+// page-specific hex values so the same status looks identical everywhere.
+$status-info-bg:    $primary-50;
+$status-success-bg: #DCFCE7;
+$status-warning-bg: #FEF3C7;
+$status-danger-bg:  #FEE2E2;
+$status-neutral-bg: $neutral-100;
+
+// -------------------- Footer --------------------
+$footer-bg:          $neutral-900;
+$footer-title-color: $neutral-400;
+$footer-link-color: $neutral-300;
+$footer-link-hover: $white;

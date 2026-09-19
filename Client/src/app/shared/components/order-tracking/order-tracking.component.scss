@@ -1,0 +1,123 @@
+﻿@use '../../../../styles/tokens' as *;
+
+.tracking-wrapper {
+  padding: $space-4 0;
+  font-family: $font-body;
+}
+
+/* ── List ── */
+.tracking-list {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ── Item ── */
+.tracking-item {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-4;
+  padding-bottom: $space-8;
+  position: relative;
+
+  /* vertical line */
+  &::before {
+    content: '';
+    position: absolute;
+    left: 17px;
+    top: 36px;
+    bottom: 0;
+    width: 2px;
+    background: $neutral-200;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+    &::before { display: none; }
+  }
+
+  &--pending {
+    opacity: 0.45;
+    &::before { background: $neutral-100; }
+  }
+}
+
+/* ── Icon bubble ── */
+.tracking-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: $white;
+  }
+
+  &.status-intransit {
+    background: $success-600;
+    box-shadow: 0 0 0 4px rgba($success-600, 0.15);
+  }
+
+  &.status-current {
+    background: $primary-600;
+    box-shadow: 0 0 0 4px rgba($primary-600, 0.15);
+  }
+
+  &.status-pending {
+    background: $neutral-200;
+    svg { fill: $neutral-400; }
+  }
+}
+
+/* ── Blinker (current step) ── */
+.blinker {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: $radius-full;
+  background: $white;
+  animation: blink 1.4s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ── Content ── */
+.tracking-content {
+  flex: 1;
+  padding-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &__label {
+    font-size: $text-body-md;
+    font-weight: $weight-semibold;
+    color: $neutral-900;
+    line-height: $leading-snug;
+  }
+
+  &__date {
+    font-size: $text-body-sm;
+    font-weight: $weight-regular;
+    color: $neutral-500;
+  }
+}
+
+/* ── Pending empty dot ── */
+.empty-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: $neutral-300;
+}

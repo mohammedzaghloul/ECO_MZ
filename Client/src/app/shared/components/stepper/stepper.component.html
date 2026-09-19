@@ -1,0 +1,28 @@
+<div class="stepper">
+  <div class="stepper-header">
+    @for (step of steps; track $index) {
+      <div
+        class="stepper-step"
+        [class.stepper-step--complete]="isStepComplete($index)"
+        [class.stepper-step--active]="isStepActive($index)"
+        (click)="goToStep($index)">
+        <div class="step-number">
+          @if (isStepComplete($index)) {
+            <svg class="check-icon" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          } @else {
+            <span>{{ $index + 1 }}</span>
+          }
+        </div>
+        <div class="step-label">{{ step }}</div>
+        @if ($index < steps.length - 1) {
+          <div class="step-connector"></div>
+        }
+      </div>
+    }
+  </div>
+  <div class="stepper-content">
+    <ng-content></ng-content>
+  </div>
+</div>

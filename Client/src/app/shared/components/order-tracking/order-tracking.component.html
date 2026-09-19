@@ -1,0 +1,31 @@
+<div class="tracking-wrapper">
+  <div class="tracking-list">
+    @for (step of steps; track step.label) {
+      <div class="tracking-item" [class.tracking-item--pending]="!step.completed && !step.current">
+
+        <!-- Icon -->
+        <div class="tracking-icon"
+             [class.status-intransit]="step.completed"
+             [class.status-current]="step.current && !step.completed"
+             [class.status-pending]="!step.completed && !step.current">
+          @if (step.completed) {
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          } @else if (step.current) {
+            <span class="blinker"></span>
+          } @else {
+            <span class="empty-dot"></span>
+          }
+        </div>
+
+        <!-- Content -->
+        <div class="tracking-content">
+          <span class="tracking-content__label">{{ step.labelKey | translate }}</span>
+          @if (step.completed && step.date) {
+            <span class="tracking-content__date">{{ step.date }}</span>
+          }
+        </div>
+
+      </div>
+    }
+  </div>
+</div>

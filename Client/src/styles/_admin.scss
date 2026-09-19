@@ -1,0 +1,566 @@
+@use './tokens' as *;
+
+/* ==========================================================================
+   Shared admin UI primitives — warm "Larkon" look borrowed from the Lumina
+   MVC admin: cream canvas, white cards with soft rounded corners, terracotta
+   accent, soft tinted status pills. The dark espresso sidebar lives in
+   admin.scss (admin shell).
+   ========================================================================== */
+
+/* ── Page header ─────────────────────── */
+.admin-page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-4;
+  flex-wrap: wrap;
+  margin-bottom: $space-6;
+  padding: 2px 0;
+
+  h1 {
+    font-family: $font-display;
+    font-size: 1.55rem;
+    font-weight: $weight-extrabold;
+    color: $neutral-900;
+    margin: 0 0 4px;
+    letter-spacing: -0.02em;
+    line-height: $leading-tight;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &::before { display: none; }
+  }
+
+  p {
+    margin: 0;
+    color: $neutral-500;
+    font-size: 0.875rem;
+  }
+}
+
+/* ── Cards ───────────────────────────── */
+.admin-panel {
+  background: $white;
+  border: 1px solid $admin-border;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  padding: $space-6;
+  margin-bottom: $space-6;
+  overflow: hidden;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    border-color: rgba($admin-primary, 0.18);
+    box-shadow: 0 8px 28px rgba($neutral-900, 0.06);
+  }
+}
+
+.admin-panel-title {
+  font-family: $font-display;
+  font-size: 1rem;
+  font-weight: $weight-bold;
+  color: $neutral-900;
+  margin: 0 0 $space-4;
+}
+
+/* ── Forms ───────────────────────────── */
+.admin-form {
+  display: grid;
+  gap: $space-4;
+  max-width: 900px;
+}
+
+.admin-form-intro {
+  margin: -$space-2 0 $space-4;
+  color: $neutral-500;
+  font-size: 0.82rem;
+}
+
+.admin-label-hint {
+  color: $neutral-400;
+  font-size: 0.72rem;
+  font-weight: $weight-medium;
+}
+
+.admin-field {
+  display: grid;
+  gap: 6px;
+
+  label {
+    font-size: 0.78rem;
+    font-weight: $weight-semibold;
+    color: $neutral-700;
+  }
+
+  input,
+  select,
+  textarea {
+    border: 1px solid $admin-border;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 0.875rem;
+    font-family: $font-body;
+    color: $neutral-900;
+    background: $white;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &::placeholder { color: $neutral-400; }
+
+    &:focus {
+      outline: none;
+      border-color: $admin-primary;
+      box-shadow: 0 0 0 4px rgba($admin-primary, 0.12);
+    }
+  }
+}
+
+.admin-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+
+  > div { display: grid; gap: 6px; }
+
+  label {
+    font-size: 0.78rem;
+    font-weight: $weight-semibold;
+    color: $neutral-700;
+  }
+
+  input {
+    border: 1px solid $admin-border;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 0.875rem;
+    color: $neutral-900;
+    width: 100%;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: $admin-primary;
+      box-shadow: 0 0 0 4px rgba($admin-primary, 0.12);
+    }
+  }
+
+  @media (max-width: 720px) { grid-template-columns: 1fr; }
+}
+
+/* Styled file input — dashed dropzone look instead of the raw browser button */
+.admin-file {
+  &::file-selector-button {
+    border: none;
+    border-radius: 8px;
+    background: rgba($admin-primary, 0.09);
+    color: $admin-primary;
+    font-family: $font-body;
+    font-size: 0.8rem;
+    font-weight: $weight-semibold;
+    padding: 7px 14px;
+    margin-inline-end: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  &::file-selector-button:hover { background: rgba($admin-primary, 0.16); }
+}
+
+.admin-actions {
+  display: flex;
+  gap: $space-2;
+  align-items: center;
+  padding-top: $space-2;
+}
+
+/* ── Validation & helper text ────────── */
+.admin-field input.is-invalid,
+.admin-field select.is-invalid,
+.admin-field textarea.is-invalid,
+.admin-field-row input.is-invalid {
+  border-color: $danger-600;
+
+  &:focus {
+    border-color: $danger-600;
+    box-shadow: 0 0 0 4px rgba($danger-600, 0.12);
+  }
+}
+
+.admin-field-error {
+  font-size: 0.75rem;
+  font-weight: $weight-medium;
+  color: $danger-600;
+}
+
+.admin-hint {
+  font-size: 0.75rem;
+  color: $neutral-400;
+}
+
+/* ── Images ──────────────────────────── */
+.admin-thumb {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid $admin-border;
+  background: $neutral-100;
+}
+
+.admin-cell-product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 180px;
+}
+
+.admin-photos {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid $admin-border;
+  }
+}
+
+/* ── Buttons ─────────────────────────── */
+.admin-btn {
+  border: none;
+  border-radius: 8px;
+  background: $admin-primary;
+  color: $white;
+  font-family: $font-body;
+  font-size: 0.875rem;
+  font-weight: $weight-semibold;
+  padding: 10px 18px;
+  min-height: 40px;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: $admin-primary-dark;
+    box-shadow: 0 4px 14px rgba($admin-primary, 0.28);
+    transform: translateY(-1px);
+  }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+.admin-btn-secondary {
+  background: $white;
+  color: $neutral-700;
+  border: 1px solid $admin-border;
+
+  &:hover:not(:disabled) { background: $admin-thead-bg; box-shadow: none; }
+}
+
+.admin-btn-link {
+  border: none;
+  background: none;
+  color: $admin-primary;
+  font-size: 0.8rem;
+  font-weight: $weight-semibold;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
+  min-height: 34px;
+
+  &:hover { background: rgba($admin-primary, 0.09); }
+
+  &.is-danger { color: #D64545; }
+  &.is-danger:hover { background: rgba(#D64545, 0.08); }
+}
+
+/* ── Tables ──────────────────────────── */
+.admin-table-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  margin-bottom: $space-4;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-table-wrap { overflow-x: auto; }
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+  color: $neutral-900;
+
+  th {
+    text-align: start;
+    font-size: 0.72rem;
+    font-weight: $weight-bold;
+    color: $neutral-400;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 20px;
+    background: $admin-thead-bg;
+    border-bottom: 1px solid $admin-border;
+    white-space: nowrap;
+  }
+
+  /* Keep keyboard focus visible without changing the compact admin layout. */
+  .admin-shell :is(button, input, select, textarea, a):focus-visible {
+    outline: 3px solid rgba($admin-primary, 0.28);
+    outline-offset: 2px;
+  }
+
+  td {
+    padding: 13px 20px;
+    border-bottom: 1px solid $admin-border;
+    vertical-align: middle;
+    transition: background 0.15s ease;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even):not(:hover) td { background: rgba($neutral-100, 0.55); }
+  tbody tr:hover td { background: rgba($admin-primary, 0.06); }
+}
+
+@media (max-width: 640px) {
+  .admin-panel {
+    padding: $space-4;
+    border-radius: 14px;
+    margin-bottom: $space-4;
+  }
+
+  .admin-page-head {
+    margin-bottom: $space-4;
+
+    h1 { font-size: 1.3rem; }
+    p { font-size: 0.8rem; }
+  }
+
+  .admin-table-head {
+    align-items: center;
+    gap: $space-3;
+  }
+
+  .admin-filter-input,
+  .admin-filter-select,
+  .orders-filter-input,
+  .orders-filter-select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .admin-table-wrap {
+    margin-inline: -$space-4;
+    padding-inline: $space-4;
+    overflow-x: hidden;
+  }
+
+  .admin-table {
+    min-width: 0;
+    table-layout: fixed;
+
+    th { padding: 10px 14px; }
+    td { padding: 11px 14px; }
+  }
+
+  /* Product rows use the available phone width instead of forcing a desktop
+     four-column table into a narrow viewport. */
+  .admin-panel:has(.products-filters) {
+    .admin-table th:nth-child(2),
+    .admin-table td:nth-child(2) {
+      display: none;
+    }
+
+    .admin-table th:first-child { width: 46%; }
+    .admin-table th:nth-child(3) { width: 21%; }
+    .admin-table th:nth-child(4) { width: 18%; }
+    .admin-table th:last-child { width: 15%; }
+
+    .admin-cell-product {
+      min-width: 0;
+      gap: 9px;
+
+      > span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .admin-thumb {
+      width: 38px;
+      height: 38px;
+    }
+
+    .admin-table-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0;
+
+      .admin-btn-link {
+        width: 24px;
+        min-height: 28px;
+        padding: 3px 1px;
+        font-size: 0;
+
+        &::before {
+          font-family: 'Material Icons';
+          font-size: 16px;
+        }
+
+        &:not(.is-danger)::before { content: 'edit'; }
+        &.is-danger::before { content: 'delete'; }
+      }
+    }
+
+    .admin-table td:nth-child(3),
+    .admin-table td:nth-child(4) {
+      font-size: .76rem;
+      line-height: 1.25;
+      white-space: normal;
+    }
+
+    .admin-table td:nth-child(4) {
+      overflow-wrap: anywhere;
+    }
+  }
+}
+
+.admin-table-actions {
+  text-align: end;
+  white-space: nowrap;
+}
+
+/* ── Pager ───────────────────────────── */
+.admin-pager {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: $neutral-500;
+
+  button {
+    border: 1px solid $admin-border;
+    background: $white;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    color: $neutral-700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s ease, color 0.15s ease;
+
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+    &:hover:not(:disabled) { border-color: $admin-primary; color: $admin-primary; }
+  }
+}
+
+/* Full-bleed table + breathing room for the pager, only inside cards
+   (landing-list reuses .admin-table-wrap as the card itself). */
+.admin-panel > .admin-table-wrap {
+  margin: 0 (-$space-5);
+}
+
+.admin-panel > .admin-pager {
+  padding-top: $space-4;
+}
+
+/* ── Empty state ─────────────────────── */
+.admin-empty {
+  text-align: center;
+  color: $neutral-500;
+  padding: $space-10 $space-4 !important;
+  font-size: 0.9rem;
+}
+
+/* Block variant used outside tables (landing pages). */
+.admin-empty--card {
+  background: $white;
+  border: 1px dashed $neutral-300;
+  border-radius: 16px;
+  margin-bottom: $space-4;
+
+  .material-icons {
+    display: block;
+    font-size: 44px;
+    color: $neutral-400;
+    margin-bottom: $space-2;
+  }
+
+  h3 {
+    margin: 0 0 4px;
+    color: $neutral-900;
+  }
+
+  p { margin: 0 0 $space-4; }
+}
+
+/* ── Loading state ───────────────────── */
+.admin-loading {
+  padding: 4rem;
+  text-align: center;
+  color: $neutral-500;
+}
+
+/* ── Filter inputs (search / status selects above tables) ── */
+.admin-filter-input,
+.admin-filter-select {
+  border: 1px solid $admin-border;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 0.875rem;
+  font-family: $font-body;
+  color: $neutral-900;
+  background: $white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $admin-primary;
+    box-shadow: 0 0 0 4px rgba($admin-primary, 0.12);
+  }
+}
+
+/* ── Status chips — soft tinted pills ── */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: $weight-semibold;
+  padding: 3px 11px;
+  border-radius: 8px;
+  color: $neutral-500;
+  background: $neutral-100;
+
+  &--paid, &--live { color: $success-700; background: $status-success-bg; }
+  &--admin { color: $admin-primary-dark; background: $primary-100; }
+  &--pending { color: #B45309; background: $status-warning-bg; }
+  &--failed { color: $danger-600; background: $status-danger-bg; }
+  &--shipped, &--delivered { color: $admin-primary; background: $status-info-bg; }
+  &--draft { color: $neutral-500; background: $status-neutral-bg; }
+}
+
+/* Native selects keep the same status language as dashboard badges. */
+.status-select.status-chip {
+  appearance: auto;
+  border: 1px solid transparent;
+  min-width: 96px;
+  padding: 5px 8px;
+  color: inherit;
+  background-color: inherit;
+
+  &--paid { color: $success-700; background-color: $status-success-bg; }
+  &--pending { color: #B45309; background-color: $status-warning-bg; }
+  &--failed { color: $danger-600; background-color: $status-danger-bg; }
+  &--shipped, &--delivered { color: $admin-primary; background-color: $status-info-bg; }
+}

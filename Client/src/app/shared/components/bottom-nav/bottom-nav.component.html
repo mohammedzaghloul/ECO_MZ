@@ -1,0 +1,30 @@
+<nav class="bottom-nav" [attr.aria-label]="'NAV_MOBILE_NAV' | translate">
+  <a routerLink="/" routerLinkActive="bottom-nav__item--active" [routerLinkActiveOptions]="{ exact: true }" class="bottom-nav__item">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <span>{{ 'NAV_HOME' | translate }}</span>
+  </a>
+
+  <a routerLink="/shop" routerLinkActive="bottom-nav__item--active" class="bottom-nav__item">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+    <span>{{ 'NAV_SHOP' | translate }}</span>
+  </a>
+
+  <a routerLink="/basket" routerLinkActive="bottom-nav__item--active" class="bottom-nav__item">
+    <span class="bottom-nav__cart">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm10 0a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM6.2 6h13.3l-1.6 7.3H8.3L6.2 6Zm-.7-2L4.1 4.5 3 2H1v2h1.2l2.2 9.4L7 17h12v-2H8.6l-.7-3h10.3l2-9H6.5Z"/></svg>
+      @if (basketService.itemCount() > 0) {
+        <span class="bottom-nav__badge">{{ basketService.itemCount() }}</span>
+      }
+    </span>
+    <span>{{ 'NAV_CART' | translate }}</span>
+  </a>
+
+  <a [routerLink]="accountLink" routerLinkActive="bottom-nav__item--active" class="bottom-nav__item">
+    @if (accountService.currentUser(); as user) {
+      <span class="bottom-nav__avatar">{{ (user.displayName || user.email || 'U').charAt(0) }}</span>
+    } @else {
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"/></svg>
+    }
+    <span>{{ 'NAV_ACCOUNT' | translate }}</span>
+  </a>
+</nav>

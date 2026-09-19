@@ -1,0 +1,910 @@
+/* Sticky must live on the component HOST: the <app-header> element itself is
+   only as tall as the bar, so a sticky bar inside it has no room to stick. */
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: block;
+}
+
+.app-header {
+  background: #ffffff;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.05);
+  transition: box-shadow 0.2s ease;
+
+  &--scrolled {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  }
+
+  .notification-wrap {
+    position: relative;
+  }
+
+  .notification-wrap .material-icons {
+    font-size: 20px;
+    color: #334155;
+  }
+
+  .badge-count--notification {
+    background: #dc2626 !important;
+  }
+
+  .notification-dropdown {
+    position: absolute;
+    top: calc(100% + 0.7rem);
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(360px, calc(100vw - 1.5rem));
+    max-height: 420px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+    z-index: 1010;
+  }
+
+  .notification-dropdown__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.1rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: #0f172a;
+  }
+
+  .notification-dropdown__clear {
+    margin-inline-start: auto;
+    padding: .35rem .55rem;
+    border: 0;
+    border-radius: .4rem;
+    background: transparent;
+    color: #2563eb;
+    font: inherit;
+    font-size: .78rem;
+    cursor: pointer;
+  }
+
+  .notification-dropdown__clear:hover {
+    background: #eff6ff;
+  }
+
+  .notification-dropdown__title {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .notification-dropdown__title .material-icons {
+    color: #2563eb;
+    font-size: 1.15rem;
+  }
+
+  .notification-dropdown__count {
+    min-width: 22px;
+    height: 22px;
+    padding: 0.15rem 0.4rem;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #ffffff;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .notification-dropdown__empty {
+    margin: 0;
+    padding: 1.2rem 1rem;
+    color: #64748b;
+    font-size: 0.9rem;
+  }
+
+  .notification-item {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    gap: 0.75rem;
+    padding: 1rem 1.1rem;
+    border: 0;
+    border-bottom: 1px solid #f8fafc;
+    background: #ffffff;
+    color: #334155;
+    text-align: start;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .notification-item:hover,
+  .notification-item--unread {
+    background: #f8fbff;
+  }
+
+  .notification-item__icon {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-radius: 0.65rem;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 1rem;
+  }
+
+  .notification-item__content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 0.25rem;
+  }
+
+  .notification-item__content strong {
+    color: #0f172a;
+    font-size: 0.88rem;
+    font-weight: 750;
+  }
+
+  .notification-item__content > span {
+    color: #475569;
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+
+  .notification-item__content small {
+    color: #94a3b8;
+    font-size: 0.72rem;
+  }
+
+  @media (max-width: 960px) {
+    .notification-dropdown {
+      position: fixed;
+      top: 4.6rem;
+      left: 0.75rem;
+      right: 0.75rem;
+      transform: none;
+      width: auto;
+      max-height: calc(100dvh - 5.5rem);
+    }
+  }
+
+  &__container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    background: #ffffff;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  &__logo-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.5rem;
+    background: #2563EB;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  &__logo-image {
+    width: 38px;
+    height: 38px;
+    display: block;
+    object-fit: contain;
+  }
+
+  &__logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    color: #111827;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+
+    small {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      color: #64748B;
+      text-transform: uppercase;
+    }
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  &__nav--desktop {
+    @media (max-width: 960px) {
+      display: none;
+    }
+  }
+
+  &__link {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 1.05rem;
+    color: #334155;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: #2563EB;
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(37, 99, 235, 0.4);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    &--active {
+      color: #2563EB;
+      font-weight: 600;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .lang-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 9999px;
+    border: 1px solid #CBD5E1;
+    background: #ffffff;
+    color: #334155;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #EFF6FF;
+      border-color: #2563EB;
+      color: #2563EB;
+    }
+
+    &--separate {
+      order: -1;
+    }
+  }
+
+  [dir="rtl"] .lang-toggle-btn--separate {
+    order: 1;
+  }
+
+  &__icon-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    border: 1px solid #E2E8F0;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      fill: #334155;
+    }
+
+    &:hover {
+      background: #F8FAFC;
+    }
+
+    .badge-count {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 18px;
+      width: fit-content; /* RTL sets left+right offsets; without an explicit width the badge stretches */
+      height: 18px;
+      padding: 0 4px;
+      border-radius: 9999px;
+      background: #2563EB;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+
+      &--wishlist {
+        background: #dc2626;
+      }
+    }
+
+    @media (max-width: 960px) {
+      &:nth-child(n + 3) {
+        display: none;
+      }
+    }
+  }
+
+  &__hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.5rem;
+    background: #ffffff;
+    cursor: pointer;
+
+    span {
+      width: 18px;
+      height: 2px;
+      background: #334155;
+      margin: 0 auto;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    @media (max-width: 960px) {
+      display: flex;
+    }
+  }
+
+  &__nav--mobile {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(320px, 86vw);
+    height: 100vh;
+    height: 100dvh;
+    background: #ffffff;
+    color: #111111;
+    flex-direction: column;
+    align-items: stretch;   /* override the desktop nav's centering so children fill the drawer */
+    justify-content: flex-start;
+    gap: 0;
+    padding: 1.1rem 1.3rem calc(1rem + env(safe-area-inset-bottom, 0px));
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.22, 0.8, 0.3, 1);
+    z-index: 1001;
+    border-left: 1px solid #F0F0F0;
+
+    @media (max-width: 960px) {
+      display: flex;
+    }
+
+    &-open {
+      transform: translateX(0);
+    }
+  }
+
+  &__link--mobile {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #334155;
+    padding: 0.85rem 0.9rem;
+    border-radius: 12px;
+    border-bottom: none;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    .material-icons { font-size: 21px; color: #64748B; transition: color 0.15s ease; }
+
+    &:hover { background: #F1F5F9; }
+
+    &.app-header__link--active {
+      background: #EFF6FF;
+      color: #2563EB;
+      .material-icons { color: #2563EB; }
+    }
+  }
+
+}
+
+/* Lives OUTSIDE the <header> element in the template, so it must not be nested
+   under .app-header — otherwise the selector never matches and the dim overlay
+    renders as an invisible div at the bottom of the page. */
+.app-header__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  animation: headerBackdropIn 0.2s ease;
+}
+
+@keyframes headerBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+[dir="rtl"] .app-header__icon-btn .badge-count {
+  right: auto;
+  left: -4px;
+}
+
+
+
+// Logged-in avatar chip
+.app-header__avatar {
+  padding: 0;
+}
+
+.app-header__avatar-initial {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 15px;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+
+// Logged-in user dropdown
+.user-menu-wrap {
+  position: relative;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  inset-inline-end: 0;
+  min-width: 220px;
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  padding: 0.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: all 0.18s ease;
+  z-index: 60;
+
+  &--open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0.7rem 0.75rem;
+    border-bottom: 1px solid #F1F5F9;
+    margin-bottom: 0.4rem;
+  }
+
+  &__id {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  &__avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background: #2563EB;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__who {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  &__badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #2563EB;
+    background: rgba(37, 99, 235, 0.09);
+    border-radius: 999px;
+    padding: 1px 8px;
+    width: fit-content;
+  }
+
+  .material-icons {
+    font-size: 19px;
+    color: currentColor;
+  }
+
+  &__name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #111827;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__email {
+    font-size: 0.75rem;
+    color: #64748B;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: transparent;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334155;
+    text-decoration: none;
+    text-align: start;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    svg { width: 17px; height: 17px; fill: currentColor; flex-shrink: 0; }
+
+    &:hover { background: #EFF6FF; color: #2563EB; }
+
+    &--danger {
+      color: #DC2626;
+      &:hover { background: rgba(220, 38, 38, 0.07); color: #DC2626; }
+    }
+  }
+}
+
+
+
+
+
+
+/* ═══ Korean-minimal drawer ═══ */
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.2rem 0 1rem;
+}
+
+.drawer-brand {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: #111111;
+  letter-spacing: 0.22em;
+}
+
+.drawer-brand-image {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  display: block;
+}
+
+.drawer-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: #888888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.15s;
+
+  .material-icons { font-size: 21px; font-weight: 300; }
+  &:hover { color: #111111; }
+}
+
+.drawer-user {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.95rem 0;
+  border-top: 1px solid #F2F2F2;
+  border-bottom: 1px solid #F2F2F2;
+  text-decoration: none;
+
+  &__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #F5F5F5;
+    color: #111111;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+
+  &__name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #111111;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__badge {
+    font-size: 0.68rem;
+    color: #999999;
+    letter-spacing: 0.02em;
+  }
+
+  &__chevron { font-size: 18px; color: #CCCCCC; margin-inline-start: auto; }
+}
+
+.drawer-links {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.drawer-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.95rem 0.15rem;
+  border-bottom: 1px solid #F5F5F5;
+  text-decoration: none;
+
+  &__label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #555555;
+    letter-spacing: -0.01em;
+    transition: color 0.15s;
+  }
+
+  &__arrow {
+    display: flex;
+    color: #D0D0D0;
+    transition: color 0.15s, transform 0.15s;
+
+    svg { width: 14px; height: 14px; }
+  }
+
+  &:hover {
+    .drawer-link__label { color: #111111; font-weight: 600; }
+    .drawer-link__arrow { color: #111111; }
+  }
+
+  &--active {
+    .drawer-link__label { color: #111111; font-weight: 700; }
+    .drawer-link__arrow { color: #111111; }
+  }
+}
+
+.drawer-foot {
+  margin-top: auto;
+  padding-top: 0.9rem;
+  display: flex;
+  gap: 8px;
+}
+
+.drawer-lang,
+.drawer-logout {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 6px;
+  border: 1px solid #E5E5E5;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #666666;
+  font-family: system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  .material-icons { font-size: 15px; }
+
+  &:hover { border-color: #111111; color: #111111; }
+}
+
+.drawer-logout:hover { border-color: #E0E0E0; color: #D32F2F; }
+
+[dir="rtl"] .app-header__nav--mobile {
+  right: auto;
+  left: 0;
+  transform: translateX(-100%);
+  border-left: none;
+  border-right: 1px solid #F0F0F0;
+
+  &-open { transform: translateX(0); }
+}
+
+
+/* ═══ Mobile header: Korean minimal bar ═══ */
+@media (max-width: 768px) {
+  /* language switch lives in the drawer foot */
+  .app-header .lang-toggle-btn { display: none !important; }
+
+  /* wishlist moves into the drawer */
+  .app-header .app-header__icon-btn--wishlist { display: none !important; }
+
+  /* clean wordmark: no badge chip, no tagline */
+  .app-header__logo-badge { display: none; }
+  .app-header__logo-text {
+    font-size: 1.15rem;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+  }
+  .app-header__logo-text small { display: none; }
+
+  /* tighter bar */
+  .app-header__container {
+    padding-inline: 1rem;
+    min-height: 56px;
+  }
+
+  .app-header__actions { gap: 0.35rem; }
+
+  .app-header__icon-btn {
+    width: 38px;
+    height: 38px;
+
+    svg { width: 20px; height: 20px; }
+  }
+
+  .app-header__hamburger { margin-inline-start: 2px; }
+}
+
+
+/* ═══ Drawer: guest login chip + new arrivals ═══ */
+.drawer-user--guest {
+  .drawer-user__avatar--guest {
+    background: #F5F5F5;
+    color: #888888;
+
+    .material-icons { font-size: 20px; }
+  }
+}
+
+.drawer-arrivals {
+  margin-top: auto;
+  padding-top: 0.9rem;
+
+  &__label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #999999;
+    margin-bottom: 0.55rem;
+  }
+
+  &__row {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.arrival-tile {
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  img {
+    width: 100%;
+    aspect-ratio: 1 / 1.15;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #F5F5F5;
+  }
+
+  &__name {
+    font-size: 0.68rem;
+    color: #333333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__price {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #111111;
+  }
+
+  &:hover img { opacity: 0.85; }
+}
+
+/* keep the foot below the arrivals strip */
+.drawer-foot { margin-top: 0.9rem; }
+
+/* ═══ Mobile bar: account lives in the drawer ═══ */
+@media (max-width: 768px) {
+  .app-header .user-menu-wrap { display: none !important; }
+}
+
+/* ── Language toggle inside icon cluster ── */
+.app-header__icon-btn--lang {
+  position: relative;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  .lang-short {
+    position: absolute;
+    bottom: 2px;
+    inset-inline-end: 2px;
+    font-size: 8px;
+    font-weight: 800;
+    background: #2563EB;
+    color: #ffffff;
+    border-radius: 6px;
+    padding: 1px 3px;
+    line-height: 1.2;
+  }
+}

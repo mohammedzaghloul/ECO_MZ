@@ -1,0 +1,97 @@
+.stepper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.stepper-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+
+  &:not(.stepper-step--active):not(.stepper-step--complete) {
+    cursor: default;
+  }
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #E2E8F0;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  .check-icon {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+}
+
+.step-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748B;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.step-connector {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: #E2E8F0;
+  z-index: 0;
+}
+
+.stepper-step--active {
+  .step-number {
+    background: #2563EB;
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+  }
+
+  .step-label {
+    color: #2563EB;
+    font-weight: 700;
+  }
+}
+
+.stepper-step--complete {
+  .step-number {
+    background: #2563EB;
+    color: #ffffff;
+  }
+
+  .step-label {
+    color: #2563EB;
+  }
+}
+
+.stepper-content {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #E2E8F0;
+}
