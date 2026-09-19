@@ -1,0 +1,39 @@
+<div class="active-page">
+  <div class="container">
+    <div class="active-card">
+      @if (status === 'loading') {
+        <div class="icon-wrap icon-wrap--loading" aria-hidden="true">
+          <span class="material-icons">mark_email_read</span>
+        </div>
+        <span class="active-eyebrow">Eco Verification</span>
+        <h1 class="active-title">Activating Your Account</h1>
+      } @else if (status === 'success') {
+        <div class="icon-wrap icon-wrap--success" aria-hidden="true">
+          <span class="material-icons">check_circle</span>
+        </div>
+        <span class="active-eyebrow">Verification Complete</span>
+        <h1 class="active-title">Account Activated!</h1>
+        <p class="active-message">{{ message }}</p>
+        <a routerLink="/account/login" class="btn-active-primary">
+          <span>Sign In to Your Account</span>
+          <span class="material-icons">arrow_forward</span>
+        </a>
+      } @else {
+        <div class="icon-wrap icon-wrap--error" aria-hidden="true">
+          <span class="material-icons">error_outline</span>
+        </div>
+        <span class="active-eyebrow text-danger">Verification Notice</span>
+        <h1 class="active-title">Activation Issue</h1>
+        <p class="active-message">{{ message }}</p>
+        <a routerLink="/account/login" class="btn-active-outline">
+          <span class="material-icons">arrow_back</span>
+          <span>Go to Sign In</span>
+        </a>
+      }
+
+      @if (status === 'loading') {
+        <p class="active-message">{{ message }}</p>
+      }
+    </div>
+  </div>
+</div>

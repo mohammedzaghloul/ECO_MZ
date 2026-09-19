@@ -1,0 +1,36 @@
+@use '../../../styles/tokens' as *;
+@use '../login/login.scss' as *;
+
+.alert-box {
+  padding: 11px 14px;
+  border: 1px solid rgba($danger-600, 0.22);
+  border-radius: $radius-md;
+  background: rgba($danger-600, 0.07);
+  color: $danger-600;
+  font-size: $text-body-sm;
+  line-height: 1.45;
+  text-align: start;
+}
+
+html[dir='rtl'] {
+  .auth-page {
+    direction: rtl;
+  }
+
+  .auth-brand {
+    direction: ltr;
+  }
+
+  .auth-title,
+  .auth-subtitle,
+  .form-label,
+  .forgot-link,
+  .form-error,
+  .alert-box {
+    text-align: right;
+  }
+
+  .btn-submit {
+    direction: rtl;
+  }
+}

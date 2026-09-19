@@ -1,0 +1,297 @@
+<div class="register-stepper-page">
+  <div class="container">
+    <div class="page-header">
+      <h1>Create Your Account</h1>
+      <p>Complete the steps below to register</p>
+    </div>
+
+    <app-stepper
+      [steps]="steps"
+      [currentStep]="currentStep()"
+      (stepChange)="onStepChange($event)">
+      
+      <!-- Step 1: Personal Info -->
+      @if (currentStep() === 0) {
+        <div class="step-content">
+          <h2>Personal Information</h2>
+          <form [formGroup]="personalInfoForm" class="registration-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firstName">First Name *</label>
+                <input
+                  id="firstName"
+                  type="text"
+                  formControlName="firstName"
+                  placeholder="First name"
+                  [class.invalid]="personalInfoForm.get('firstName')?.invalid && personalInfoForm.get('firstName')?.touched"
+                />
+                @if (personalInfoForm.get('firstName')?.invalid && personalInfoForm.get('firstName')?.touched) {
+                  <div class="error-message">
+                    @if (personalInfoForm.get('firstName')?.errors?.['required']) {
+                      First name is required
+                    }
+                    @if (personalInfoForm.get('firstName')?.errors?.['minlength']) {
+                      First name must be at least 2 characters
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="lastName">Last Name *</label>
+                <input
+                  id="lastName"
+                  type="text"
+                  formControlName="lastName"
+                  placeholder="Last name"
+                  [class.invalid]="personalInfoForm.get('lastName')?.invalid && personalInfoForm.get('lastName')?.touched"
+                />
+                @if (personalInfoForm.get('lastName')?.invalid && personalInfoForm.get('lastName')?.touched) {
+                  <div class="error-message">
+                    @if (personalInfoForm.get('lastName')?.errors?.['required']) {
+                      Last name is required
+                    }
+                    @if (personalInfoForm.get('lastName')?.errors?.['minlength']) {
+                      Last name must be at least 2 characters
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                placeholder="Enter your email"
+                [class.invalid]="personalInfoForm.get('email')?.invalid && personalInfoForm.get('email')?.touched"
+              />
+              @if (personalInfoForm.get('email')?.invalid && personalInfoForm.get('email')?.touched) {
+                <div class="error-message">
+                  @if (personalInfoForm.get('email')?.errors?.['required']) {
+                    Email is required
+                  }
+                  @if (personalInfoForm.get('email')?.errors?.['email']) {
+                    Please enter a valid email
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password *</label>
+              <input
+                id="password"
+                type="password"
+                formControlName="password"
+                placeholder="Create a password"
+                [class.invalid]="personalInfoForm.get('password')?.invalid && personalInfoForm.get('password')?.touched"
+              />
+              @if (personalInfoForm.get('password')?.invalid && personalInfoForm.get('password')?.touched) {
+                <div class="error-message">
+                  @if (personalInfoForm.get('password')?.errors?.['required']) {
+                    Password is required
+                  }
+                  @if (personalInfoForm.get('password')?.errors?.['minlength']) {
+                    Password must be at least 6 characters
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password *</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                formControlName="confirmPassword"
+                placeholder="Confirm your password"
+                [class.invalid]="passwordMismatch && personalInfoForm.get('confirmPassword')?.touched"
+              />
+              @if (passwordMismatch && personalInfoForm.get('confirmPassword')?.touched) {
+                <div class="error-message">Passwords do not match</div>
+              }
+            </div>
+
+            <div class="step-actions">
+              <button type="button" class="btn-primary" (click)="nextStep()">
+                Next: Address
+                <svg class="arrow-icon" viewBox="0 0 24 24">
+                  <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+
+      <!-- Step 2: Address -->
+      @if (currentStep() === 1) {
+        <div class="step-content">
+          <h2>Address Information</h2>
+          <form [formGroup]="addressForm" class="registration-form">
+            <div class="form-group">
+              <label for="street">Street Address *</label>
+              <input
+                id="street"
+                type="text"
+                formControlName="street"
+                placeholder="Enter your street address"
+                [class.invalid]="addressForm.get('street')?.invalid && addressForm.get('street')?.touched"
+              />
+              @if (addressForm.get('street')?.invalid && addressForm.get('street')?.touched) {
+                <div class="error-message">Street address is required</div>
+              }
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="city">City *</label>
+                <input
+                  id="city"
+                  type="text"
+                  formControlName="city"
+                  placeholder="City"
+                  [class.invalid]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched"
+                />
+                @if (addressForm.get('city')?.invalid && addressForm.get('city')?.touched) {
+                  <div class="error-message">City is required</div>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="state">State *</label>
+                <input
+                  id="state"
+                  type="text"
+                  formControlName="state"
+                  placeholder="State"
+                  [class.invalid]="addressForm.get('state')?.invalid && addressForm.get('state')?.touched"
+                />
+                @if (addressForm.get('state')?.invalid && addressForm.get('state')?.touched) {
+                  <div class="error-message">State is required</div>
+                }
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="zipCode">ZIP Code *</label>
+                <input
+                  id="zipCode"
+                  type="text"
+                  formControlName="zipCode"
+                  placeholder="ZIP Code"
+                  [class.invalid]="addressForm.get('zipCode')?.invalid && addressForm.get('zipCode')?.touched"
+                />
+                @if (addressForm.get('zipCode')?.invalid && addressForm.get('zipCode')?.touched) {
+                  <div class="error-message">ZIP Code is required</div>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="country">Country *</label>
+                <input
+                  id="country"
+                  type="text"
+                  formControlName="country"
+                  placeholder="Country"
+                  [class.invalid]="addressForm.get('country')?.invalid && addressForm.get('country')?.touched"
+                />
+                @if (addressForm.get('country')?.invalid && addressForm.get('country')?.touched) {
+                  <div class="error-message">Country is required</div>
+                }
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button type="button" class="btn-secondary" (click)="previousStep()">
+                <svg class="arrow-icon" viewBox="0 0 24 24">
+                  <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+                Back
+              </button>
+              <button type="button" class="btn-primary" (click)="nextStep()">
+                Next: Confirmation
+                <svg class="arrow-icon" viewBox="0 0 24 24">
+                  <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+
+      <!-- Step 3: Confirmation -->
+      @if (currentStep() === 2) {
+        <div class="step-content">
+          <h2>Review & Confirm</h2>
+          <div class="confirmation-summary">
+            <div class="summary-section">
+              <h3>Personal Information</h3>
+              <div class="summary-item">
+                <span class="label">First Name:</span>
+                <span class="value">{{ personalInfoForm.value.firstName }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">Last Name:</span>
+                <span class="value">{{ personalInfoForm.value.lastName }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">Email:</span>
+                <span class="value">{{ personalInfoForm.value.email }}</span>
+              </div>
+            </div>
+
+            <div class="summary-section">
+              <h3>Address Information</h3>
+              <div class="summary-item">
+                <span class="label">Street:</span>
+                <span class="value">{{ addressForm.value.street }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">City:</span>
+                <span class="value">{{ addressForm.value.city }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">State:</span>
+                <span class="value">{{ addressForm.value.state }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">ZIP Code:</span>
+                <span class="value">{{ addressForm.value.zipCode }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">Country:</span>
+                <span class="value">{{ addressForm.value.country }}</span>
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button type="button" class="btn-secondary" (click)="previousStep()">
+                <svg class="arrow-icon" viewBox="0 0 24 24">
+                  <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+                Back
+              </button>
+              <button
+                type="button"
+                class="btn-primary"
+                (click)="submitRegistration()"
+                [disabled]="isLoading()">
+                @if (!isLoading()) {
+                  Complete Registration
+                } @else {
+                  Creating Account...
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      }*/
+
+    </app-stepper>
+  </div>
+</div>

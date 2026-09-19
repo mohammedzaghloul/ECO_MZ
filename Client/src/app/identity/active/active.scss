@@ -1,0 +1,139 @@
+@use '../../../styles/tokens' as *;
+
+.active-page {
+  min-height: 100vh;
+  background: $neutral-50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-8 $space-4;
+  font-family: $font-body;
+}
+
+.active-card {
+  background: $white;
+  border: 1px solid $neutral-200;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: $space-12 $space-8;
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: $radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: $space-4;
+
+  .material-icons {
+    font-size: 36px;
+  }
+
+  &--loading {
+    background: $primary-50;
+    color: $primary-600;
+  }
+
+  &--success {
+    background: rgba($success-600, 0.1);
+    color: $success-600;
+  }
+
+  &--error {
+    background: rgba($danger-600, 0.1);
+    color: $danger-600;
+  }
+}
+
+.active-eyebrow {
+  font-size: $text-label-xs;
+  font-weight: $weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: $primary-600;
+  margin-bottom: $space-1;
+
+  &.text-danger {
+    color: $danger-600;
+  }
+}
+
+.active-title {
+  font-family: $font-display;
+  font-size: $text-heading-lg;
+  font-weight: $weight-extrabold;
+  color: $neutral-900;
+  margin: 0 0 $space-4;
+  letter-spacing: -0.02em;
+}
+
+.active-message {
+  font-size: $text-body-md;
+  color: $neutral-500;
+  line-height: $leading-normal;
+  margin: 0 0 $space-6;
+  max-width: 400px;
+}
+
+.btn-active-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: $button-padding-y $button-padding-x;
+  background: $primary-600;
+  color: $white;
+  border-radius: $radius-md;
+  font-family: $font-display;
+  font-weight: $weight-bold;
+  font-size: $text-body-md;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba($primary-600, 0.25);
+
+  .material-icons {
+    font-size: 18px;
+  }
+
+  &:hover {
+    background: $primary-700;
+    color: $white;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba($primary-600, 0.35);
+  }
+}
+
+.btn-active-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: $button-padding-y $button-padding-x;
+  background: $white;
+  color: $neutral-700;
+  border: 1px solid $neutral-300;
+  border-radius: $radius-md;
+  font-family: $font-display;
+  font-weight: $weight-bold;
+  font-size: $text-body-md;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  .material-icons {
+    font-size: 18px;
+  }
+
+  &:hover {
+    background: $neutral-50;
+    border-color: $neutral-400;
+    color: $neutral-900;
+  }
+}

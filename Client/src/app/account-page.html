@@ -1,8 +1,299 @@
-<section class="account-page container">
-  <div class="account-card">
-    <span class="account-eyebrow">Eco account</span>
-    <h1>{{ title }}</h1>
-    <p>{{ message }}</p>
-    <a routerLink="/shop" class="btn btn-primary rounded-pill">Continue shopping</a>
+<div class="account-page">
+  <div class="container">
+    @if (loadingUser()) {
+      <div class="account-loading">
+        <div class="spinner-dot" aria-hidden="true"></div>
+        <p>{{ 'ACCOUNT_LOADING' | translate }}</p>
+      </div>
+    } @else if (isLoggedIn() && currentUser()) {
+      <!-- Account Dashboard -->
+      <div class="account-dashboard">
+        <!-- Dashboard Header -->
+        <header class="account-header">
+          <div class="account-user-badge">
+            <div class="user-avatar" aria-hidden="true">
+              {{ (currentUser()?.displayName || currentUser()?.email || 'U')[0].toUpperCase() }}
+            </div>
+            <div class="user-meta">
+              <span class="account-eyebrow">{{ 'ACCOUNT_MEMBER' | translate }}</span>
+              <h1 class="user-name">{{ displayLabel() || ('ACCOUNT_VALUED_CUSTOMER' | translate) }}</h1>
+              <span class="user-email">{{ currentUser()?.email }}</span>
+            </div>
+          </div>
+
+          <div class="account-header-actions">
+            <a routerLink="/shop" class="btn-account-outline">
+              <span class="material-icons">storefront</span>
+              <span>{{ 'ACCOUNT_SHOP_MORE' | translate }}</span>
+            </a>
+          </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="account-tabs-nav" role="tablist">
+          <button
+            type="button"
+            class="tab-link"
+            [class.active]="activeTab() === 'profile'"
+            (click)="setTab('profile')"
+            role="tab"
+            [attr.aria-label]="'ACCOUNT_PROFILE' | translate">
+            <span class="material-icons">person</span>
+            <span>{{ 'ACCOUNT_PROFILE' | translate }}</span>
+          </button>
+          <button
+            type="button"
+            class="tab-link"
+            [class.active]="activeTab() === 'orders'"
+            (click)="setTab('orders')"
+            role="tab"
+            [attr.aria-label]="'ACCOUNT_ORDER_HISTORY' | translate">
+            <span class="material-icons">receipt_long</span>
+            <span>{{ 'ACCOUNT_ORDER_HISTORY' | translate }}</span>
+            <span class="tab-badge" *ngIf="orders().length > 0">{{ orders().length }}</span>
+          </button>
+        </div>
+
+        <!-- Tab 1: Profile -->
+        @if (activeTab() === 'profile') {
+          <div class="tab-pane-card">
+            <h2 class="pane-title">{{ 'ACCOUNT_DETAILS' | translate }}</h2>
+            <div class="details-grid">
+              <div class="detail-box">
+                <span class="detail-label">{{ 'ACCOUNT_DISPLAY_NAME' | translate }}</span>
+                <strong class="detail-value">{{ displayLabel() || ('ACCOUNT_NOT_SPECIFIED' | translate) }}</strong>
+              </div>
+
+              <div class="detail-box">
+                <span class="detail-label">{{ 'AUTH_EMAIL' | translate }}</span>
+                <strong class="detail-value">{{ currentUser()?.email }}</strong>
+              </div>
+
+              <div class="detail-box detail-box--compact">
+                <span class="detail-label">{{ 'ACCOUNT_STATUS' | translate }}</span>
+                <span class="badge badge-success">{{ 'ACCOUNT_ACTIVE_VERIFIED' | translate }}</span>
+              </div>
+
+              <div class="detail-box detail-box--compact">
+                <span class="detail-label">{{ 'ACCOUNT_MEMBERSHIP' | translate }}</span>
+                <span class="badge badge-primary">{{ 'ACCOUNT_STANDARD_MEMBER' | translate }}</span>
+              </div>
+            </div>
+
+            <div class="pane-divider"></div>
+
+            <div class="security-banner">
+              <span class="material-icons text-primary">security</span>
+              <div>
+                <strong>{{ 'ACCOUNT_PROTECTED' | translate }}</strong>
+                <p>{{ 'ACCOUNT_PROTECTED_DESC' | translate }}</p>
+              </div>
+            </div>
+
+            <!-- Address -->
+            <div class="pane-divider"></div>
+            <div class="address-section">
+              <div class="address-section__head">
+                <h3 class="address-section__title">
+                  <span class="material-icons">location_on</span>
+                  {{ 'ACCOUNT_ADDRESS' | translate }}
+                </h3>
+                @if (addressSaved()) {
+                  <span class="badge badge-success">✓ {{ 'ACCOUNT_ADDRESS_SAVED' | translate }}</span>
+                } @else if (!editingAddress()) {
+                  <button type="button" class="btn-address-edit" (click)="editAddress()">
+                    <span class="material-icons">{{ address() ? 'edit' : 'add' }}</span>
+                    {{ (address() ? 'ACCOUNT_EDIT_ADDRESS' : 'ACCOUNT_ADD_ADDRESS') | translate }}
+                  </button>
+                }
+              </div>
+
+              @if (address() && !editingAddress()) {
+                <address class="address-view">
+                  <strong>{{ address()!.firstName }} {{ address()!.lastName }}</strong><br />
+                  {{ address()!.street }}<br />
+                  {{ address()!.city }}, {{ address()!.state }} {{ address()!.zipCode }}<br />
+                  {{ address()!.country }}
+                </address>
+              } @else if (editingAddress()) {
+                <form [formGroup]="addressForm" (ngSubmit)="saveAddress()" novalidate class="address-form">
+                  <div class="address-grid">
+                    <div class="addr-field">
+                      <label>{{ 'ACCOUNT_ADDRESS_FIRST' | translate }}</label>
+                      <input type="text" formControlName="firstName" [placeholder]="'ACCOUNT_ADDRESS_FIRST' | translate" />
+                      @if (isAddrInvalid('firstName')) { <span class="addr-error">{{ 'ACCOUNT_REQUIRED' | translate }}</span> }
+                    </div>
+                    <div class="addr-field">
+                      <label>{{ 'ACCOUNT_ADDRESS_LAST' | translate }}</label>
+                      <input type="text" formControlName="lastName" [placeholder]="'ACCOUNT_ADDRESS_LAST' | translate" />
+                      @if (isAddrInvalid('lastName')) { <span class="addr-error">{{ 'ACCOUNT_REQUIRED' | translate }}</span> }
+                    </div>
+                    <div class="addr-field addr-field--full">
+                      <label>{{ 'ACCOUNT_ADDRESS_STREET' | translate }}</label>
+                      <input type="text" formControlName="street" [placeholder]="'ACCOUNT_ADDRESS_STREET' | translate" />
+                      @if (isAddrInvalid('street')) { <span class="addr-error">{{ 'ACCOUNT_REQUIRED' | translate }}</span> }
+                    </div>
+                    <div class="addr-field">
+                      <label>{{ 'ACCOUNT_ADDRESS_CITY' | translate }}</label>
+                      <select formControlName="city" class="addr-select">
+                        <option value="">{{ 'CHECKOUT_SELECT_CITY' | translate }}</option>
+                        @for (city of citiesForGovernorate(); track city.value) {
+                          <option [value]="city.value">{{ localizedOption(city) }}</option>
+                        }
+                      </select>
+                      @if (!addressForm.get('state')?.value) {
+                        <small class="addr-hint">{{ 'CHECKOUT_SELECT_STATE_FIRST' | translate }}</small>
+                      }
+                      @if (isAddrInvalid('city')) { <span class="addr-error">{{ 'ACCOUNT_REQUIRED' | translate }}</span> }
+                    </div>
+                    <div class="addr-field">
+                      <label>{{ 'ACCOUNT_ADDRESS_STATE' | translate }}</label>
+                      <select formControlName="state" class="addr-select">
+                        <option value="">{{ 'CHECKOUT_SELECT_STATE' | translate }}</option>
+                        @for (governorate of governorates(); track governorate.value) {
+                          <option [value]="governorate.value">{{ localizedOption(governorate) }}</option>
+                        }
+                      </select>
+                      @if (isAddrInvalid('state')) { <span class="addr-error">{{ 'ACCOUNT_REQUIRED' | translate }}</span> }
+                    </div>
+                    <div class="addr-field">
+                      <label>{{ 'ACCOUNT_ADDRESS_ZIP' | translate }}</label>
+                      <input type="text" formControlName="zipCode" placeholder="33932" />
+                      @if (isAddrInvalid('zipCode')) { <span class="addr-error">{{ 'ACCOUNT_ZIP_INVALID' | translate }}</span> }
+                    </div>
+                    <div class="addr-field">
+                      <label>{{ 'ACCOUNT_ADDRESS_COUNTRY' | translate }}</label>
+                      <input type="text" formControlName="country" [placeholder]="'ACCOUNT_ADDRESS_COUNTRY' | translate" />
+                      @if (isAddrInvalid('country')) { <span class="addr-error">{{ 'ACCOUNT_REQUIRED' | translate }}</span> }
+                    </div>
+                  </div>
+                  <div class="address-actions">
+                    <button type="submit" class="btn-address-save" [disabled]="savingAddress()">
+                      @if (savingAddress()) {
+                        <span class="spinner-border spinner-border-sm"></span>
+                        {{ 'ACCOUNT_SAVING' | translate }}
+                      } @else {
+                        {{ 'ACCOUNT_SAVE_ADDRESS' | translate }}
+                      }
+                    </button>
+                    <button type="button" class="btn-address-cancel" (click)="editingAddress.set(false)">
+                      {{ 'ACCOUNT_CANCEL' | translate }}
+                    </button>
+                  </div>
+                </form>
+              } @else {
+                <p class="address-empty">{{ 'ACCOUNT_ADDRESS_EMPTY' | translate }}</p>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Tab 2: Orders -->
+        @if (activeTab() === 'orders') {
+          <div class="tab-pane-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h2 class="pane-title mb-0">{{ 'ACCOUNT_YOUR_ORDERS' | translate }}</h2>
+              <button
+                type="button"
+                class="btn-refresh-orders"
+                (click)="loadOrders()"
+                [disabled]="loadingOrders()">
+                <span class="material-icons">refresh</span>
+                <span>{{ 'ACCOUNT_REFRESH' | translate }}</span>
+              </button>
+            </div>
+
+            @if (loadingOrders()) {
+              <div class="orders-loading">
+                <p>{{ 'ACCOUNT_LOADING_ORDERS' | translate }}</p>
+              </div>
+            } @else if (orders().length === 0) {
+              <div class="orders-empty">
+                <span class="material-icons empty-icon">inventory_2</span>
+                <h3>{{ 'ACCOUNT_NO_ORDERS' | translate }}</h3>
+                <p>{{ 'ACCOUNT_NO_ORDERS_DESC' | translate }}</p>
+                <a routerLink="/shop" class="btn-account-primary">
+                  <span class="material-icons">shopping_bag</span>
+                  <span>{{ 'BASKET_EXPLORE' | translate }}</span>
+                </a>
+              </div>
+            } @else {
+              <div class="orders-list">
+                @for (order of orders(); track order.id) {
+                  <article class="order-card">
+                    <header class="order-card-head">
+                      <div>
+                        <span class="order-num">{{ 'ACCOUNT_ORDER' | translate }} #{{ order.id }}</span>
+                        <span class="order-date">{{ formatDate(order.orderDate) }}</span>
+                      </div>
+                      <span class="badge" [ngClass]="getOrderStatusClass(order.status)">
+                        {{ getOrderStatus(order.status) }}
+                      </span>
+                    </header>
+
+                    <div class="order-card-body">
+                      <div class="order-meta-item">
+                        <span class="meta-label">{{ 'ACCOUNT_TOTAL_AMOUNT' | translate }}</span>
+                        <strong class="meta-value">${{ (order.total ?? order.totalAmount)?.toFixed(2) }}</strong>
+                      </div>
+                      <div class="order-meta-item">
+                        <span class="meta-label">{{ 'ACCOUNT_ITEMS_COUNT' | translate }}</span>
+                        <strong class="meta-value">{{ order.orderItems?.length ?? 0 }} {{ 'SHOP_PRODUCTS' | translate }}</strong>
+                      </div>
+                    </div>
+
+                    <div class="order-card-actions mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
+                      <span class="text-muted small">{{ 'ACCOUNT_NEED_TRACKING' | translate }}</span>
+                      <a [routerLink]="['/my-order', order.id]" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1">
+                        <span class="material-icons" style="font-size: 16px;">local_shipping</span>
+                        <span>{{ 'ACCOUNT_TRACK_ORDER' | translate }} #{{ order.id }}</span>
+                      </a>
+                    </div>
+
+                    @if (order.orderItems && order.orderItems.length > 0) {
+                      <div class="order-items-preview">
+                        @for (item of order.orderItems; track item.id) {
+                          <div class="order-item-chip">
+                            <img
+                              [src]="basketService.imageUrl(item.mainImage)"
+                              [alt]="item.productName"
+                              class="item-thumb"
+                              loading="lazy"
+                              (error)="$event.target.style.display = 'none'" />
+                            <span class="item-name">{{ item.productName }}</span>
+                            <span class="item-qty">×{{ item.quantity }}</span>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </article>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Unauthenticated View -->
+      <div class="account-unauth-card">
+        <div class="unauth-icon-wrap" aria-hidden="true">
+          <span class="material-icons">account_circle</span>
+        </div>
+        <span class="account-eyebrow">{{ 'NAV_ACCOUNT' | translate }}</span>
+        <h1 class="unauth-title">{{ 'ACCOUNT_WELCOME' | translate }}</h1>
+        <p class="unauth-message">
+          {{ 'ACCOUNT_WELCOME_DESC' | translate }}
+        </p>
+        <div class="unauth-actions">
+          <a routerLink="/account/login" class="btn-account-primary">
+            <span>{{ 'AUTH_SIGN_IN' | translate }}</span>
+            <span class="material-icons">arrow_forward</span>
+          </a>
+          <a routerLink="/account/register" class="btn-account-outline">
+            <span>{{ 'AUTH_CREATE_ACC' | translate }}</span>
+          </a>
+        </div>
+      </div>
+    }
   </div>
-</section>
+</div>
