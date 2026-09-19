@@ -1,0 +1,424 @@
+<header class="admin-page-head">
+  <div class="head-title-wrap">
+    <h1 class="page-title">
+      <span class="page-icon material-icons">web</span>
+      {{ pageId ? ('ADMIN_EDIT_LANDING_PAGE' | translate) : ('ADMIN_NEW_LANDING_PAGE' | translate) }}
+    </h1>
+    <p class="admin-page-desc">{{ 'ADMIN_LANDING_PAGE_INTRO' | translate }}</p>
+  </div>
+  <div class="landing-editor-actions">
+    @if (slug()) {
+      <a [href]="'/landing/' + slug()" target="_blank" class="btn-action-preview" title="معاينة الصفحة العامة">
+        <i class="material-icons">visibility</i>
+        <span>معاينة للعميل</span>
+      </a>
+    }
+    <button type="button" class="btn-action-cancel" (click)="cancel()">
+      <i class="material-icons">close</i>
+      <span>{{ 'ADMIN_CANCEL' | translate }}</span>
+    </button>
+    <button type="button" class="btn-action-save" (click)="save()" [disabled]="saving()">
+      <i class="material-icons">{{ saving() ? 'hourglass_top' : 'save' }}</i>
+      <span>{{ saving() ? ('ADMIN_SAVING' | translate) : ('ADMIN_SAVE_LANDING_PAGE' | translate) }}</span>
+    </button>
+  </div>
+</header>
+
+@if (loading()) {
+  <div class="admin-loading-card">
+    <i class="material-icons is-spinning">sync</i>
+    <span>{{ 'ADMIN_LOADING' | translate }}</span>
+  </div>
+} @else {
+  <!-- Card 1: Main Settings -->
+  <section class="admin-panel editor-card">
+    <div class="card-section-head">
+      <span class="card-head-icon material-icons">tune</span>
+      <div>
+        <h2 class="card-title">بيانات الصفحة الأساسية</h2>
+        <p class="card-subtitle">حدد عنوان الصفحة والمنتج المراد بيعه ورابط الوصول المباشر</p>
+      </div>
+    </div>
+
+    <div class="editor-grid-3">
+      <div class="admin-field">
+        <label for="lp-title">
+          <i class="material-icons">title</i>
+          <span>{{ 'ADMIN_PAGE_TITLE' | translate }} *</span>
+        </label>
+        <div class="input-wrap">
+          <input
+            id="lp-title"
+            type="text"
+            [value]="title()"
+            (input)="onTitleInput($any($event.target).value)"
+            placeholder="{{ 'ADMIN_PAGE_TITLE_PLACEHOLDER' | translate }}"
+          />
+        </div>
+      </div>
+
+      <div class="admin-field">
+        <label for="lp-slug">
+          <i class="material-icons">link</i>
+          <span>{{ 'ADMIN_SHARE_LINK_NAME' | translate }} *</span>
+        </label>
+        <div class="input-wrap">
+          <input
+            id="lp-slug"
+            type="text"
+            [value]="slug()"
+            (input)="onSlugInput($any($event.target).value)"
+            placeholder="{{ 'ADMIN_SLUG_PLACEHOLDER' | translate }}"
+          />
+        </div>
+      </div>
+
+      <div class="admin-field">
+        <label for="lp-product">
+          <i class="material-icons">shopping_bag</i>
+          <span>{{ 'ADMIN_PRODUCT_TO_SELL' | translate }}</span>
+        </label>
+        <div class="select-wrap">
+          <select
+            id="lp-product"
+            [value]="productId() ?? ''"
+            (change)="onProductChange($any($event.target).value)"
+          >
+            <option value="">{{ 'ADMIN_NONE' | translate }}</option>
+            @for (product of products(); track product.id) {
+              <option [value]="product.id" [selected]="product.id === productId()">{{ product.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="publish-switch-row">
+      <label class="publish-toggle-label">
+        <input
+          type="checkbox"
+          [checked]="isPublished()"
+          (change)="isPublished.set($any($event.target).checked)"
+        />
+        <span class="toggle-slider"></span>
+        <span class="toggle-text">
+          <strong>{{ isPublished() ? 'الصفحة منشورة للعملاء الآن' : 'الصفحة كـ مسودة (غير منشورة)' }}</strong>
+          <small>{{ isPublished() ? 'يمكن لأي عميل الدخول للصفحة والشراء' : 'لا يمكن الوصول للصفحة إلا من لوحة التحكم' }}</small>
+        </span>
+      </label>
+
+      @if (slug()) {
+        <div class="slug-preview-pill">
+          <i class="material-icons">public</i>
+          <span>رابط الصفحة للعملاء:</span>
+          <code>/landing/{{ slug() }}</code>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Card 2: Customization & Branding -->
+  <section class="admin-panel editor-card">
+    <div class="card-section-head">
+      <span class="card-head-icon material-icons">palette</span>
+      <div>
+        <h2 class="card-title">تخصيص المظهر والتواصل</h2>
+        <p class="card-subtitle">اختر ألوان الصفحة ونمط العرض وأرقام التواصل مع العملاء</p>
+      </div>
+    </div>
+
+    <div class="editor-grid-4">
+      <div class="admin-field">
+        <label>
+          <i class="material-icons">dashboard_customize</i>
+          <span>نمط القالب</span>
+        </label>
+        <div class="select-wrap">
+          <select [value]="template()" (change)="template.set($any($event.target).value)">
+            <option value="minimal">Minimal (هادئ وبسيط)</option>
+            <option value="bold">Bold (جريء وبارز)</option>
+            <option value="classic">Classic (كلاسيكي)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="admin-field">
+        <label>
+          <i class="material-icons">palette</i>
+          <span>اللون الأساسي للأزرار</span>
+        </label>
+        <div class="color-picker-wrap">
+          <input type="color" [value]="accentColor()" (input)="accentColor.set($any($event.target).value)" />
+          <span class="color-hex-text">{{ accentColor() }}</span>
+        </div>
+      </div>
+
+      <div class="admin-field">
+        <label>
+          <i class="material-icons">font_download</i>
+          <span>نوع الخط</span>
+        </label>
+        <div class="select-wrap">
+          <select [value]="fontFamily()" (change)="fontFamily.set($any($event.target).value)">
+            <option value="cairo">Cairo (موصى به - حديث)</option>
+            <option value="tajawal">Tajawal (عصري وناعم)</option>
+            <option value="system">System (خط النظام الافتراضي)</option>
+            <option value="inter">Inter (إنجليزي/عالمي)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="admin-field">
+        <label>
+          <i class="material-icons">videocam</i>
+          <span>فيديو المنتج (اختياري)</span>
+        </label>
+        <div class="input-wrap">
+          <input type="url" [value]="videoUrl()" (input)="videoUrl.set($any($event.target).value)" placeholder="https://example.com/video.mp4" />
+        </div>
+      </div>
+
+      <div class="admin-field">
+        <label>
+          <i class="material-icons">chat</i>
+          <span>رقم واتساب للطلب السريع</span>
+        </label>
+        <div class="input-wrap">
+          <input type="tel" [value]="whatsAppNumber()" (input)="whatsAppNumber.set($any($event.target).value)" placeholder="مثال: 201012345678" />
+        </div>
+      </div>
+
+      <div class="admin-field field-span-2">
+        <label>
+          <i class="material-icons">sms</i>
+          <span>رسالة واتساب الجاهزة</span>
+        </label>
+        <div class="input-wrap">
+          <input type="text" [value]="whatsAppMessage()" (input)="whatsAppMessage.set($any($event.target).value)" placeholder="مرحباً، أريد طلب المنتج المعروض" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Card 3: Sections Builder -->
+  <section class="sections-builder-section">
+    <div class="builder-header-row">
+      <div class="builder-title-group">
+        <div class="builder-icon-pill">
+          <i class="material-icons">view_quilt</i>
+        </div>
+        <div>
+          <h2>أقسام ومحتوى الصفحة</h2>
+          <p>تحكم في ترتيب وظهور كل بلوك داخل الصفحة حسب رغبتك</p>
+        </div>
+        <span class="sections-count-pill">{{ sections().length }} أقسام مضافة</span>
+      </div>
+
+      <div class="add-section-action-box">
+        <div class="select-wrap">
+          <select #typeSelect>
+            <option value="separator" selected>+ اختر قسماً جديداً لإضافته...</option>
+            @for (def of sectionDefs; track def.type) {
+              <option [value]="def.type">{{ def.label | translate }}</option>
+            }
+          </select>
+        </div>
+        <button
+          type="button"
+          class="btn-add-section"
+          (click)="addSection(typeSelect.value); typeSelect.value = 'separator'"
+        >
+          <i class="material-icons">add</i>
+          <span>إضافة القسم</span>
+        </button>
+      </div>
+    </div>
+
+    @if (sections().length === 0) {
+      <div class="empty-sections-card">
+        <i class="material-icons">layers_clear</i>
+        <h3>لم يتم إضافة أي قسم بعد</h3>
+        <p>ابدأ باختيار منتج من الأعلى وسيتم إنشاء أقسام نموذجية فوراً، أو أضف قسماً يدوياً من القائمة أعلاه.</p>
+      </div>
+    }
+
+    @for (section of sections(); track $index; let i = $index) {
+      <div class="section-card" [class.section-card--hidden]="!section.isVisible">
+        <div class="section-card__head">
+          <div class="section-head-info">
+            <span class="section-badge">
+              <i class="material-icons">{{ defFor(section).icon }}</i>
+              <span>{{ defFor(section).label | translate }}</span>
+            </span>
+            <input
+              type="text"
+              class="section-title-input"
+              [value]="section.title"
+              (input)="section.title = $any($event.target).value"
+              placeholder="عنوان القسم (اختياري)"
+            />
+          </div>
+
+          <div class="section-tools">
+            <button
+              type="button"
+              class="tool-btn"
+              (click)="moveSection(i, -1)"
+              [disabled]="i === 0"
+              title="{{ 'ADMIN_MOVE_UP' | translate }}"
+            >
+              <i class="material-icons">arrow_upward</i>
+            </button>
+            <button
+              type="button"
+              class="tool-btn"
+              (click)="moveSection(i, 1)"
+              [disabled]="i === sections().length - 1"
+              title="{{ 'ADMIN_MOVE_DOWN' | translate }}"
+            >
+              <i class="material-icons">arrow_downward</i>
+            </button>
+            <button
+              type="button"
+              class="tool-btn"
+              [class.is-muted]="!section.isVisible"
+              (click)="toggleVisible(section)"
+              title="{{ (section.isVisible ? 'ADMIN_HIDE' : 'ADMIN_SHOW') | translate }}"
+            >
+              <i class="material-icons">{{ section.isVisible ? 'visibility' : 'visibility_off' }}</i>
+            </button>
+            <button
+              type="button"
+              class="tool-btn is-delete"
+              (click)="removeSection(i)"
+              title="{{ 'ADMIN_REMOVE' | translate }}"
+            >
+              <i class="material-icons">delete_outline</i>
+            </button>
+          </div>
+        </div>
+
+        <div class="section-card__body">
+          @if (defFor(section).hasImage) {
+            <div class="admin-field">
+              <label>
+                <i class="material-icons">image</i>
+                <span>{{ 'ADMIN_IMAGE_URL' | translate }}</span>
+              </label>
+              <div class="input-wrap">
+                <input
+                  type="text"
+                  [value]="section.imageUrl"
+                  (input)="section.imageUrl = $any($event.target).value"
+                  placeholder="{{ 'ADMIN_IMAGE_URL_PLACEHOLDER' | translate }}"
+                />
+              </div>
+            </div>
+          }
+
+          @if (defFor(section).hasHeadline) {
+            <div class="admin-field">
+              <label>
+                <i class="material-icons">subtitles</i>
+                <span>{{ 'ADMIN_HEADLINE' | translate }}</span>
+              </label>
+              <div class="input-wrap">
+                <input
+                  type="text"
+                  [value]="section.content.headline"
+                  (input)="section.content.headline = $any($event.target).value"
+                  placeholder="العنوان الرئيسي البارز"
+                />
+              </div>
+            </div>
+          }
+
+          @if (defFor(section).hasBody) {
+            <div class="admin-field">
+              <label>
+                <i class="material-icons">notes</i>
+                <span>{{ 'ADMIN_BODY_TEXT' | translate }}</span>
+              </label>
+              <div class="textarea-wrap">
+                <textarea
+                  rows="3"
+                  [value]="section.content.body"
+                  (input)="section.content.body = $any($event.target).value"
+                  placeholder="أدخل النص والشرح التوضيحي هنا..."
+                ></textarea>
+              </div>
+            </div>
+          }
+
+          @if (defFor(section).hasButton) {
+            <div class="admin-field-row">
+              <div class="admin-field">
+                <label>
+                  <i class="material-icons">smart_button</i>
+                  <span>{{ 'ADMIN_BUTTON_TEXT' | translate }}</span>
+                </label>
+                <div class="input-wrap">
+                  <input
+                    type="text"
+                    [value]="section.content.buttonText"
+                    (input)="section.content.buttonText = $any($event.target).value"
+                    placeholder="مثال: اطلب الآن"
+                  />
+                </div>
+              </div>
+              <div class="admin-field">
+                <label>
+                  <i class="material-icons">link</i>
+                  <span>{{ 'ADMIN_BUTTON_LINK' | translate }}</span>
+                </label>
+                <div class="input-wrap">
+                  <input
+                    type="text"
+                    [value]="section.content.buttonLink"
+                    (input)="section.content.buttonLink = $any($event.target).value"
+                    placeholder="#order أو رابط كامل"
+                  />
+                </div>
+              </div>
+            </div>
+          }
+
+          @if (defFor(section).itemsKind) {
+            <div class="items-editor">
+              <div class="items-editor__head">
+                <span class="items-title">
+                  <i class="material-icons">list_alt</i>
+                  <span>{{ defFor(section).itemsLabel | translate }}</span>
+                </span>
+                <button type="button" class="btn-add-item" (click)="addItem(section)">
+                  <i class="material-icons">add</i>
+                  <span>{{ 'ADMIN_ADD_ITEM' | translate }}</span>
+                </button>
+              </div>
+
+              @for (item of section.content.items; track $index; let j = $index) {
+                <div class="item-row">
+                  @if (defFor(section).itemsKind === 'icon') {
+                    <input type="text" [value]="item.icon" (input)="item.icon = $any($event.target).value" placeholder="أيقونة (star, check)" />
+                    <input type="text" [value]="item.title" (input)="item.title = $any($event.target).value" placeholder="العنوان" />
+                    <input type="text" [value]="item.text" (input)="item.text = $any($event.target).value" placeholder="الوصف" />
+                  } @else if (defFor(section).itemsKind === 'review') {
+                    <input type="text" [value]="item.name" (input)="item.name = $any($event.target).value" placeholder="اسم العميل" />
+                    <input type="number" min="1" max="5" [value]="item.rating" (input)="item.rating = toRating($any($event.target).value)" placeholder="التقييم (1-5)" />
+                    <input type="text" [value]="item.text" (input)="item.text = $any($event.target).value" placeholder="رأي العميل في المنتج" />
+                  } @else {
+                    <input type="text" [value]="item.question" (input)="item.question = $any($event.target).value" placeholder="السؤال" />
+                    <input type="text" [value]="item.answer" (input)="item.answer = $any($event.target).value" placeholder="الإجابة" />
+                  }
+                  <button type="button" class="btn-remove-item" (click)="removeItem(section, j)" title="إزالة هذا العنصر">
+                    <i class="material-icons">delete_outline</i>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </section>
+}

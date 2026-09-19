@@ -1,0 +1,179 @@
+<header class="admin-page-head">
+  <div>
+    <h1 class="page-title">
+      <span class="page-icon material-icons">category</span>
+      {{ 'ADMIN_CATEGORIES' | translate }}
+    </h1>
+    <p class="admin-page-desc">إدارة تصنيفات وأقسام المتجر لترتيب المنتجات وتسهيل التصفح للعملاء</p>
+  </div>
+</header>
+
+<!-- Card 1: Add / Edit Category -->
+<section class="admin-panel category-card-panel">
+  <div class="category-editor__intro">
+    <span class="category-editor__icon" [class.is-editing]="editingId" aria-hidden="true">
+      <i class="material-icons">{{ editingId ? 'edit_note' : 'add_circle' }}</i>
+    </span>
+    <div>
+      <h2 class="admin-panel-title">{{ editingId ? ('ADMIN_EDIT_CATEGORY' | translate) : ('ADMIN_NEW_CATEGORY' | translate) }}</h2>
+      <p class="admin-panel-subtitle">{{ editingId ? 'قم بتعديل بيانات التصنيف ثم اضغط حفظ' : 'أدخل اسم ووصف التصنيف الجديد لإضافته للمتجر' }}</p>
+    </div>
+  </div>
+
+  <form class="category-form" [formGroup]="categoryForm" (ngSubmit)="save()" novalidate>
+    <div class="category-form-grid">
+      <div class="admin-field">
+        <label for="c-name">
+          <i class="material-icons">label</i>
+          <span>{{ 'ADMIN_NAME' | translate }}</span>
+        </label>
+        <div class="input-with-icon" [class.has-error]="showError('name')">
+          <input
+            id="c-name"
+            type="text"
+            placeholder="{{ 'ADMIN_CATEGORY_NAME_PLACEHOLDER' | translate }}"
+            formControlName="name"
+          />
+        </div>
+        @if (showError('name')) {
+          <span class="admin-field-error">
+            <i class="material-icons">error_outline</i>
+            {{ 'ADMIN_NAME_REQUIRED' | translate }}
+          </span>
+        }
+      </div>
+
+      <div class="admin-field">
+        <label for="c-description">
+          <i class="material-icons">description</i>
+          <span>{{ 'ADMIN_DESCRIPTION' | translate }}</span>
+        </label>
+        <div class="input-with-icon" [class.has-error]="showError('description')">
+          <input
+            id="c-description"
+            type="text"
+            placeholder="{{ 'ADMIN_CATEGORY_DESCRIPTION_PLACEHOLDER' | translate }}"
+            formControlName="description"
+          />
+        </div>
+        @if (showError('description')) {
+          <span class="admin-field-error">
+            <i class="material-icons">error_outline</i>
+            {{ 'ADMIN_DESCRIPTION_REQUIRED' | translate }}
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="admin-actions">
+      <button class="btn-category-submit" type="submit" [disabled]="saving()">
+        <i class="material-icons">{{ saving() ? 'hourglass_top' : editingId ? 'save' : 'add' }}</i>
+        <span>{{ saving() ? ('ADMIN_SAVING' | translate) : editingId ? ('ADMIN_SAVE_CHANGES' | translate) : ('ADMIN_ADD_CATEGORY' | translate) }}</span>
+      </button>
+
+      @if (editingId) {
+        <button class="btn-category-cancel" type="button" (click)="reset()">
+          <i class="material-icons">close</i>
+          <span>{{ 'ADMIN_CANCEL' | translate }}</span>
+        </button>
+      }
+    </div>
+  </form>
+</section>
+
+<!-- Card 2: Categories List & Table -->
+<section class="admin-panel category-card-panel">
+  <div class="category-list__head">
+    <div class="list-title-group">
+      <h2 class="admin-panel-title">{{ 'ADMIN_CATEGORIES' | translate }}</h2>
+      <span class="category-count-badge">{{ categories().length }} تصنيفات</span>
+    </div>
+
+    <div class="category-search-box">
+      <i class="material-icons search-icon" aria-hidden="true">search</i>
+      <input
+        type="search"
+        aria-label="{{ 'ADMIN_SEARCH_CATEGORIES' | translate }}"
+        placeholder="{{ 'ADMIN_SEARCH_CATEGORIES_PLACEHOLDER' | translate }}"
+        [value]="search()"
+        (input)="onSearch($any($event.target).value)"
+      />
+      @if (search()) {
+        <button type="button" class="btn-clear-search" (click)="onSearch('')" title="مسح البحث">
+          <i class="material-icons">clear</i>
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="admin-table-wrap">
+    <table class="categories-table">
+      <thead>
+        <tr>
+          <th>{{ 'ADMIN_NAME' | translate }}</th>
+          <th>{{ 'ADMIN_DESCRIPTION' | translate }}</th>
+          <th class="th-actions">إجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          <tr>
+            <td colspan="3" class="table-state-cell">
+              <div class="loading-spinner-wrap">
+                <i class="material-icons is-spinning">sync</i>
+                <span>{{ 'ADMIN_LOADING_CATEGORIES' | translate }}</span>
+              </div>
+            </td>
+          </tr>
+        } @else {
+          @for (category of filteredCategories(); track category.id) {
+            <tr class="category-row" [class.is-being-edited]="editingId === category.id">
+              <td>
+                <div class="category-name-cell">
+                  <div class="category-avatar">
+                    <i class="material-icons">folder</i>
+                  </div>
+                  <span class="category-name-text">{{ category.name }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="category-desc-text">{{ category.description }}</span>
+              </td>
+              <td class="td-actions">
+                <div class="action-buttons-group">
+                  <button
+                    type="button"
+                    class="btn-table-action is-edit"
+                    (click)="edit(category)"
+                    title="{{ 'ADMIN_EDIT' | translate }}"
+                  >
+                    <i class="material-icons" aria-hidden="true">edit</i>
+                    <span>{{ 'ADMIN_EDIT' | translate }}</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-table-action is-delete"
+                    (click)="remove(category.id)"
+                    title="{{ 'ADMIN_DELETE' | translate }}"
+                  >
+                    <i class="material-icons" aria-hidden="true">delete_outline</i>
+                    <span>{{ 'ADMIN_DELETE' | translate }}</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="3" class="table-state-cell">
+                <div class="empty-state-wrap">
+                  <i class="material-icons">folder_off</i>
+                  <p>{{ search() ? 'لا توجد نتائج مطابقة لبحثك' : ('ADMIN_NO_CATEGORIES' | translate) }}</p>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

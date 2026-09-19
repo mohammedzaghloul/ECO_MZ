@@ -1,0 +1,185 @@
+<header class="admin-page-head">
+  <div>
+    <h1>{{ 'ADMIN_LANDING_PAGES_TITLE' | translate }}</h1>
+    <p>{{ 'ADMIN_LANDING_PAGES_DESCRIPTION' | translate }}</p>
+  </div>
+  <button type="button" class="admin-btn" (click)="create()">{{ 'ADMIN_NEW_LANDING_PAGE' | translate }}</button>
+</header>
+
+<div class="landing-filter-bar">
+  <span class="landing-filter-label"><i class="material-icons">schedule</i> فترة الإحصائيات:</span>
+  <div class="landing-filter-chips">
+    <button type="button" class="filter-chip" [class.is-active]="selectedPeriod() === 'all'" (click)="setPeriod('all')">كل الأوقات</button>
+    <button type="button" class="filter-chip" [class.is-active]="selectedPeriod() === 'today'" (click)="setPeriod('today')">اليوم</button>
+    <button type="button" class="filter-chip" [class.is-active]="selectedPeriod() === '7d'" (click)="setPeriod('7d')">آخر 7 أيام</button>
+    <button type="button" class="filter-chip" [class.is-active]="selectedPeriod() === '30d'" (click)="setPeriod('30d')">آخر 30 يوم</button>
+  </div>
+</div>
+
+@if (loading()) {
+  <div class="admin-loading">{{ 'ADMIN_LOADING_LANDING_PAGES' | translate }}</div>
+} @else if (pages().length === 0) {
+  <div class="admin-empty admin-empty--card">
+    <i class="material-icons">web</i>
+    <h3>{{ 'ADMIN_NO_LANDING_PAGES' | translate }}</h3>
+    <p>{{ 'ADMIN_NO_LANDING_PAGES_DESC' | translate }}</p>
+    <button type="button" class="admin-btn" (click)="create()">{{ 'ADMIN_CREATE_LANDING_PAGE' | translate }}</button>
+  </div>
+} @else {
+  <section class="admin-panel">
+    <div class="admin-table-wrap">
+      <table class="admin-table landing-table">
+        <thead>
+          <tr>
+            <th>الصفحة والمنتج</th>
+            <th>الرابط</th>
+            <th>الحالة</th>
+            <th>الزيارات</th>
+            <th>الطلبات</th>
+            <th>معدل التحويل</th>
+            <th>آخر تحديث</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (page of pages(); track page.id) {
+            <tr class="landing-row-main" (click)="togglePage(page.id)">
+              <td class="cell-title">
+                <div class="landing-title-wrapper">
+                  <span class="landing-arrow material-icons" [class.expanded]="isExpanded(page.id)">expand_more</span>
+                  <div>
+                    <div class="landing-main-title">{{ page.title }}</div>
+                    @if (page.productName && page.productName !== page.title) {
+                      <div class="landing-sub-title">{{ page.productName }}</div>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="landing-slug-wrap">
+                  <code class="landing-slug">/landing/{{ page.slug }}</code>
+                  <button type="button" class="landing-icon-btn" (click)="copyLink(page.slug, $event)" title="نسخ الرابط">
+                    <i class="material-icons">content_copy</i>
+                  </button>
+                </div>
+              </td>
+              <td>
+                <app-status-badge [status]="page.isPublished ? 'Published' : 'Draft'" />
+              </td>
+              <td><strong>{{ page.viewCount }}</strong></td>
+              <td><strong class="orders-count">{{ page.ordersCount }}</strong></td>
+              <td>
+                <span class="conversion-badge" [class.is-high]="page.conversionRate >= 5" [class.is-medium]="page.conversionRate > 0 && page.conversionRate < 5">
+                  {{ page.conversionRate }}%
+                </span>
+              </td>
+              <td>{{ formatDate(page.updatedAt) }}</td>
+              <td class="admin-table-actions">
+                <button type="button" class="admin-btn-link" (click)="view(page.slug); $event.stopPropagation()">{{ 'ADMIN_VIEW' | translate }}</button>
+                <button type="button" class="admin-btn-link" (click)="edit(page.id); $event.stopPropagation()">{{ 'ADMIN_EDIT' | translate }}</button>
+                <button type="button" class="admin-btn-link is-danger" (click)="remove(page); $event.stopPropagation()">{{ 'ADMIN_DELETE' | translate }}</button>
+              </td>
+            </tr>
+            <tr class="landing-row-details" [class.collapsed]="!isExpanded(page.id)">
+              <td colspan="8">
+                <div class="landing-details">
+                  <div class="landing-details__info">
+                    <h4>{{ page.title }}</h4>
+                    <p><strong>{{ 'ADMIN_SLUG' | translate }}:</strong> <code>{{ page.slug }}</code></p>
+                    <p><strong>{{ 'ADMIN_STATUS' | translate }}:</strong> {{ page.isPublished ? ('ADMIN_PUBLISHED' | translate) : ('ADMIN_DRAFT' | translate) }}</p>
+                    <p><strong>{{ 'ADMIN_SECTIONS' | translate }}:</strong> {{ page.sectionsCount }}</p>
+                    <p><strong>إجمالي المشاهدات:</strong> {{ page.viewCount }}</p>
+                    <p><strong>إجمالي الطلبات:</strong> {{ page.ordersCount }}</p>
+                    <p><strong>{{ 'ADMIN_LAST_UPDATED' | translate }}:</strong> {{ formatDate(page.updatedAt, true) }}</p>
+                  </div>
+                  <div class="landing-analytics">
+                    @if (isAnalyticsLoading(page.id)) {
+                      <span class="admin-loading">جارٍ تحميل الإحصائيات...</span>
+                    } @else if (analyticsFor(page.id); as stats) {
+
+                      <!-- KPI Cards row -->
+                      <div class="landing-kpi-grid">
+                        <div class="kpi-card kpi-card--blue">
+                          <div class="kpi-card__header">
+                            <span class="kpi-card__lbl">زائر فريد</span>
+                            <i class="material-icons kpi-icon kpi-icon--blue">visibility</i>
+                          </div>
+                          <strong class="kpi-card__val">{{ stats.uniqueVisitors }}</strong>
+                        </div>
+                        <div class="kpi-card kpi-card--amber">
+                          <div class="kpi-card__header">
+                            <span class="kpi-card__lbl">بدأوا الطلب</span>
+                            <i class="material-icons kpi-icon kpi-icon--amber">touch_app</i>
+                          </div>
+                          <strong class="kpi-card__val">{{ stats.formStarts }}</strong>
+                        </div>
+                        <div class="kpi-card kpi-card--green">
+                          <div class="kpi-card__header">
+                            <span class="kpi-card__lbl">طلب مكتمل</span>
+                            <i class="material-icons kpi-icon kpi-icon--green">shopping_bag</i>
+                          </div>
+                          <strong class="kpi-card__val">{{ stats.orders }}</strong>
+                        </div>
+                        <div class="kpi-card kpi-card--purple">
+                          <div class="kpi-card__header">
+                            <span class="kpi-card__lbl">معدل التحويل</span>
+                            <i class="material-icons kpi-icon kpi-icon--purple">trending_up</i>
+                          </div>
+                          <strong class="kpi-card__val">{{ stats.conversionRate }}%</strong>
+                        </div>
+                      </div>
+
+                      <!-- Timeline -->
+                      @if (stats.timeline.length > 0) {
+                        <div class="landing-analytics__timeline">
+                          <div class="timeline-head">
+                            <strong><i class="material-icons">show_chart</i> الأداء اليومي</strong>
+                            <div class="timeline-legend">
+                              <span class="legend-visits">● الزيارات</span>
+                              <span class="legend-orders">● الطلبات</span>
+                            </div>
+                          </div>
+                          <div class="timeline-bars">
+                            @for (day of stats.timeline; track day.date) {
+                              <div class="timeline-col" [title]="(day.date | date: 'yyyy-MM-dd') + ': ' + day.visits + ' زيارة، ' + day.orders + ' طلب'">
+                                <div class="bars-wrapper">
+                                  <div class="bar-visits" [style.height.px]="barHeight(day.visits, 64, 4)"></div>
+                                  <div class="bar-orders" [style.height.px]="barHeight(day.orders, 64, 8)"></div>
+                                </div>
+                                <span class="day-label">{{ day.date | date: 'd/M' }}</span>
+                              </div>
+                            }
+                          </div>
+                        </div>
+                      }
+
+                      <!-- Sources -->
+                      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:.6rem;margin-top:.85rem;padding-top:.75rem;border-top:1px solid #e2e8f0;">
+                        <span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.82rem;font-weight:700;color:#334155;">
+                          <i class="material-icons" style="font-size:18px;color:#2563eb;">campaign</i>
+                          مصادر الزيارات:
+                        </span>
+                        @for (source of stats.sources; track source.source) {
+                          <span style="display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .7rem;border-radius:999px;background:#f1f5f9;font-size:.78rem;border:1px solid #e2e8f0;">
+                            <b style="font-weight:700;color:#0f172a;">{{ source.source }}</b>
+                            <em style="color:#64748b;font-style:normal;">{{ source.visits }} زيارة</em>
+                          </span>
+                        } @empty {
+                          <span style="color:#64748b;font-size:.82rem;font-style:italic;">لا توجد زيارات مسجلة بعد</span>
+                        }
+                      </div>
+                    }
+                  </div>
+                  <div class="landing-details__actions">
+                    <button type="button" class="admin-btn" (click)="view(page.slug)">{{ 'ADMIN_VIEW_PAGE' | translate }}</button>
+                    <button type="button" class="admin-btn admin-btn-secondary" (click)="edit(page.id)">{{ 'ADMIN_EDIT_PAGE' | translate }}</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+}

@@ -1,0 +1,206 @@
+@use '../../../styles/tokens' as *;
+
+.location-form {
+  display: grid;
+  gap: $space-5;
+}
+
+.location-form__head,
+.location-list__head,
+.location-card__head,
+.cities-section__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+}
+
+.location-card__head {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: $neutral-50;
+  }
+}
+
+.location-card__head-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  flex: 1;
+}
+
+.location-card__arrow {
+  color: $neutral-400;
+  transition: transform 0.2s ease;
+  font-size: 24px;
+
+  &.expanded {
+    transform: rotate(180deg);
+  }
+}
+
+.location-form__head h2,
+.location-list__head h2 {
+  margin: 2px 0 4px;
+  color: $neutral-900;
+  font-size: 1.05rem;
+}
+
+.location-form__head p {
+  margin: 0;
+  color: $neutral-500;
+  font-size: $text-body-sm;
+}
+
+.location-eyebrow {
+  display: block;
+  color: $admin-primary;
+  font-size: $text-label-xs;
+  font-weight: $weight-bold;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.location-form__icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: $radius-md;
+  color: $admin-primary;
+  background: $primary-50;
+}
+
+.location-fields,
+.city-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $space-4;
+}
+
+.location-list {
+  display: grid;
+  gap: $space-4;
+}
+
+.location-list__head {
+  padding: 4px 2px 0;
+}
+
+.location-count {
+  color: $neutral-500;
+  font-size: $text-body-sm;
+  font-weight: $weight-semibold;
+}
+
+.location-card {
+  padding: $space-5;
+  background: $white;
+  border: 1px solid $admin-border;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+}
+
+.location-card__title,
+.city-row__name {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.location-card__title strong { font-size: 1rem; }
+.location-ar { color: $neutral-500; font-size: .88rem; }
+.location-code,
+.city-row__name small {
+  display: block;
+  margin-top: 5px;
+  color: $neutral-400;
+  font-size: $text-label-xs;
+  font-weight: $weight-medium;
+}
+
+.cities-section {
+  margin-top: $space-5;
+  padding-top: $space-4;
+  border-top: 1px solid $admin-border;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  max-height: 2000px;
+
+  &.collapsed {
+    max-height: 0;
+    padding-top: 0;
+    margin-top: 0;
+    border-top: none;
+    opacity: 0;
+  }
+}
+
+.cities-section__head {
+  margin-bottom: $space-2;
+
+  h3 {
+    margin: 0;
+    color: $neutral-700;
+    font-size: .84rem;
+    font-weight: $weight-bold;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  h3 span {
+    color: $admin-primary;
+    margin-inline-start: 4px;
+  }
+
+  > span {
+    color: $neutral-400;
+    font-size: $text-label-xs;
+  }
+}
+
+.city-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  min-height: 52px;
+  padding: $space-2 0;
+  border-bottom: 1px solid $neutral-100;
+}
+
+.city-form {
+  align-items: end;
+  margin-top: $space-4;
+  padding: $space-4;
+  background: $neutral-50;
+  border: 1px solid $admin-border;
+  border-radius: $radius-md;
+}
+
+.city-form__button {
+  min-height: 40px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 760px) {
+  .location-fields,
+  .city-form { grid-template-columns: 1fr; }
+  .location-form__head,
+  .location-list__head,
+  .location-card__head { align-items: flex-start; }
+  .location-form__icon { display: none; }
+}
+
+@media (max-width: 480px) {
+  .location-card { padding: $space-4; }
+  .location-card__head,
+  .cities-section__head { display: grid; }
+  .location-card__head .admin-btn-link { justify-self: start; }
+  .city-row { align-items: flex-start; }
+}

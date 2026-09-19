@@ -1,0 +1,181 @@
+<header class="admin-page-head">
+  <div>
+    <h1>{{ 'ADMIN_DASHBOARD' | translate }}</h1>
+    <p>{{ 'ADMIN_LIVE_OVERVIEW' | translate }}</p>
+  </div>
+  <button type="button" class="dash-date-chip dash-refresh-btn" (click)="refresh()" [disabled]="loading()">
+    <i class="material-icons" aria-hidden="true">refresh</i>
+    {{ 'ADMIN_REFRESH' | translate }}
+  </button>
+  <span class="dash-date-chip">
+    <i class="material-icons" aria-hidden="true">calendar_today</i>
+    {{ today }}
+  </span>
+</header>
+
+@if (loading()) {
+  <div class="dash-loading">
+    <span class="dash-spinner" aria-hidden="true"></span>
+    {{ 'ADMIN_LOADING_DASHBOARD' | translate }}
+  </div>
+} @else if (loadError()) {
+  <div class="dash-loading dash-loading--error">
+    {{ 'ADMIN_DASHBOARD_LOAD_ERROR' | translate }}
+    <button type="button" class="dash-date-chip dash-refresh-btn" (click)="refresh()">
+      <i class="material-icons" aria-hidden="true">refresh</i>
+      {{ 'ADMIN_REFRESH' | translate }}
+    </button>
+  </div>
+} @else {
+
+  <!-- Stat cards -->
+  <div class="dash-stats">
+    <app-stat-card
+      [label]="'ADMIN_TOTAL_REVENUE' | translate"
+      [value]="money(summary()?.totalRevenue)"
+      icon="payments"
+      tone="primary"
+      [trend]="(summary()?.totalRevenue ?? 0) > 0 ? growthText(summary()?.revenueGrowth) : ''"
+      [trendIcon]="(summary()?.revenueGrowth ?? 0) >= 0 ? 'trending_up' : 'trending_down'"
+      [trendTone]="(summary()?.revenueGrowth ?? 0) < 0 ? 'negative' : 'positive'"
+    />
+    <app-stat-card
+      [label]="'ADMIN_ORDERS' | translate"
+      [value]="(summary()?.totalOrders ?? 0).toString()"
+      icon="receipt_long"
+      tone="success"
+      [trend]="(summary()?.totalOrders ?? 0) > 0 ? growthText(summary()?.ordersGrowth) : ''"
+      [trendIcon]="(summary()?.ordersGrowth ?? 0) >= 0 ? 'trending_up' : 'trending_down'"
+      [trendTone]="(summary()?.ordersGrowth ?? 0) < 0 ? 'negative' : 'positive'"
+    />
+    <app-stat-card
+      [label]="'ADMIN_CUSTOMERS' | translate"
+      [value]="(summary()?.totalCustomers ?? 0).toString()"
+      icon="group"
+      tone="warning"
+      [trend]="'ADMIN_REGISTERED' | translate"
+      trendTone="muted"
+    />
+    <app-stat-card
+      [label]="'ADMIN_AVG_ORDER' | translate"
+      [value]="money(summary()?.averageOrderValue)"
+      icon="shopping_bag"
+      tone="danger"
+      [trend]="(summary()?.totalProducts ?? 0) + ' ' + ('ADMIN_PRODUCTS_LIVE' | translate)"
+      trendTone="muted"
+    />
+  </div>
+
+  <div class="dash-grid dash-grid--main">
+    <!-- Sales chart -->
+    <section class="dash-panel">
+      <div class="dash-panel__head">
+        <h2><i class="material-icons" aria-hidden="true">bar_chart</i>{{ 'ADMIN_SALES_7_DAYS' | translate }}</h2>
+        <span class="dash-week-total">{{ money(weekRevenue()) }} <small>{{ 'ADMIN_THIS_WEEK' | translate }}</small></span>
+      </div>
+      <div class="dash-chart">
+        @for (point of sales(); track point.date) {
+          <div class="dash-chart__col" [class.dash-chart__col--empty]="point.revenue <= 0" [title]="salesLabel(point.date) + ' — ' + money(point.revenue)">
+            <span class="dash-chart__value">{{ point.revenue > 0 ? moneyShort(point.revenue) : '' }}</span>
+            <div class="dash-chart__bar-wrap">
+              <div class="dash-chart__bar" [style.height.%]="barHeight(point.revenue)"></div>
+            </div>
+            <span class="dash-chart__label">{{ salesLabel(point.date) }}</span>
+            <span class="dash-chart__orders">{{ point.orders }}</span>
+          </div>
+        }
+      </div>
+      @if (sales().length && sales().every((p) => (p.revenue ?? 0) === 0)) {
+        <p class="dash-empty-line">{{ 'ADMIN_NO_PAID_ORDERS_7_DAYS' | translate }}</p>
+      }
+    </section>
+
+    <!-- Recent orders -->
+    <section class="dash-panel">
+      <div class="dash-panel__head">
+        <h2><i class="material-icons" aria-hidden="true">receipt_long</i>{{ 'ADMIN_RECENT_ORDERS' | translate }}</h2>
+        <a class="dash-panel__link" routerLink="/admin/orders">{{ 'ADMIN_VIEW_ALL' | translate }}</a>
+      </div>
+      @if (recentOrders().length === 0) {
+        <p class="dash-empty-line">{{ 'ADMIN_NO_ORDERS' | translate }}</p>
+      } @else {
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>{{ 'ADMIN_ORDER' | translate }}</th>
+              <th>{{ 'ADMIN_CUSTOMER' | translate }}</th>
+              <th>{{ 'ADMIN_ITEMS' | translate }}</th>
+              <th>{{ 'ADMIN_STATUS' | translate }}</th>
+              <th>{{ 'ADMIN_TOTAL' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (order of recentOrders(); track order.id) {
+              <tr>
+                <td><a routerLink="/admin/orders" class="order-link">#{{ order.id }}</a></td>
+                <td class="cell-email">{{ order.buyerEmail }}</td>
+                <td>{{ order.itemsCount }}</td>
+                <td><app-status-badge [status]="order.status" /></td>
+                <td class="cell-total">{{ money(order.total) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+  </div>
+
+  <div class="dash-grid dash-grid--secondary">
+    <!-- Top products -->
+    <section class="dash-panel">
+      <div class="dash-panel__head">
+        <h2><i class="material-icons" aria-hidden="true">trending_up</i>{{ 'ADMIN_BEST_SELLERS' | translate }}</h2>
+        <a class="dash-panel__link" routerLink="/admin/products">{{ 'ADMIN_PRODUCTS_LINK' | translate }}</a>
+      </div>
+      @if (topProducts().length === 0) {
+        <p class="dash-empty-line">{{ 'ADMIN_NO_SALES' | translate }}</p>
+      } @else {
+        <ol class="dash-top-list">
+          @for (product of topProducts(); track product.name; let i = $index) {
+            <li>
+              <span class="dash-top-rank">{{ i + 1 }}</span>
+              <div class="dash-top-main">
+                <div class="dash-top-row">
+                  <span class="dash-top-name">{{ product.name }}</span>
+                  <span class="dash-top-revenue">{{ money(product.revenue) }}</span>
+                </div>
+                <div class="dash-top-sub">
+                  <span class="dash-top-bar" aria-hidden="true"><span [style.width.%]="topWidth(product.revenue)"></span></span>
+                  <span class="dash-top-qty">{{ product.quantitySold }} {{ 'ADMIN_SOLD' | translate }}</span>
+                </div>
+              </div>
+            </li>
+          }
+        </ol>
+      }
+    </section>
+
+    <!-- Low stock -->
+    <section class="dash-panel">
+      <div class="dash-panel__head">
+        <h2><i class="material-icons" aria-hidden="true">inventory_2</i>{{ 'ADMIN_LOW_STOCK' | translate }}</h2>
+        <span class="dash-panel__hint">{{ 'ADMIN_STOCK_HINT' | translate }}</span>
+      </div>
+      @if (lowStock().length === 0) {
+        <p class="dash-empty-line">{{ 'ADMIN_WELL_STOCKED' | translate }} 👍</p>
+      } @else {
+        <ul class="dash-stock-list">
+          @for (product of lowStock(); track product.productId) {
+            <li>
+              <a routerLink="/admin/products" class="dash-stock-name">{{ product.name }}</a>
+              <span class="stock-chip" [class.stock-chip--critical]="(product.stockQuantity ?? 0) <= 2">
+                {{ product.stockQuantity }} {{ 'ADMIN_LEFT' | translate }}
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+
+}

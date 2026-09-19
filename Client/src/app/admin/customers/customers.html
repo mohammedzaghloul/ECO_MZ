@@ -1,0 +1,194 @@
+<header class="admin-page-head">
+  <div>
+    <h1>{{ 'ADMIN_CUSTOMERS_TITLE' | translate }}</h1>
+    <p>{{ 'ADMIN_CUSTOMERS_DESCRIPTION' | translate }}</p>
+  </div>
+</header>
+<section class="admin-panel">
+  <div class="customers-toolbar">
+    <div class="customers-toolbar__top">
+      <div class="role-filter-group">
+        <span class="role-filter-label">
+          <span class="material-icons" aria-hidden="true">tune</span>
+          {{ 'ADMIN_CUSTOMER_FILTER' | translate }}
+        </span>
+        <div class="role-pills" role="group" [attr.aria-label]="'ADMIN_CUSTOMER_FILTER' | translate">
+          @for (option of roleOptions; track option.value) {
+            <button
+              type="button"
+              class="role-pill"
+              [class.is-active]="roleFilter() === option.value"
+              (click)="onRoleFilter(option.value)"
+            >
+              <span class="material-icons pill-icon" aria-hidden="true">{{ option.icon }}</span>
+              <span>{{ option.labelKey | translate }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="customers-head-actions">
+        <span class="customers-count">
+          <strong>{{ totalCount() }}</strong> {{ 'ADMIN_CUSTOMERS_COUNT' | translate }}
+        </span>
+        <button
+          type="button"
+          class="admin-btn-link customers-refresh"
+          (click)="refresh()"
+          [disabled]="loading()"
+          [title]="'ADMIN_REFRESH' | translate"
+        >
+          <span class="material-icons" [class.is-spinning]="loading()" aria-hidden="true">refresh</span>
+          <span>{{ 'ADMIN_REFRESH' | translate }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="customers-filter-row">
+      <div class="customers-search-box">
+        <span class="material-icons search-icon" aria-hidden="true">search</span>
+        <input
+          type="text"
+          class="customers-search-input"
+          [placeholder]="'ADMIN_SEARCH_CUSTOMERS_PLACEHOLDER' | translate"
+          [value]="search()"
+          (input)="onSearchInput($any($event.target).value)"
+        />
+        @if (search()) {
+          <button
+            type="button"
+            class="clear-search-btn"
+            (click)="clearSearch()"
+            aria-label="مسح البحث"
+            title="مسح البحث"
+          >
+            <span class="material-icons" aria-hidden="true">close</span>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table customers-table">
+      <thead>
+        <tr>
+          <th>{{ 'ADMIN_CUSTOMER' | translate }}</th>
+          <th>{{ 'ADMIN_EMAIL' | translate }}</th>
+          <th>{{ 'ADMIN_ORDERS' | translate }}</th>
+          <th>{{ 'ADMIN_TOTAL_SPENT' | translate }}</th>
+          <th>{{ 'ADMIN_ROLES' | translate }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (customer of customers(); track customer.id) {
+          <tr>
+            <td class="customer-name">{{ customer.displayName }}</td>
+            <td class="customer-email">{{ customer.email }}</td>
+            <td>{{ customer.ordersCount }}</td>
+            <td class="customer-spent">{{ money(customer.totalSpent) }}</td>
+            <td>
+              <div class="role-chips">
+                @for (role of customer.roles; track role) {
+                  <app-status-badge [status]="role" />
+                } @empty {
+                  <app-status-badge [status]="'ADMIN_CUSTOMER_ROLE' | translate" />
+                }
+              </div>
+            </td>
+            <td class="admin-table-actions">
+              <button type="button" class="customer-action customer-action--view" title="عرض تفاصيل المستخدم" aria-label="عرض تفاصيل المستخدم" (click)="view(customer)">
+                <span class="material-icons" aria-hidden="true">visibility</span>
+              </button>
+              @if (pendingAdminRemoval() === customer.id) {
+                <span class="admin-removal-confirmation">
+                  <button type="button" class="customer-action customer-action--confirm" title="تأكيد إزالة المسؤول" aria-label="تأكيد إزالة المسؤول" (click)="toggleAdmin(customer)">
+                    <span class="material-icons" aria-hidden="true">check</span>
+                  </button>
+                  <button type="button" class="customer-action customer-action--cancel" title="إلغاء" aria-label="إلغاء" (click)="pendingAdminRemoval.set(null)">
+                    <span class="material-icons" aria-hidden="true">close</span>
+                  </button>
+                </span>
+              } @else if (pendingDeleteId() === customer.id) {
+                <span class="admin-removal-confirmation">
+                  <button type="button" class="customer-action customer-action--confirm" title="تأكيد حذف المستخدم" aria-label="تأكيد حذف المستخدم" (click)="deleteCustomer(customer)">
+                    <span class="material-icons" aria-hidden="true">check</span>
+                  </button>
+                  <button type="button" class="customer-action customer-action--cancel" title="إلغاء" aria-label="إلغاء" (click)="pendingDeleteId.set(null)">
+                    <span class="material-icons" aria-hidden="true">close</span>
+                  </button>
+                </span>
+              } @else {
+                <button type="button" class="customer-action" [class.customer-action--admin]="isAdmin(customer)" [class.customer-action--make-admin]="!isAdmin(customer)" [disabled]="togglingId() === customer.id" [title]="isAdmin(customer) ? 'إزالة صلاحية المسؤول' : 'منح صلاحية المسؤول'" [attr.aria-label]="isAdmin(customer) ? 'إزالة صلاحية المسؤول' : 'منح صلاحية المسؤول'" (click)="toggleAdmin(customer)">
+                  <span class="material-icons" aria-hidden="true">{{ isAdmin(customer) ? 'admin_panel_settings' : 'person_add' }}</span>
+                </button>
+                @if (!isAdmin(customer)) {
+                  <button type="button" class="customer-action customer-action--delete" [disabled]="deletingId() === customer.id" title="حذف المستخدم" aria-label="حذف المستخدم" (click)="deleteCustomer(customer)">
+                    <span class="material-icons" aria-hidden="true">delete</span>
+                  </button>
+                }
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="6" class="admin-empty">{{ loading() ? ('ADMIN_LOADING' | translate) : ('ADMIN_NO_CUSTOMERS_FOUND' | translate) }}</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="admin-pager">
+    <button type="button" (click)="goToPage(pageNumber() - 1)" [disabled]="pageNumber() <= 1">‹</button>
+    <span>{{ 'ADMIN_PAGE' | translate }} {{ pageNumber() }} {{ 'ADMIN_OF' | translate }} {{ totalPages() }}</span>
+    <button type="button" (click)="goToPage(pageNumber() + 1)" [disabled]="pageNumber() >= totalPages()">›</button>
+  </div>
+</section>
+
+<!-- Customer details -->
+@if (detailLoading()) {
+  <section class="admin-panel"><p class="admin-empty">{{ 'ADMIN_LOADING_CUSTOMER' | translate }}</p></section>
+} @else if (selectedCustomer(); as customer) {
+  <section class="admin-panel">
+    <div class="admin-table-head">
+      <div>
+        <h2 class="customer-detail-title">{{ customer.displayName }}</h2>
+        <p class="customer-detail-sub">
+          {{ customer.email }}
+          @if (customer.phoneNumber) { · {{ customer.phoneNumber }} }
+          · {{ customer.ordersCount }} {{ 'ADMIN_ORDERS' | translate }} · {{ money(customer.totalSpent) }} {{ 'ADMIN_SPENT' | translate }}
+        </p>
+      </div>
+      <button type="button" class="admin-btn-link" (click)="selectedCustomer.set(null)">{{ 'ADMIN_CLOSE' | translate }}</button>
+    </div>
+
+    @if (customer.orders.length === 0) {
+      <p class="admin-empty">{{ 'ADMIN_CUSTOMER_NO_ORDERS' | translate }}</p>
+    } @else {
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>{{ 'ADMIN_ORDER' | translate }}</th>
+              <th>{{ 'ADMIN_DATE' | translate }}</th>
+              <th>{{ 'ADMIN_ITEMS' | translate }}</th>
+              <th>{{ 'ADMIN_STATUS' | translate }}</th>
+              <th>{{ 'ADMIN_TOTAL' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (order of customer.orders; track order.id) {
+              <tr>
+                <td class="order-id">#{{ order.id }}</td>
+                <td>{{ order.orderDate | date: 'MMM d, y' }}</td>
+                <td>{{ order.orderItems?.length ?? 0 }}</td>
+                <td><app-status-badge [status]="order.status" /></td>
+                <td class="customer-spent">{{ money(order.total) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+}

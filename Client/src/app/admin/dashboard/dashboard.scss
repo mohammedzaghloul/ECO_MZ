@@ -1,0 +1,533 @@
+@use '../../../styles/tokens' as *;
+
+/* Dashboard panels follow the Larkon-style card system (_admin.scss). */
+
+$bar-glow: #60A5FA; // lighter step of $admin-primary for the bar gradient top
+
+.dash-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 4rem;
+  color: $neutral-500;
+  font-size: 0.9rem;
+}
+
+.dash-spinner {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid rgba($admin-primary, 0.15);
+  border-top-color: $admin-primary;
+  animation: dash-spin 0.8s linear infinite;
+}
+
+@keyframes dash-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Page header extras ─────────────── */
+.dash-date-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: $white;
+  border: 1px solid $admin-border;
+  border-radius: $radius-full;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  font-weight: $weight-semibold;
+  color: $neutral-500;
+
+  .material-icons {
+    font-size: 16px;
+    color: $admin-primary;
+  }
+
+  .dash-refresh-btn {
+    cursor: pointer;
+    font-family: inherit;
+    &:disabled { opacity: .55; cursor: wait; }
+  }
+}
+
+/* ── Stat cards grid ────────────────── */
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $space-4;
+  margin-bottom: $space-5;
+
+  @media (max-width: 1100px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 560px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
+
+/* ── Panels grid ────────────────────── */
+.dash-grid {
+  display: grid;
+  gap: $space-4;
+  margin-bottom: $space-4;
+
+  &--main {
+    grid-template-columns: 1.1fr 1.6fr;
+
+    @media (max-width: 1100px) { grid-template-columns: 1fr; }
+  }
+
+  &--secondary {
+    grid-template-columns: 1fr 1fr;
+
+    @media (max-width: 1100px) { grid-template-columns: 1fr; }
+  }
+}
+
+.dash-panel {
+  background: $white;
+  border: 1px solid $admin-border;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  padding: $space-5;
+  min-width: 0;
+
+  &:hover { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+    min-height: 42px;
+    margin-bottom: $space-4;
+    padding-bottom: $space-3;
+    border-bottom: 1px solid $admin-border;
+
+    h2 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: $weight-bold;
+      color: $neutral-900;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      .material-icons {
+        font-size: 18px;
+        color: $admin-primary;
+      }
+    }
+  }
+
+  &__hint {
+    font-size: $text-label-xs;
+    color: $neutral-400;
+    font-weight: $weight-semibold;
+  }
+
+  &__link {
+    font-size: 0.8rem;
+    font-weight: $weight-bold;
+    color: $admin-primary;
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+  }
+}
+
+.dash-empty-line {
+  margin: 0;
+  padding: $space-5 $space-3;
+  text-align: center;
+  color: $neutral-400;
+  font-size: $text-body-sm;
+  background: $neutral-50;
+  border: 1px dashed $neutral-200;
+  border-radius: 10px;
+}
+
+/* ── Sales chart ────────────────────── */
+.dash-week-total {
+  font-size: 0.82rem;
+  font-weight: $weight-bold;
+  color: $admin-primary-dark;
+  background: $primary-50;
+  padding: 4px 12px;
+  border-radius: $radius-full;
+  white-space: nowrap;
+
+  small {
+    font-size: 0.7rem;
+    font-weight: $weight-semibold;
+    color: $neutral-500;
+  }
+}
+
+.dash-chart {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: $space-2;
+  min-height: 220px;
+  padding-top: $space-2;
+}
+
+.dash-chart__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.dash-chart__value {
+  min-height: 18px;
+  line-height: 1.2;
+  font-size: $text-label-xs;
+  font-weight: $weight-bold;
+  color: $neutral-700;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.dash-chart__bar-wrap {
+  flex: 1;
+  width: 100%;
+  max-width: 52px;
+  display: flex;
+  align-items: flex-end;
+  /* No visible track — full-height gray pillars read as broken bars. */
+  background: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: $space-2 0;
+}
+
+.dash-chart__bar {
+  width: 100%;
+  background: linear-gradient(180deg, $bar-glow 0%, $admin-primary 55%, $admin-primary-dark 100%);
+  border-radius: 8px 8px 0 0;
+  transition: height 0.5s ease, filter 0.2s ease;
+}
+
+.dash-chart__col:hover {
+  .dash-chart__bar { filter: brightness(1.12) saturate(1.05); }
+  .dash-chart__value { color: $admin-primary-dark; }
+}
+
+.dash-chart__col--empty .dash-chart__bar {
+  background: $neutral-200;
+  min-height: 3px;
+}
+
+.dash-chart__label {
+  font-size: $text-label-xs;
+  font-weight: $weight-semibold;
+  color: $neutral-500;
+  white-space: nowrap;
+}
+
+.dash-chart__orders {
+  display: block;
+  width: 100%;
+  min-height: 16px;
+  text-align: center;
+  line-height: 1.2;
+  font-size: $text-label-xs;
+  color: $neutral-400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Table ──────────────────────────── */
+.dash-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: $text-body-sm;
+
+  th {
+    text-align: start;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: $neutral-400;
+    padding: $space-2;
+    border-bottom: 1px solid $admin-border;
+
+    &:nth-child(1) { width: 14%; }
+    &:nth-child(2) { width: 38%; }
+    &:nth-child(3) { width: 12%; }
+    &:nth-child(4) { width: 18%; }
+    &:nth-child(5) { width: 18%; }
+
+    &:first-child { text-align: center; }
+    &:last-child { text-align: end; }
+  }
+
+  td {
+    padding: 10px $space-2;
+    border-bottom: 1px solid $neutral-100;
+    vertical-align: middle;
+    color: $neutral-900;
+    transition: background 0.15s ease;
+
+    &:first-child { text-align: center; }
+  }
+
+  tbody tr:nth-child(even):not(:hover) td { background: rgba($neutral-100, 0.55); }
+  tbody tr:hover td { background: rgba($admin-primary, 0.05); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .cell-email {
+    max-width: 180px;
+    text-align: start;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: $neutral-700;
+  }
+
+  .cell-total {
+    font-weight: $weight-bold;
+    text-align: end;
+    white-space: nowrap;
+  }
+}
+
+.order-link {
+  color: $admin-primary;
+  font-weight: $weight-bold;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+/* Best sellers */
+.dash-top-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid $neutral-100;
+
+    &:last-child { border-bottom: none; }
+  }
+}
+
+.dash-top-rank {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba($admin-primary, 0.25);
+  border-radius: 8px;
+  background: $primary-50;
+  color: $admin-primary-dark;
+  font-size: $text-label-xs;
+  font-weight: $weight-bold;
+}
+
+.dash-top-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.dash-top-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.dash-top-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: $weight-semibold;
+  color: $neutral-900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-top-revenue {
+  font-weight: $weight-bold;
+  color: $neutral-900;
+  white-space: nowrap;
+}
+
+.dash-top-sub {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dash-top-bar {
+  flex: 1;
+  height: 5px;
+  border-radius: $radius-full;
+  background: $neutral-100;
+  overflow: hidden;
+
+  > span {
+    display: block;
+    height: 100%;
+    border-radius: $radius-full;
+    background: linear-gradient(90deg, $admin-primary-dark 0%, $admin-primary 60%, $bar-glow 100%);
+  }
+}
+
+.dash-top-qty {
+  font-size: $text-label-xs;
+  color: $neutral-500;
+  white-space: nowrap;
+}
+
+/* Low stock */
+.dash-stock-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+    padding: $space-2 0;
+    border-bottom: 1px solid $neutral-100;
+
+    &:last-child { border-bottom: none; }
+  }
+}
+
+.dash-stock-name {
+  color: $neutral-900;
+  font-weight: $weight-semibold;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover { color: $admin-primary; }
+}
+
+.stock-chip {
+  flex-shrink: 0;
+  font-size: $text-label-xs;
+  font-weight: $weight-bold;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #fff7ed;
+  color: #b45309;
+
+  &--critical {
+    background: #fef2f2;
+    color: $danger-600;
+  }
+}
+
+@media (max-width: 560px) {
+  .dash-date-chip { display: none; }
+
+  .dash-panel {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .dash-panel__head {
+    margin-bottom: 10px;
+    padding-bottom: 9px;
+
+    h2 {
+      font-size: 0.88rem;
+
+      .material-icons { font-size: 16px; }
+    }
+    .dash-panel__hint { font-size: 10px; }
+  }
+
+  .dash-week-total {
+    padding: 3px 9px;
+
+    small { display: none; }
+  }
+
+  .dash-chart {
+    height: 156px;
+    gap: 3px;
+  }
+
+  .dash-chart__value {
+    min-height: 15px;
+    font-size: 9px;
+  }
+
+  .dash-chart__bar-wrap {
+    max-width: 26px;
+    margin: 3px 0;
+    border-radius: 5px;
+  }
+
+  .dash-chart__bar { border-radius: 5px 5px 0 0; }
+
+  .dash-chart__label,
+  .dash-chart__orders {
+    font-size: 9px;
+    line-height: 1.15;
+  }
+
+  .dash-chart__label {
+    max-width: 34px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dash-chart__orders { white-space: nowrap; }
+
+  .dash-table {
+    font-size: 0.75rem;
+
+    th, td { padding: 9px 5px; }
+    th:nth-child(3),
+    td:nth-child(3),
+    th:nth-child(4),
+    td:nth-child(4) {
+      display: none;
+    }
+
+    th:first-child { width: 24%; }
+    th:nth-child(2) { width: 48%; }
+    th:last-child { width: 28%; }
+
+    td:first-child { width: 24%; }
+    td:nth-child(2) { width: 48%; }
+    td:last-child { width: 28%; }
+
+    .cell-email {
+      max-width: 0;
+      font-size: 0.72rem;
+    }
+  }
+
+  .dash-top-list li,
+  .dash-stock-list li {
+    gap: 8px;
+    padding: 7px 0;
+  }
+
+  .dash-top-revenue,
+  .dash-top-qty {
+    font-size: 0.72rem;
+  }
+}

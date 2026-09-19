@@ -1,0 +1,82 @@
+<header class="admin-page-head">
+  <div>
+    <h1>{{ 'ADMIN_COUPONS_TITLE' | translate }}</h1>
+    <p>{{ 'ADMIN_COUPONS_DESCRIPTION' | translate }}</p>
+  </div>
+  <button type="button" class="admin-btn" (click)="startCreate()" [disabled]="!!editing()">{{ 'ADMIN_NEW_COUPON' | translate }}</button>
+</header>
+
+<!-- Editor -->
+@if (editing(); as form) {
+  <section class="admin-panel" #editorPanel>
+    <h2 class="admin-panel-title">{{ form.id ? ('ADMIN_EDIT_COUPON' | translate) : ('ADMIN_NEW_COUPON' | translate) }}</h2>
+    <div class="coupon-form">
+      <div class="admin-field">
+        <label>{{ 'ADMIN_COUPON_CODE' | translate }} *</label>
+        <input type="text" [value]="form.code" (input)="form.code = $any($event.target).value.toUpperCase()" placeholder="SUMMER20" />
+      </div>
+      <div class="admin-field">
+        <label>{{ 'ADMIN_COUPON_TYPE' | translate }}</label>
+        <select [value]="form.isPercentage ? 'percent' : 'fixed'" (change)="form.isPercentage = $any($event.target).value === 'percent'">
+          <option value="percent">{{ 'ADMIN_COUPON_PERCENTAGE' | translate }}</option>
+          <option value="fixed">{{ 'ADMIN_COUPON_FIXED_AMOUNT' | translate }}</option>
+        </select>
+      </div>
+      <div class="admin-field">
+        <label>{{ 'ADMIN_COUPON_VALUE' | translate }} *</label>
+        <input type="number" min="1" [value]="form.value" (input)="form.value = toNumber($any($event.target).value)" />
+      </div>
+      <div class="admin-field">
+        <label>{{ 'ADMIN_COUPON_EXPIRY_DATE' | translate }} ({{ 'ADMIN_OPTIONAL' | translate }})</label>
+        <input type="date" [value]="form.expiryDate ?? ''" (change)="form.expiryDate = $any($event.target).value || null" />
+      </div>
+      <div class="admin-field">
+        <label>{{ 'ADMIN_COUPON_MAX_USES' | translate }} ({{ 'ADMIN_OPTIONAL' | translate }})</label>
+        <input type="number" min="1" [value]="form.maxUses ?? ''" (input)="form.maxUses = $any($event.target).value ? toNumber($any($event.target).value) : null" />
+      </div>
+      <label class="coupon-active">
+        <input type="checkbox" [checked]="form.isActive" (change)="form.isActive = $any($event.target).checked" />
+        {{ 'ADMIN_COUPON_ACTIVE' | translate }}
+      </label>
+    </div>
+    <div class="admin-actions">
+      <button type="button" class="admin-btn" (click)="save()" [disabled]="saving()">
+        {{ saving() ? ('ADMIN_SAVING' | translate) : ('ADMIN_SAVE_COUPON' | translate) }}
+      </button>
+      <button type="button" class="admin-btn admin-btn-secondary" (click)="cancelEdit()">{{ 'ADMIN_CANCEL' | translate }}</button>
+    </div>
+  </section>
+}
+
+<!-- List -->
+<section class="admin-panel">
+  <div class="admin-table-head">
+    <h2 class="admin-panel-title">{{ 'ADMIN_ALL_COUPONS' | translate }} ({{ discounts().length }})</h2>
+  </div>
+  <div class="admin-table-wrap">
+    <table class="admin-table coupons-table">
+      <thead>
+        <tr><th>{{ 'ADMIN_COUPON_CODE' | translate }}</th><th>{{ 'ADMIN_DISCOUNT' | translate }}</th><th>{{ 'ADMIN_STATUS' | translate }}</th><th>{{ 'ADMIN_USAGE' | translate }}</th><th>{{ 'ADMIN_EXPIRY' | translate }}</th><th></th></tr>
+      </thead>
+      <tbody>
+        @for (discount of discounts(); track discount.id) {
+          <tr>
+            <td><code class="coupon-code">{{ discount.code }}</code></td>
+            <td>{{ valueLabel(discount) }}</td>
+            <td>
+              <app-status-badge [status]="!discount.isActive ? ('ADMIN_COUPON_INACTIVE' | translate) : isExpired(discount) ? ('ADMIN_COUPON_EXPIRED' | translate) : ('ADMIN_COUPON_ACTIVE' | translate)" />
+            </td>
+            <td>{{ usageLabel(discount) }}</td>
+            <td>{{ discount.expiryDate ? (discount.expiryDate | date: 'MMM d, y') : '—' }}</td>
+            <td class="admin-table-actions">
+              <button type="button" class="admin-btn-link" (click)="startEdit(discount)">{{ 'ADMIN_EDIT' | translate }}</button>
+              <button type="button" class="admin-btn-link is-danger" (click)="remove(discount)">{{ 'ADMIN_DELETE' | translate }}</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="6" class="admin-empty">{{ loading() ? ('ADMIN_LOADING' | translate) : ('ADMIN_NO_COUPONS_YET' | translate) }}</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

@@ -1,0 +1,808 @@
+@use '../../../styles/tokens' as *;
+
+/* Base admin primitives (.admin-panel, .admin-table, .admin-btn, …) live in
+   src/styles/_admin.scss, loaded globally. */
+
+/* ── Order management ── */
+.admin-page-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+  color: $admin-primary;
+  font-size: .72rem;
+  font-weight: $weight-bold;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+
+  .fa { font-size: .85rem; }
+}
+
+.orders-toolbar {
+  display: grid;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid $admin-border;
+}
+
+.orders-toolbar__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.orders-filter-row {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  min-width: 0;
+}
+
+.status-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.mobile-status-filter { display: none; }
+.status-pill {
+  border: 1px solid $admin-border; border-radius: $radius-full; padding: 7px 11px;
+  background: $white; color: $neutral-500; font: inherit; font-size: .75rem; cursor: pointer;
+  white-space: nowrap;
+  transition: color .15s ease, background .15s ease, border-color .15s ease, transform .15s ease;
+  &:hover { border-color: rgba($admin-primary, .35); color: $admin-primary; transform: translateY(-1px); }
+  &.is-active { background: $admin-primary; border-color: $admin-primary; color: $white; }
+}
+
+.orders-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 300px;
+  min-width: 220px;
+
+  .fa {
+    position: absolute;
+    inset-inline-start: 13px;
+    color: $neutral-400;
+    pointer-events: none;
+  }
+}
+
+.orders-date-filters {
+  display: flex;
+  gap: 8px;
+
+  label {
+    display: grid;
+    gap: 4px;
+    color: $neutral-400;
+    font-size: .7rem;
+    font-weight: $weight-bold;
+    white-space: nowrap;
+  }
+
+  .orders-date-filters::before {
+    content: 'date_range';
+    font-family: 'Material Icons';
+    align-self: center;
+    color: $neutral-400;
+    font-size: 18px;
+  }
+
+  input {
+    min-width: 132px;
+    border: 1px solid $admin-border;
+    border-radius: 9px;
+    padding: 9px 10px;
+    color: $neutral-700;
+    background: $white;
+    font: inherit;
+    font-size: .78rem;
+    color-scheme: light;
+
+    &:focus {
+      outline: none;
+      border-color: $admin-primary;
+      box-shadow: 0 0 0 3px rgba($admin-primary, .1);
+    }
+  }
+}
+
+.orders-filter-select,
+.orders-filter-input {
+  border: 1px solid $admin-border;
+  border-radius: 10px;
+  padding: 10px 14px;
+  padding-inline-start: 36px;
+  font-size: 0.875rem;
+  font-family: $font-body;
+  color: $neutral-900;
+  background: $white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $admin-primary;
+    box-shadow: 0 0 0 4px rgba($admin-primary, 0.12);
+  }
+}
+
+.orders-filter-input { min-width: 0; width: 100%; }
+
+.orders-head-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.orders-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding-inline: 0;
+}
+
+.orders-refresh .fa { font-size: .75rem; }
+
+.order-detail-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border: 0;
+  padding: 4px 0;
+  color: $admin-primary;
+  background: transparent;
+  font: inherit;
+  font-weight: $weight-bold;
+  cursor: pointer;
+
+  .material-icons { font-size: 17px; }
+}
+
+.orders-count {
+  font-size: $text-body-sm;
+  color: $neutral-500;
+  font-weight: $weight-semibold;
+
+  strong {
+    color: $neutral-900;
+    font-size: 1rem;
+  }
+}
+
+.status-cell {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-wrap: wrap;
+}
+
+.order-status-badge,
+.order-payment-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.order-status-badge {
+  width: fit-content;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: .76rem !important;
+  font-weight: $weight-bold;
+
+  .material-icons { font-size: 15px; }
+}
+
+.detail-status-picker {
+  position: relative;
+  width: fit-content;
+  min-width: 0;
+}
+
+.detail-status-picker__trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  width: max-content;
+  max-width: 100%;
+  min-height: 34px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-size: .78rem;
+  font-weight: $weight-semibold;
+  cursor: pointer;
+  outline: none;
+
+  /* The global .status-chip adds a status dot; the icon already says it. */
+  &::before { display: none; }
+
+  .material-icons { font-size: 16px; }
+  span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  &:disabled { opacity: .55; cursor: wait; }
+  &:focus-visible { box-shadow: inset 0 0 0 1px rgba($admin-primary, .35); }
+}
+
+.detail-status-picker__arrow {
+  margin-inline-start: 2px;
+  font-size: 18px !important;
+  opacity: .75;
+  transition: transform .18s ease;
+
+  &.is-open { transform: rotate(180deg); }
+}
+
+.detail-status-picker__menu {
+  /* Floating dropdown anchored under the trigger — the invoice content
+     must not jump or get pushed when the menu opens. */
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline-start: 0;
+  z-index: 30;
+  display: grid;
+  width: 100%;
+  gap: 0;
+  padding: 4px 12px;
+  border: 1px solid $admin-border;
+  border-radius: 8px;
+  background: $white;
+  box-shadow: 0 4px 12px rgba($neutral-900, .08);
+  animation: status-menu-in .16s ease-out;
+
+  .detail-status-picker__option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 40px;
+    border: 0;
+    border-bottom: 1px solid $neutral-200;
+    border-radius: 0;
+    padding: 8px 0;
+    background: transparent;
+    color: $neutral-700;
+    font: inherit;
+    font-size: .78rem;
+    font-weight: $weight-semibold;
+    text-align: start;
+    cursor: pointer;
+    transition: background-color .15s ease, color .15s ease;
+
+    .material-icons { font-size: 17px; }
+
+    &:hover { background: $neutral-100; color: $neutral-900; }
+
+    /* Current status: tinted row + trailing check. */
+    &.is-current {
+      margin: 2px 0;
+      border: 1px solid $neutral-200;
+      border-radius: 6px;
+      padding-inline: 8px;
+      background: $neutral-100;
+      color: $neutral-900;
+
+      &::after {
+        content: 'check';
+        font-family: 'Material Icons';
+        margin-inline-start: auto;
+        font-size: 16px;
+        color: $admin-primary;
+      }
+    }
+
+    &:last-child { border-bottom: 0; }
+
+    &--Pending .material-icons { color: #B45309; }
+    &--PaymentRecevied .material-icons { color: $success-700; }
+    &--PaymentFaild .material-icons { color: $danger-600; }
+    &--Shipped .material-icons,
+    &--Delivered .material-icons { color: $admin-primary; }
+  }
+}
+
+@keyframes status-menu-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* The status control always gets its own full row so opening the dropdown
+   never reflows the rest of the invoice. */
+.order-modal__status {
+  min-width: 0;
+  grid-column: 1 / -1;
+}
+
+.order-modal__status .detail-status-picker {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.order-payment-value .material-icons {
+  color: $admin-primary;
+  font-size: 17px;
+}
+
+.order-id { font-weight: $weight-bold; color: $admin-primary; }
+
+.order-email {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: $neutral-700;
+}
+
+.order-date__mobile { display: none; }
+
+.order-total { font-weight: $weight-bold; }
+
+.orders-table {
+  th:nth-child(1) { width: 13%; }
+  th:nth-child(2) { width: 20%; }
+  th:nth-child(3) { width: 24%; }
+  th:nth-child(4) { width: 10%; }
+  th:nth-child(5) { width: 17%; }
+  th:nth-child(6) { width: 16%; }
+}
+
+.order-discount {
+  display: block;
+  color: $success-700;
+  font-size: $text-label-xs;
+}
+
+.order-details-row td {
+  padding: 0 20px 18px;
+  background: $neutral-50;
+}
+
+.order-details {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px 20px;
+  padding: 14px;
+  border: 1px solid $admin-border;
+  border-radius: 12px;
+  background: $white;
+  box-shadow: 0 4px 16px rgba($neutral-900, .04);
+
+  > div {
+    min-width: 0;
+    display: grid;
+    gap: 3px;
+  }
+
+  &__label {
+    color: $neutral-400;
+    font-size: 0.7rem;
+    font-weight: $weight-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  &__items { grid-column: 1 / -1; color: $neutral-500; font-size: 0.8rem; }
+}
+.order-details__address { grid-column: span 2; }
+.order-item { display: inline-flex; align-items: center; gap: 8px; margin: 4px 14px 0 0; }
+.order-item img { width: 34px; height: 34px; border-radius: 6px; object-fit: cover; border: 1px solid $admin-border; }
+
+.order-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(15, 23, 42, .38);
+  backdrop-filter: blur(3px);
+}
+
+.order-modal {
+  width: min(600px, 100%);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 28px 30px;
+  background: $white;
+  box-shadow: -12px 0 36px rgba($neutral-900, .14);
+  animation: order-drawer-in .2s ease-out;
+
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-bottom: 0;
+    padding-bottom: 0;
+
+    h2 { margin: 0; color: $neutral-900; font-size: 1.15rem; font-weight: $weight-semibold; }
+    .admin-page-kicker { margin: 0 0 2px; font-size: .68rem; letter-spacing: .14em; }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__print {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 32px;
+    padding: 6px 9px;
+    border: 1px solid $neutral-200;
+    border-radius: 7px;
+    background: $white;
+    color: $admin-primary;
+    font: inherit;
+    font-size: .74rem;
+    font-weight: $weight-semibold;
+    cursor: pointer;
+
+    .material-icons { font-size: 15px; }
+    &:hover { background: $primary-50; border-color: $primary-100; }
+  }
+
+  &__close {
+    border: 0;
+    background: $neutral-100;
+    color: $neutral-500;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .invoice-brand {
+    display: flex;
+    align-items: center;
+
+    img { width: 36px; height: 36px; object-fit: contain; }
+  }
+
+  .invoice-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 18px;
+    padding: 10px 0;
+    border-top: 1px solid $admin-border;
+    border-bottom: 1px solid $admin-border;
+    color: $neutral-500;
+    font-size: .7rem;
+    direction: ltr;
+
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      direction: rtl;
+    }
+    span { color: $neutral-400; font-weight: $weight-semibold; }
+    time, strong { color: $neutral-700; font-weight: $weight-semibold; }
+  }
+
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 28px;
+    padding: 8px 0 16px;
+
+    > div {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba($admin-border, .75);
+    }
+    span { color: $neutral-400; font-size: .66rem; font-weight: $weight-semibold; }
+    strong, .order-phone { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: $neutral-900; font-size: .8rem; }
+  }
+
+  &__address {
+    grid-column: 1 / -1;
+    strong { white-space: normal; line-height: 1.45; }
+  }
+
+  &__items {
+    padding-top: 16px;
+    min-height: 0;
+    overflow: hidden;
+
+    h3 { display: flex; justify-content: space-between; margin: 0 0 8px; font-size: .82rem; font-weight: $weight-semibold; }
+    h3 small { color: $neutral-400; font-weight: $weight-semibold; }
+  }
+
+  &__items:has(.order-modal-item:nth-child(5)) {
+    overflow-y: auto;
+    max-height: 240px;
+  }
+
+  &__totals {
+    display: grid;
+    gap: 6px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid $admin-border;
+
+    div { display: flex; justify-content: space-between; gap: 16px; color: $neutral-500; }
+    .grand-total { padding-top: 7px; color: $neutral-900; font-size: 1rem; font-weight: $weight-bold; border-top: 1px dashed $admin-border; }
+  }
+}
+
+.order-modal-item {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba($admin-border, .7);
+
+  img { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; background: $neutral-100; }
+  div { display: grid; gap: 3px; min-width: 0; }
+  strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  span { color: $neutral-500; font-size: .74rem; }
+}
+
+.order-phone {
+  color: $admin-primary;
+  text-decoration: none;
+  font-weight: $weight-bold;
+
+  &:hover { text-decoration: underline; }
+}
+
+@keyframes order-drawer-in {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 640px) {
+  .orders-filter-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .orders-toolbar__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    width: 100%;
+  }
+
+  .orders-toolbar__top .orders-head-actions {
+    order: -1;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .status-pills {
+    display: none;
+  }
+
+  .mobile-status-filter {
+    position: relative;
+    display: block;
+    width: 100%;
+  }
+
+  .mobile-status-filter__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 12px;
+    border: 1px solid $admin-border;
+    border-radius: 10px;
+    background: $white;
+    color: $neutral-700;
+    font: inherit;
+    font-size: .82rem;
+    cursor: pointer;
+
+    .material-icons { color: $admin-primary; font-size: 19px; }
+  }
+
+  .mobile-status-filter__menu {
+    position: absolute;
+    z-index: 30;
+    inset-inline: 0;
+    top: calc(100% + 6px);
+    display: grid;
+    gap: 3px;
+    padding: 6px;
+    border: 1px solid $admin-border;
+    border-radius: 10px;
+    background: $white;
+    box-shadow: 0 12px 28px rgba($neutral-900, .16);
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      border: 0;
+      border-radius: 7px;
+      padding: 8px 10px;
+      background: transparent;
+      color: $neutral-700;
+      font: inherit;
+      font-size: .82rem;
+      text-align: start;
+
+      .material-icons { font-size: 17px; }
+      &.is-active, &:hover { background: $primary-50; color: $admin-primary; }
+    }
+  }
+
+  .orders-search {
+    width: 100%;
+    margin: 0;
+  }
+
+  .status-pill {
+    flex: 0 0 auto;
+    direction: rtl;
+    padding: 8px 12px;
+  }
+
+  .orders-date-filters {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    input { min-width: 0; width: 100%; }
+  }
+
+  .orders-date-filters::before { display: none; }
+
+  .orders-head-actions {
+    padding-top: 2px;
+  }
+
+  .orders-count { white-space: nowrap; }
+
+  .orders-table {
+    th:nth-child(3),
+    td:nth-child(3),
+    th:nth-child(4),
+    td:nth-child(4) {
+      display: none;
+    }
+
+    th:first-child,
+    td:first-child { width: 25%; }
+
+    th:nth-child(2),
+    td:nth-child(2) { width: 25%; }
+
+    th:nth-child(5),
+    td:nth-child(5) { width: 25%; }
+
+    th:last-child,
+    td:last-child {
+      width: 25%;
+      text-align: end;
+    }
+
+    th { font-size: .64rem; letter-spacing: 0; }
+    td { padding: 10px 6px; font-size: .7rem; }
+    .order-id { font-size: .72rem; }
+    .order-date {
+      .order-date__full { display: none; }
+      .order-date__mobile {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        color: $neutral-500;
+        white-space: nowrap;
+      }
+      .material-icons { color: $admin-primary; font-size: 14px; }
+    }
+    .order-total { font-size: .72rem; }
+    .order-status-badge {
+      justify-content: center;
+      min-width: 0;
+      width: 100%;
+      padding: 6px 4px;
+      border-radius: 9px;
+      font-size: .64rem !important;
+      line-height: 1.25;
+      text-align: center;
+      white-space: nowrap;
+
+      gap: 3px;
+      .material-icons { font-size: 13px; }
+    }
+  }
+
+  .order-details-row td { padding: 0 14px 12px; }
+  .order-details { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .order-details__items { grid-column: 1 / -1; }
+
+  .order-modal {
+    padding: 20px 16px 24px;
+
+    &__head {
+      h2 { font-size: 1.05rem; }
+    }
+
+    &__print {
+      padding: 7px;
+      font-size: 0;
+      .material-icons { font-size: 18px; }
+    }
+
+    &__summary {
+      grid-template-columns: 1fr 1fr;
+      gap: 0 18px;
+      padding: 6px 0 12px;
+
+      > div {
+        min-height: 0;
+        padding: 9px 0;
+        gap: 4px;
+      }
+
+      span { font-size: .61rem; }
+      strong, .order-phone { font-size: .74rem; }
+    }
+
+    &__address { grid-column: 1 / -1; }
+    &__items {
+      padding-top: 14px;
+      h3 { font-size: .8rem; margin-bottom: 8px; }
+    }
+
+    &__items:has(.order-modal-item:nth-child(4)) { max-height: 190px; }
+
+    &__totals {
+      margin-top: 12px;
+      gap: 6px;
+      font-size: .78rem;
+      .grand-total { font-size: .9rem; }
+    }
+  }
+
+  .detail-status-picker__trigger {
+    min-height: 36px;
+    padding: 8px 9px;
+    font-size: .78rem;
+  }
+
+  .detail-status-picker__menu {
+    padding: 6px;
+    gap: 4px;
+
+    .detail-status-picker__option {
+      min-height: 42px;
+      padding: 8px 10px;
+      font-size: .78rem;
+    }
+  }
+
+  .order-modal-item {
+    grid-template-columns: 44px 1fr auto;
+    gap: 9px;
+    padding: 8px 0;
+
+    img { width: 38px; height: 38px; }
+    strong { font-size: .82rem; }
+    span { font-size: .7rem; }
+    b { font-size: .8rem; }
+  }
+}

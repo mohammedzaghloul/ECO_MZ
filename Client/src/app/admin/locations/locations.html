@@ -1,0 +1,115 @@
+<header class="admin-page-head">
+  <div>
+    <h1>{{ 'ADMIN_LOCATIONS_TITLE' | translate }}</h1>
+    <p>{{ 'ADMIN_LOCATIONS_DESCRIPTION' | translate }}</p>
+  </div>
+</header>
+
+<section class="admin-panel location-form">
+  <div class="location-form__head">
+    <div>
+      <span class="location-eyebrow">{{ 'ADMIN_GOVERNORATES' | translate }}</span>
+      <h2>{{ 'ADMIN_ADD_GOVERNORATE' | translate }}</h2>
+      <p>{{ 'ADMIN_ADD_GOVERNORATE_DESC' | translate }}</p>
+    </div>
+    <span class="location-form__icon material-icons" aria-hidden="true">map</span>
+  </div>
+  <div class="location-fields">
+    <div class="admin-field">
+      <label for="governorate-code">{{ 'ADMIN_CODE' | translate }}</label>
+      <input id="governorate-code" [(ngModel)]="governorate.value" placeholder="CAI" aria-label="Governorate short code">
+    </div>
+    <div class="admin-field">
+      <label for="governorate-en">{{ 'ADMIN_ENGLISH_NAME' | translate }}</label>
+      <input id="governorate-en" [(ngModel)]="governorate.en" placeholder="Cairo" aria-label="Governorate name in English">
+    </div>
+    <div class="admin-field">
+      <label for="governorate-ar">{{ 'ADMIN_ARABIC_NAME' | translate }}</label>
+      <input id="governorate-ar" [(ngModel)]="governorate.ar" placeholder="القاهرة" aria-label="Governorate name in Arabic">
+    </div>
+  </div>
+  <div class="admin-actions">
+    <button type="button" class="admin-btn" [disabled]="saving()" (click)="addGovernorate()">{{ 'ADMIN_ADD_GOVERNORATE_BTN' | translate }}</button>
+  </div>
+</section>
+
+<section class="admin-panel location-list" *ngIf="loading()">
+  <p class="admin-loading">{{ 'ADMIN_LOADING_LOCATIONS' | translate }}</p>
+</section>
+
+<section class="location-list" *ngIf="!loading()">
+  <div class="location-list__head">
+    <div>
+      <span class="location-eyebrow">{{ 'ADMIN_DIRECTORY' | translate }}</span>
+      <h2>{{ 'ADMIN_GOVERNORATES_AND_CITIES' | translate }}</h2>
+    </div>
+    <span class="location-count">{{ locations().length }} {{ 'ADMIN_GOVERNORATES' | translate }}</span>
+  </div>
+  <article *ngFor="let item of locations()" class="location-card">
+    <div class="location-card__head" (click)="toggleGovernorate(item.id)">
+      <div class="location-card__head-content">
+        <div>
+          <div class="location-card__title">
+            <strong>{{ item.en }}</strong>
+            <span class="location-ar">{{ item.ar }}</span>
+          </div>
+          <span class="location-code">{{ 'ADMIN_CODE' | translate }}: {{ item.value }}</span>
+        </div>
+        <button type="button" class="admin-btn-link is-danger" (click)="deleteGovernorate(item.id); $event.stopPropagation()">{{ 'ADMIN_DELETE_GOVERNORATE' | translate }}</button>
+      </div>
+      <span class="location-card__arrow material-icons" [class.expanded]="isExpanded(item.id)">expand_more</span>
+    </div>
+    <div class="cities-section" [class.collapsed]="!isExpanded(item.id)">
+      <div class="cities-section__head">
+        <h3>{{ 'ADMIN_CITIES' | translate }} <span>{{ item.cities.length }}</span></h3>
+        <span>{{ 'ADMIN_AVAILABLE_IN_CHECKOUT' | translate }}</span>
+      </div>
+      <div class="city-row" *ngFor="let city of item.cities">
+        <div class="city-row__name">
+          <strong>{{ city.en }}</strong>
+          <span class="location-ar">{{ city.ar }}</span>
+          <small>{{ city.value }}</small>
+          <small>{{ 'ADMIN_SHIPPING_PRICE' | translate }}: {{ city.shippingPrice | number:'1.0-2' }}</small>
+          <small>{{ 'ADMIN_DELIVERY_DAYS' | translate }}: {{ city.deliveryDays }}</small>
+          <small [class.text-danger]="!city.shippingAvailable">{{ city.shippingAvailable ? ('ADMIN_SHIPPING_AVAILABLE' | translate) : ('ADMIN_SHIPPING_UNAVAILABLE' | translate) }}</small>
+        </div>
+        <button type="button" class="admin-btn-link" (click)="editCity(item.id, city)">{{ 'ADMIN_EDIT' | translate }}</button>
+        <button type="button" class="admin-btn-link is-danger" (click)="deleteCity(item.id, city.id)">{{ 'ADMIN_DELETE' | translate }}</button>
+      </div>
+      <div class="city-form">
+        <div class="admin-field">
+          <label [for]="'city-code-' + item.id">{{ 'ADMIN_CODE' | translate }}</label>
+          <input [id]="'city-code-' + item.id" [ngModel]="cityDraft(item.id).value" (ngModelChange)="updateCityDraft(item.id, 'value', $event)" placeholder="HEL" aria-label="City short code">
+        </div>
+        <div class="admin-field">
+          <label [for]="'city-en-' + item.id">{{ 'ADMIN_ENGLISH_NAME' | translate }}</label>
+          <input [id]="'city-en-' + item.id" [ngModel]="cityDraft(item.id).en" (ngModelChange)="updateCityDraft(item.id, 'en', $event)" placeholder="Heliopolis" aria-label="City name in English">
+        </div>
+        <div class="admin-field">
+          <label [for]="'city-ar-' + item.id">{{ 'ADMIN_ARABIC_NAME' | translate }}</label>
+          <input [id]="'city-ar-' + item.id" [ngModel]="cityDraft(item.id).ar" (ngModelChange)="updateCityDraft(item.id, 'ar', $event)" placeholder="مصر الجديدة" aria-label="City name in Arabic">
+        </div>
+        <div class="admin-field">
+          <label [for]="'city-shipping-' + item.id">{{ 'ADMIN_SHIPPING_PRICE' | translate }}</label>
+          <input [id]="'city-shipping-' + item.id" type="number" min="0" step="0.01" [ngModel]="cityDraft(item.id).shippingPrice" (ngModelChange)="updateCityDraft(item.id, 'shippingPrice', +$event)" placeholder="50">
+        </div>
+        <div class="admin-field">
+          <label [for]="'city-days-' + item.id">{{ 'ADMIN_DELIVERY_DAYS' | translate }}</label>
+          <input [id]="'city-days-' + item.id" type="number" min="0" step="1" [ngModel]="cityDraft(item.id).deliveryDays" (ngModelChange)="updateCityDraft(item.id, 'deliveryDays', +$event)" placeholder="2">
+        </div>
+        <label class="admin-checkbox">
+          <input type="checkbox" [ngModel]="cityDraft(item.id).shippingAvailable" (ngModelChange)="updateCityDraft(item.id, 'shippingAvailable', $event)">
+          {{ 'ADMIN_SHIPPING_AVAILABLE' | translate }}
+        </label>
+        <button type="button" class="admin-btn admin-btn-secondary city-form__button" [disabled]="saving()" (click)="editingCity(item.id) ? saveCity(item.id, editingCityIds[item.id]!) : addCity(item.id)">
+          {{ editingCity(item.id) ? ('ADMIN_SAVE_CITY' | translate) : ('ADMIN_ADD_CITY' | translate) }}
+        </button>
+      </div>
+    </div>
+  </article>
+  <div class="admin-empty admin-empty--card" *ngIf="locations().length === 0">
+    <i class="material-icons">map</i>
+    <h3>{{ 'ADMIN_NO_GOVERNORATES' | translate }}</h3>
+    <p>{{ 'ADMIN_NO_GOVERNORATES_DESC' | translate }}</p>
+  </div>
+</section>

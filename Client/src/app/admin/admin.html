@@ -1,0 +1,125 @@
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <img src="/images/logo.png" alt="Eco" class="admin-brand-logo" width="34" height="34" />
+      <div class="admin-brand-text">
+        <span class="admin-brand-name">{{ 'ADMIN_DASHBOARD' | translate }}</span>
+        <span class="admin-brand-sub">{{ 'ADMIN_MANAGE' | translate }}</span>
+      </div>
+    </div>
+
+    <nav class="admin-nav">
+      <span class="admin-nav-label">{{ 'ADMIN_MANAGE' | translate }}</span>
+      @for (item of navItems; track item.link) {
+        <a
+          class="admin-nav-link"
+          [routerLink]="item.link"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: item.exact }"
+          [attr.aria-label]="item.label"
+        >
+          <i class="material-icons">{{ item.icon }}</i>
+          <span>{{ item.translationKey | translate }}</span>
+          @if (item.link === '/admin/products' && lowStockCount() > 0) {
+            <span class="admin-nav-badge admin-nav-badge--success">{{ lowStockCount() }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="admin-sidebar-footer">
+      <div class="admin-user-card">
+        <span class="admin-user-avatar">{{ initials }}</span>
+        <div class="admin-user-card-text">
+          <span class="admin-user-card-name">{{ user()?.displayName || 'Administrator' }}</span>
+          <span class="admin-user-card-role">{{ user()?.roles?.[0] || 'Admin' }}</span>
+        </div>
+      </div>
+      <div class="admin-footer-actions">
+        <a class="admin-back" routerLink="/">
+          <i class="material-icons">storefront</i>
+          <span>{{ 'ADMIN_BACK_TO_STORE' | translate }}</span>
+        </a>
+        <button type="button" class="admin-logout-btn" (click)="logout()" aria-label="Log out">
+          <i class="material-icons">logout</i>
+          <span>{{ 'ADMIN_LOG_OUT' | translate }}</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <a class="admin-topbar-btn" routerLink="/" title="View store" aria-label="View store">
+        <i class="material-icons">storefront</i>
+      </a>
+      <button type="button" class="admin-topbar-btn admin-language-btn" title="Language" aria-label="Language" (click)="language.toggleLanguage()">
+        <i class="material-icons">language</i>
+        <span>{{ language.currentLang().toUpperCase() }}</span>
+      </button>
+      <div class="admin-topbar-spacer"></div>
+      <a class="admin-header-logo" routerLink="/" aria-label="Eco store">
+        <img src="/images/logo.png" alt="Eco" width="34" height="34" />
+      </a>
+    </header>
+
+    <main class="admin-content">
+      <router-outlet />
+    </main>
+  </div>
+
+  <nav class="admin-bottom-nav" aria-label="Admin mobile navigation">
+    @for (item of mobileNavItems; track item.link) {
+      <a
+        class="admin-bottom-nav__item"
+        [routerLink]="item.link"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: item.exact }"
+      >
+        <i class="material-icons">{{ item.icon }}</i>
+        <span>{{ item.link === '/admin' ? ('NAV_HOME' | translate) : item.link === '/admin/products' ? ('ADMIN_PRODUCTS' | translate) : ('ADMIN_ORDERS' | translate) }}</span>
+      </a>
+    }
+    <button type="button" class="admin-bottom-nav__item" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen">
+      <i class="material-icons">menu</i>
+      <span>{{ 'ADMIN_MENU' | translate }}</span>
+    </button>
+  </nav>
+
+  @if (menuOpen) {
+    <div class="admin-menu-backdrop" (click)="closeMenu()"></div>
+    <aside class="admin-mobile-menu" aria-label="Admin menu">
+      <div class="admin-mobile-menu__head">
+        <strong>{{ 'ADMIN_MENU' | translate }}</strong>
+        <button type="button" class="admin-topbar-btn" (click)="closeMenu()" aria-label="Close menu">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+      <nav class="admin-mobile-menu__links">
+        @for (item of navItems; track item.link) {
+          <a
+            class="admin-mobile-menu__link"
+            [routerLink]="item.link"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: item.exact }"
+            (click)="closeMenu()"
+          >
+            <i class="material-icons">{{ item.icon }}</i>
+            <span>{{ item.translationKey | translate }}</span>
+          </a>
+        }
+      </nav>
+      <div class="admin-mobile-menu__actions">
+        <a class="admin-mobile-menu__action" routerLink="/" (click)="closeMenu()">
+          <i class="material-icons">storefront</i>
+          <span>{{ 'ADMIN_BACK_TO_STORE' | translate }}</span>
+        </a>
+        <button type="button" class="admin-mobile-menu__action admin-mobile-menu__action--danger" (click)="logout()">
+          <i class="material-icons">logout</i>
+          <span>{{ 'ADMIN_LOG_OUT' | translate }}</span>
+        </button>
+      </div>
+    </aside>
+  }
+
+</div>

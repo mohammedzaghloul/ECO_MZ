@@ -1,0 +1,82 @@
+<section class="admin-panel settings-page currency-settings">
+  <div class="settings-heading">
+    <span class="settings-icon material-icons">payments</span>
+    <div>
+      <p class="admin-eyebrow">{{ 'ADMIN_STORE_SETTINGS' | translate }}</p>
+      <h1>{{ 'ADMIN_CURRENCY' | translate }}</h1>
+      <p>{{ 'ADMIN_CURRENCY_DESC' | translate }}</p>
+    </div>
+  </div>
+  <div class="settings-field">
+    <label for="currency">{{ 'ADMIN_STORE_CURRENCY' | translate }}</label>
+    <div class="settings-control">
+      <span class="material-icons" aria-hidden="true">currency_exchange</span>
+      <select id="currency" [(ngModel)]="currency">
+        <option value="EGP">EGP — {{ 'ADMIN_EGYPTIAN_POUND' | translate }}</option>
+        <option value="USD">USD — {{ 'ADMIN_US_DOLLAR' | translate }}</option>
+        <option value="EUR">EUR — {{ 'ADMIN_EURO' | translate }}</option>
+        <option value="SAR">SAR — {{ 'ADMIN_SAUDI_RIYAL' | translate }}</option>
+        <option value="AED">AED — {{ 'ADMIN_UAE_DIRHAM' | translate }}</option>
+      </select>
+    </div>
+  </div>
+  <div class="settings-actions">
+    <button type="button" class="btn btn-primary" [disabled]="saving()" (click)="save()">
+      <span class="material-icons" aria-hidden="true">save</span>
+      {{ saving() ? ('ADMIN_SAVING' | translate) : ('ADMIN_SAVE_CURRENCY' | translate) }}
+    </button>
+  </div>
+</section>
+
+<section class="admin-panel settings-page email-settings">
+  <div class="settings-heading">
+    <span class="settings-icon material-icons">mail</span>
+    <div>
+      <p class="admin-eyebrow">إعدادات الإرسال</p>
+      <h1>البريد الإلكتروني SMTP</h1>
+      <div class="settings-heading-meta">
+        <p>إرسال رسائل الحساب والطلبات.</p>
+        <a class="settings-help-link" href="/docs/SMTP-Gmail-App-Password-Ar.html" target="_blank" rel="noopener noreferrer"><span class="material-icons" aria-hidden="true">help_outline</span> شرح إعداد Gmail</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-grid">
+    <label><span class="settings-field-label">خادم SMTP</span><span class="settings-input"><i class="material-icons" aria-hidden="true">dns</i><input type="text" [(ngModel)]="email().smtpHost" placeholder="smtp.gmail.com"></span></label>
+    <label><span class="settings-field-label">المنفذ</span><span class="settings-input"><i class="material-icons" aria-hidden="true">lan</i><input type="number" [(ngModel)]="email().smtpPort" min="1" max="65535"></span></label>
+    <label><span class="settings-field-label">اسم المستخدم</span><span class="settings-input"><i class="material-icons" aria-hidden="true">person</i><input type="email" [(ngModel)]="email().smtpUsername" placeholder="name@example.com"></span></label>
+    <label><span class="settings-field-label">بريد المرسل</span><span class="settings-input"><i class="material-icons" aria-hidden="true">alternate_email</i><input type="email" [(ngModel)]="email().smtpFrom" placeholder="name@example.com"></span></label>
+    <label class="settings-grid__wide"><span class="settings-field-label">كلمة مرور SMTP</span>
+      <span class="settings-input"><i class="material-icons" aria-hidden="true">key</i><input type="password" [(ngModel)]="emailPassword" placeholder="اتركها فارغة للاحتفاظ بالكلمة الحالية"></span>
+      <small class="settings-password-status" [class.is-ready]="email().passwordConfigured">
+        <i class="material-icons" aria-hidden="true">{{ email().passwordConfigured ? 'lock' : 'lock_open' }}</i>
+        {{ email().passwordConfigured ? 'محفوظة بشكل مشفر' : 'غير محفوظة' }}
+      </small>
+    </label>
+  </div>
+  <label class="settings-check">
+    <input type="checkbox" [(ngModel)]="email().smtpUseSsl">
+    <span>استخدام اتصال SSL</span>
+    <small>(465)</small>
+  </label>
+  <p class="settings-message" [class.is-error]="emailTestState() === 'error'" [class.is-success]="emailTestState() === 'success'">
+    @if (emailTestState() === 'success') { <i class="material-icons" aria-hidden="true">check_circle</i> }
+    @if (emailTestState() === 'error') { <i class="material-icons" aria-hidden="true">error</i> }
+    @if (emailTestState() === 'success') {
+      <span>تم إرسال رسالة الاختبار إلى</span>
+      <a class="settings-message-link" [href]="'mailto:' + emailTestRecipient()">{{ emailTestRecipient() }}</a>
+    } @else {
+      {{ emailMessage() || 'احفظ الإعدادات ثم اختبر الاتصال.' }}
+    }
+  </p>
+  <div class="settings-actions">
+    <button type="button" class="btn btn-primary" [disabled]="emailSaving()" (click)="saveEmail()">
+      <span class="material-icons" aria-hidden="true">save</span>
+      {{ emailSaving() ? 'جار الحفظ...' : 'حفظ إعدادات البريد' }}
+    </button>
+    <button type="button" class="btn btn-outline-primary" [disabled]="emailTesting() || !canTestEmail()" (click)="testEmail()">
+      <span class="material-icons" aria-hidden="true">send</span>
+      {{ emailTesting() ? 'جار الإرسال...' : 'إرسال رسالة اختبار' }}
+    </button>
+  </div>
+</section>

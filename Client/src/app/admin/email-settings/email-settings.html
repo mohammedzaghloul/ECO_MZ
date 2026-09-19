@@ -1,0 +1,255 @@
+<section class="admin-panel settings-page email-appearance-page">
+  <div class="settings-heading">
+    <span class="settings-icon material-icons">palette</span>
+    <div>
+      <p class="admin-eyebrow">هوية البريد</p>
+      <h1>تصميم رسائل البريد</h1>
+      <div class="settings-heading-meta">
+        <p>تحكم في ألوان وخطوط ونصوص إيميلات المتجر، مع معاينة حية قبل الحفظ.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="appearance-layout">
+    <div class="appearance-controls">
+      <!-- Tabs Nav -->
+      <nav class="settings-tabs" role="tablist" aria-label="أقسام تصميم البريد">
+        <button type="button" class="settings-tab-btn" [class.is-active]="activeTab() === 'branding'" (click)="activeTab.set('branding')" role="tab" [attr.aria-selected]="activeTab() === 'branding'">
+          <span class="material-icons" aria-hidden="true">palette</span>
+          <span>المظهر والألوان</span>
+        </button>
+        <button type="button" class="settings-tab-btn" [class.is-active]="activeTab() === 'copy'" (click)="activeTab.set('copy')" role="tab" [attr.aria-selected]="activeTab() === 'copy'">
+          <span class="material-icons" aria-hidden="true">edit_note</span>
+          <span>نصوص الرسالة</span>
+        </button>
+        <button type="button" class="settings-tab-btn" [class.is-active]="activeTab() === 'advanced'" (click)="activeTab.set('advanced')" role="tab" [attr.aria-selected]="activeTab() === 'advanced'">
+          <span class="material-icons" aria-hidden="true">tune</span>
+          <span>خيارات متقدمة</span>
+        </button>
+      </nav>
+
+      <!-- Tab 1: Branding & Colors -->
+      @if (activeTab() === 'branding') {
+        <div class="tab-pane" role="tabpanel">
+          <div class="presets-section">
+            <span class="settings-field-label">ثيمات جاهزة</span>
+            <div class="presets-grid">
+              @for (p of presets; track p.id) {
+                <button type="button" class="preset-card" [class.is-active]="isPresetActive(p)" (click)="applyPreset(p)">
+                  <div class="preset-swatches">
+                    <span class="preset-swatch" [style.background-color]="p.accentColor" title="التمييز"></span>
+                    <span class="preset-swatch" [style.background-color]="p.backgroundColor" title="الخلفية"></span>
+                    <span class="preset-swatch" [style.background-color]="p.paperColor" title="البطاقة"></span>
+                    <span class="preset-swatch" [style.background-color]="p.inkColor" title="النص"></span>
+                  </div>
+                  <span class="preset-name">{{ p.name }}</span>
+                  <span class="preset-desc">{{ p.desc }}</span>
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="custom-colors-accordion">
+            <button type="button" class="custom-colors-toggle" (click)="showCustomColors.set(!showCustomColors())">
+              <span class="material-icons" aria-hidden="true">{{ showCustomColors() ? 'expand_less' : 'tune' }}</span>
+              <span>{{ showCustomColors() ? 'إخفاء الألوان اليدوية' : 'تخصيص الألوان يدوياً' }}</span>
+            </button>
+            @if (showCustomColors()) {
+              <div class="appearance-colors custom-colors-panel">
+                <label><span class="settings-field-label">لون الأزرار والروابط</span>
+                  <span class="settings-input appearance-color">
+                    <input type="color" [value]="appearance().accentColor" (input)="onColorChange('accentColor', $any($event.target).value)" aria-label="لون التمييز">
+                    <input type="text" [value]="appearance().accentColor" (change)="onColorChange('accentColor', $any($event.target).value)" placeholder="#2D5A43">
+                  </span>
+                </label>
+                <label><span class="settings-field-label">خلفية الصفحة</span>
+                  <span class="settings-input appearance-color">
+                    <input type="color" [value]="appearance().backgroundColor" (input)="onColorChange('backgroundColor', $any($event.target).value)" aria-label="خلفية الصفحة">
+                    <input type="text" [value]="appearance().backgroundColor" (change)="onColorChange('backgroundColor', $any($event.target).value)" placeholder="#F6F4EF">
+                  </span>
+                </label>
+                <label><span class="settings-field-label">خلفية البطاقة</span>
+                  <span class="settings-input appearance-color">
+                    <input type="color" [value]="appearance().paperColor" (input)="onColorChange('paperColor', $any($event.target).value)" aria-label="خلفية البطاقة">
+                    <input type="text" [value]="appearance().paperColor" (change)="onColorChange('paperColor', $any($event.target).value)" placeholder="#FFFEFC">
+                  </span>
+                </label>
+                <label><span class="settings-field-label">لون النص</span>
+                  <span class="settings-input appearance-color">
+                    <input type="color" [value]="appearance().inkColor" (input)="onColorChange('inkColor', $any($event.target).value)" aria-label="لون النص">
+                    <input type="text" [value]="appearance().inkColor" (change)="onColorChange('inkColor', $any($event.target).value)" placeholder="#26251F">
+                  </span>
+                </label>
+              </div>
+            }
+          </div>
+
+          <div class="settings-grid">
+            <label class="settings-grid__wide"><span class="settings-field-label">اسم المتجر في الإيميل</span>
+              <span class="settings-input"><i class="material-icons" aria-hidden="true">storefront</i>
+                <input type="text" maxlength="24" [ngModel]="appearance().brandName" (ngModelChange)="onBrandNameChange($event)" placeholder="ECO">
+              </span>
+            </label>
+          </div>
+
+          <div class="logo-setting-card">
+            <div class="logo-setting-header">
+              <div>
+                <span class="settings-field-label">شعار المتجر في الإيميل (اختياري)</span>
+                <span class="logo-setting-hint">سيظهر الشعار في أعلى الإيميل بدلاً من النص. يمكنك إدخال رابط أو رفع صورة من جهازك:</span>
+              </div>
+              @if (appearance().logoUrl) {
+                <button type="button" class="btn-clear-logo" (click)="clearLogo()" title="إزالة الشعار">
+                  <span class="material-icons">delete_outline</span>
+                  <span>إزالة الشعار</span>
+                </button>
+              }
+            </div>
+
+            <div class="logo-input-row">
+              <span class="settings-input logo-url-input">
+                <i class="material-icons" aria-hidden="true">link</i>
+                <input
+                  type="text"
+                  [ngModel]="appearance().logoUrl"
+                  (ngModelChange)="onLogoUrlChange($event)"
+                  placeholder="ضع رابط الصورة هنا (https://...) أو ارفع ملفاً"
+                >
+              </span>
+
+              <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" hidden>
+              <button type="button" class="btn btn-upload-logo" (click)="fileInput.click()" title="رفع صورة من الجهاز">
+                <span class="material-icons">upload_file</span>
+                <span>رفع صورة</span>
+              </button>
+            </div>
+
+            @if (appearance().logoUrl) {
+              <div class="logo-preview-badge-row">
+                <div class="logo-thumb-container">
+                  <img
+                    [src]="appearance().logoUrl"
+                    alt="معاينة الشعار"
+                    (error)="logoError.set(true)"
+                    (load)="logoError.set(false)"
+                  >
+                </div>
+                @if (logoError()) {
+                  <span class="logo-status-tag is-error">
+                    <i class="material-icons">error</i>
+                    تعذر تحميل الصورة، تأكد من صحة الرابط
+                  </span>
+                } @else {
+                  <span class="logo-status-tag is-ok">
+                    <i class="material-icons">check_circle</i>
+                    معاينة الشعار الحالي (يظهر في المعاينة فوراً)
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Tab 2: Message Texts -->
+      @if (activeTab() === 'copy') {
+        <div class="tab-pane" role="tabpanel">
+          <span class="settings-field-label">نصوص الرسالة <small class="appearance-ph-hint">استخدم <code>{{ '{name}' }}</code> لاسم العميل و<code>{{ '{order}' }}</code> لرقم الطلب — اتركها فارغة للقيمة الافتراضية</small></span>
+          <div class="appearance-texts">
+            <label><span class="settings-field-label">العنوان الجانبي</span>
+              <span class="settings-input"><i class="material-icons" aria-hidden="true">label</i>
+                <input type="text" maxlength="40" [(ngModel)]="appearance().eyebrowText" placeholder="تأكيد الطلب {order}">
+              </span>
+            </label>
+            <label><span class="settings-field-label">التحية</span>
+              <span class="settings-input"><i class="material-icons" aria-hidden="true">waving_hand</i>
+                <input type="text" maxlength="80" [(ngModel)]="appearance().greetingText" placeholder="شكرًا لثقتك، {name}">
+              </span>
+            </label>
+            <label class="appearance-texts__wide"><span class="settings-field-label">الوصف</span>
+              <span class="settings-input"><i class="material-icons" aria-hidden="true">notes</i>
+                <input type="text" maxlength="160" [(ngModel)]="appearance().introText" placeholder="طلبك بين أيدينا الآن، وسنعلمك بكل تحديث عبر البريد.">
+              </span>
+            </label>
+            <label><span class="settings-field-label">نص الزر</span>
+              <span class="settings-input"><i class="material-icons" aria-hidden="true">ads_click</i>
+                <input type="text" maxlength="40" [(ngModel)]="appearance().ctaText" placeholder="متابعة تفاصيل الطلب">
+              </span>
+            </label>
+          </div>
+        </div>
+      }
+
+      <!-- Tab 3: Advanced Options -->
+      @if (activeTab() === 'advanced') {
+        <div class="tab-pane" role="tabpanel">
+          <span class="settings-field-label">نمط الهيدر</span>
+          <div class="appearance-styles">
+            <label class="appearance-style" [class.is-active]="appearance().headerStyle === 'minimal'">
+              <input type="radio" name="emailHeaderStyle" value="minimal" [(ngModel)]="appearance().headerStyle" (ngModelChange)="refreshPreview()">
+              <span class="appearance-style-name">أبيض بسيط</span>
+              <span class="appearance-style-desc">اسم المتجر على خلفية بيضاء</span>
+            </label>
+            <label class="appearance-style" [class.is-active]="appearance().headerStyle === 'accent'">
+              <input type="radio" name="emailHeaderStyle" value="accent" [(ngModel)]="appearance().headerStyle" (ngModelChange)="refreshPreview()">
+              <span class="appearance-style-name">لمسة لون المتجر</span>
+              <span class="appearance-style-desc">هيدر بدرجة خفيفة من لون الأزرار</span>
+            </label>
+          </div>
+          <label><span class="settings-field-label">ملاحظة الفوتر (اختياري)</span>
+            <span class="settings-input"><i class="material-icons" aria-hidden="true">forum</i>
+              <input type="text" maxlength="160" [(ngModel)]="appearance().footerNote" placeholder="لأي استفسار عن طلبك، تواصل معنا.">
+            </span>
+          </label>
+        </div>
+      }
+
+      <!-- Actions -->
+      <div class="settings-actions">
+        <button type="button" class="btn btn-primary" [disabled]="saving()" (click)="save()">
+          <span class="material-icons" aria-hidden="true">save</span>
+          {{ saving() ? 'جار الحفظ...' : 'حفظ التصميم' }}
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="resetToDefaults()" title="استعادة القيم الافتراضية الأصلية">
+          <span class="material-icons" aria-hidden="true">restart_alt</span>
+          استعادة الافتراضي
+        </button>
+      </div>
+
+      <!-- Test send row -->
+      <div class="test-send-row">
+        <span class="settings-input test-send-email-input">
+          <i class="material-icons" aria-hidden="true">alternate_email</i>
+          <input type="email" [(ngModel)]="testRecipient" placeholder="بريد الاستلام (اختياري — الافتراضي بريد المرسل)">
+        </span>
+        <button type="button" class="btn btn-outline-primary" [disabled]="sendingTest()" (click)="sendTest()">
+          <span class="material-icons" aria-hidden="true">send</span>
+          {{ sendingTest() ? 'جار الإرسال...' : 'إرسال نسخة تجريبية' }}
+        </button>
+      </div>
+      <small class="appearance-hint">النسخة التجريبية تُرسل بنفس القالب المعاين حالياً — الألوان والخط تظهر فورًا، النصوص تتجدد بعد الحفظ.</small>
+    </div>
+
+    <div class="appearance-preview">
+      <div class="appearance-preview-head">
+        <div class="preview-select-wrap">
+          <span class="material-icons preview-select-icon" aria-hidden="true">visibility</span>
+          <span class="preview-select-label">المعاينة الحية:</span>
+          <select class="preview-select" [value]="previewType()" (change)="onPreviewTypeChange($any($event.target).value)" aria-label="نوع القالب للمعاينة">
+            @for (t of templateTypes; track t.value) {
+              <option [value]="t.value">{{ t.label }}</option>
+            }
+          </select>
+        </div>
+        <button type="button" class="appearance-refresh" (click)="refreshPreview()" [disabled]="previewLoading()" aria-label="تحديث المعاينة" title="تحديث المعاينة">
+          <i class="material-icons" [class.is-spinning]="previewLoading()" aria-hidden="true">refresh</i>
+        </button>
+      </div>
+      @if (previewHtml()) {
+        <iframe class="appearance-iframe" [srcdoc]="previewHtml()" title="معاينة إيميل تأكيد الطلب"></iframe>
+      } @else {
+        <div class="appearance-preview-empty">{{ previewLoading() ? 'جار تحميل المعاينة...' : 'لا توجد معاينة متاحة' }}</div>
+      }
+    </div>
+  </div>
+</section>

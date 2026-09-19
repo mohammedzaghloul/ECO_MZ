@@ -1,0 +1,93 @@
+@use '../../../styles/tokens' as *;
+
+/* .admin-page-head is provided by src/styles/_admin.scss. */
+
+.coupon-form {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-4;
+  margin-bottom: $space-4;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.coupon-active {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: $text-body-sm;
+  font-weight: $weight-semibold;
+  color: $neutral-900;
+  align-self: end;
+  padding-bottom: $space-2;
+
+  input {
+    width: 18px;
+    height: 18px;
+    accent-color: $admin-primary;
+  }
+}
+
+.coupon-code {
+  background: $neutral-100;
+  color: $admin-primary-dark;
+  padding: 2px $space-2;
+  border-radius: $radius-md;
+  font-weight: $weight-bold;
+}
+
+.coupon-status {
+  display: inline-block;
+  padding: 2px $space-2;
+  border-radius: 999px;
+  font-size: $text-label-xs;
+  font-weight: $weight-bold;
+  background: #ecfdf5;
+  color: $success-700;
+
+  &--off {
+    background: $neutral-100;
+    color: $neutral-500;
+  }
+
+  @media (max-width: 640px) {
+    .coupons-table {
+      th:nth-child(4),
+      td:nth-child(4),
+      th:nth-child(5),
+      td:nth-child(5) {
+        display: none;
+      }
+
+      th:first-child,
+      td:first-child { width: 34%; }
+
+      th:nth-child(2),
+      td:nth-child(2) { width: 26%; }
+
+      th:nth-child(3),
+      td:nth-child(3) { width: 22%; }
+
+      th:last-child,
+      td:last-child {
+        width: 18%;
+        text-align: end;
+      }
+
+      .admin-btn-link {
+        width: 30px;
+        padding: 5px;
+        font-size: 0;
+
+        &::before {
+          font-family: 'Material Icons';
+          font-size: 18px;
+        }
+
+        &:not(.is-danger)::before { content: 'edit'; }
+        &.is-danger::before { content: 'delete'; }
+      }
+    }
+  }
+}

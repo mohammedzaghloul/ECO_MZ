@@ -1,0 +1,406 @@
+@use '../../../styles/tokens' as *;
+
+/* ── Customers Toolbar ────────────────────────── */
+.customers-toolbar {
+  display: grid;
+  gap: 16px;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid $admin-border;
+}
+
+.customers-toolbar__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.role-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.role-filter-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: $neutral-500;
+  font-size: $text-label-xs;
+  font-weight: $weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  .material-icons {
+    font-size: 16px;
+    color: $neutral-400;
+  }
+}
+
+.role-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid $admin-border;
+  border-radius: $radius-full;
+  padding: 7px 14px;
+  background: $white;
+  color: $neutral-700;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: $weight-semibold;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+
+  .pill-icon {
+    font-size: 17px;
+    color: $neutral-400;
+    transition: color 0.2s ease;
+  }
+
+  &:hover:not(.is-active) {
+    border-color: rgba($admin-primary, 0.4);
+    background: rgba($admin-primary, 0.04);
+    color: $admin-primary-dark;
+    transform: translateY(-1px);
+
+    .pill-icon {
+      color: $admin-primary;
+    }
+  }
+
+  &.is-active {
+    background: $admin-primary;
+    border-color: $admin-primary;
+    color: $white;
+    box-shadow: 0 2px 8px rgba($admin-primary, 0.28);
+
+    .pill-icon {
+      color: $white;
+    }
+  }
+}
+
+.customers-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.customers-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: $neutral-100;
+  border: 1px solid $admin-border;
+  border-radius: $radius-full;
+  font-size: $text-label-xs;
+  color: $neutral-700;
+  font-weight: $weight-medium;
+
+  strong {
+    color: $neutral-900;
+    font-weight: $weight-bold;
+  }
+}
+
+.customers-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  color: $neutral-500;
+  font-size: 0.8125rem;
+  font-weight: $weight-semibold;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  .material-icons {
+    font-size: 16px;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover:not(:disabled) {
+    color: $admin-primary;
+    background: rgba($admin-primary, 0.08);
+    border-color: rgba($admin-primary, 0.15);
+  }
+
+  .is-spinning {
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.customers-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.customers-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 440px;
+
+  .search-icon {
+    position: absolute;
+    inset-inline-start: 13px;
+    color: $neutral-400;
+    font-size: 19px;
+    pointer-events: none;
+    transition: color 0.2s ease;
+  }
+
+  &:focus-within .search-icon {
+    color: $admin-primary;
+  }
+}
+
+.customers-search-input {
+  width: 100%;
+  border: 1px solid $admin-border;
+  border-radius: 10px;
+  padding: 9px 12px;
+  padding-inline-start: 38px;
+  padding-inline-end: 36px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: $neutral-900;
+  background: $white;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &::placeholder {
+    color: $neutral-400;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $admin-primary;
+    box-shadow: 0 0 0 3px rgba($admin-primary, 0.12);
+  }
+}
+
+.clear-search-btn {
+  position: absolute;
+  inset-inline-end: 8px;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: $neutral-100;
+  border-radius: 50%;
+  color: $neutral-500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  .material-icons {
+    font-size: 15px;
+  }
+
+  &:hover {
+    background: $neutral-200;
+    color: $neutral-900;
+  }
+}
+
+.customer-name { font-weight: $weight-bold; color: $neutral-900; }
+
+.customer-email {
+  color: $neutral-700;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customer-spent { font-weight: $weight-bold; }
+
+.admin-removal-confirmation {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  white-space: nowrap;
+}
+
+.customer-action {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid $admin-border;
+  border-radius: 9px;
+  background: $white;
+  color: $neutral-500;
+  cursor: pointer;
+  transition: .15s ease;
+
+  .material-icons { font-size: 18px; }
+  &:hover:not(:disabled) { border-color: $admin-primary; color: $admin-primary; background: rgba($admin-primary, .06); }
+  &:disabled { cursor: wait; opacity: .55; }
+}
+
+.customer-action--admin { color: #dc2626; }
+.customer-action--make-admin { color: $admin-primary; }
+.customer-action--delete { color: #dc2626; &:hover:not(:disabled) { border-color: #dc2626; color: #b91c1c; background: #fef2f2; } }
+.customer-action--confirm { color: #15803d; border-color: #bbf7d0; background: #f0fdf4; }
+.customer-action--cancel { color: $neutral-500; }
+
+.admin-table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  min-width: 150px;
+}
+
+.role-chips {
+  display: flex;
+  gap: $space-1;
+  flex-wrap: wrap;
+}
+
+.role-chip {
+  display: inline-block;
+  padding: 2px $space-2;
+  border-radius: 999px;
+  font-size: $text-label-xs;
+  font-weight: $weight-bold;
+  background: $neutral-100;
+  color: $neutral-500;
+
+  &--admin {
+    background: rgba($admin-primary, 0.1);
+    color: $admin-primary-dark;
+  }
+
+  &--muted {
+    background: $neutral-100;
+  }
+
+  &--customer {
+    background: $neutral-100;
+    color: $neutral-700;
+  }
+}
+
+.customer-detail-title {
+  margin: 0 0 $space-1;
+  font-size: $text-heading-md;
+  font-weight: $weight-bold;
+  color: $neutral-900;
+}
+
+.customer-detail-sub {
+  margin: 0;
+  color: $neutral-500;
+  font-size: $text-body-sm;
+}
+
+.order-id { font-weight: $weight-bold; color: $admin-primary; }
+
+@media (max-width: 640px) {
+  .customers-toolbar {
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+  }
+
+  .customers-toolbar__top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .role-filter-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .role-pills {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .role-pill {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+
+  .customers-head-actions {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .customers-filter-row {
+    width: 100%;
+  }
+
+  .customers-search-box {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .customers-table {
+    th:nth-child(2),
+    td:nth-child(2),
+    th:nth-child(5),
+    td:nth-child(5) {
+      display: none;
+    }
+
+    th:first-child,
+    td:first-child { width: 43%; }
+
+    th:nth-child(3),
+    td:nth-child(3) { width: 18%; }
+
+    th:nth-child(4),
+    td:nth-child(4) { width: 22%; }
+
+    th:last-child,
+    td:last-child {
+      width: 17%;
+      text-align: end;
+    }
+
+    .admin-table-actions { min-width: 96px; gap: 4px; }
+    .customer-action { width: 30px; height: 30px; border-radius: 8px; }
+    .customer-action .material-icons { font-size: 16px; }
+  }
+}

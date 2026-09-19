@@ -1,0 +1,207 @@
+<header class="admin-page-head">
+  <div>
+    <span class="admin-page-kicker"><i class="fa fa-shopping-bag" aria-hidden="true"></i>{{ 'ADMIN_ORDERS' | translate }}</span>
+    <h1>{{ 'ADMIN_ORDERS' | translate }}</h1>
+    <p>{{ 'ADMIN_ORDERS_DESCRIPTION' | translate }}</p>
+  </div>
+</header>
+
+<section class="admin-panel">
+  <div class="orders-toolbar">
+    <div class="orders-toolbar__top">
+      <div class="status-pills" role="group" aria-label="Filter orders by status">
+        @for (option of statusOptions; track option.value) {
+          <button type="button" class="status-pill" [class.is-active]="statusFilter() === option.value" (click)="statusFilter.set(option.value); onFilterChange()">{{ option.labelKey | translate }}</button>
+        }
+      </div>
+      <div class="mobile-status-filter">
+        <button type="button" class="mobile-status-filter__trigger" (click)="toggleStatusFilter()" [attr.aria-expanded]="statusFilterOpen()">
+          <span>{{ statusFilter() ? (statusKey(statusFilter()) | translate) : ('ADMIN_ALL_STATUSES' | translate) }}</span>
+          <i class="material-icons" aria-hidden="true">expand_more</i>
+        </button>
+        @if (statusFilterOpen()) {
+          <div class="mobile-status-filter__menu">
+            @for (option of statusOptions; track option.value) {
+              <button type="button" [class.is-active]="statusFilter() === option.value" (click)="chooseStatusFilter(option.value)">
+                <i class="material-icons" aria-hidden="true">{{ option.value ? statusIcon(option.value) : 'list' }}</i>
+                {{ option.labelKey | translate }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+      <div class="orders-head-actions">
+        <span class="orders-count"><strong>{{ totalCount() }}</strong> {{ 'ADMIN_ORDERS_COUNT' | translate }}</span>
+        <button type="button" class="admin-btn-link orders-refresh" (click)="refresh()" [disabled]="loading()">
+          <i class="fa fa-refresh" aria-hidden="true"></i>{{ 'ADMIN_REFRESH' | translate }}
+        </button>
+      </div>
+    </div>
+    <div class="orders-filter-row">
+      <label class="orders-search">
+        <i class="fa fa-search" aria-hidden="true"></i>
+        <input
+          type="text"
+          class="orders-filter-input"
+          [placeholder]="'ADMIN_SEARCH_ORDERS' | translate"
+          [value]="search()"
+          (input)="onSearchInput($any($event.target).value)"
+        />
+      </label>
+      <div class="orders-date-filters">
+        <label>
+          <span>{{ 'ADMIN_FROM_DATE' | translate }}</span>
+          <input type="date" [value]="fromDate()" (change)="fromDate.set($any($event.target).value); onFilterChange()" />
+        </label>
+        <label>
+          <span>{{ 'ADMIN_TO_DATE' | translate }}</span>
+          <input type="date" [value]="toDate()" (change)="toDate.set($any($event.target).value); onFilterChange()" />
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table orders-table">
+      <thead>
+        <tr>
+          <th>{{ 'ADMIN_ORDER' | translate }}</th>
+          <th>{{ 'ADMIN_DATE' | translate }}</th>
+          <th>{{ 'ADMIN_CUSTOMER' | translate }}</th>
+          <th>{{ 'ADMIN_ITEMS' | translate }}</th>
+          <th>{{ 'ADMIN_STATUS' | translate }}</th>
+          <th>{{ 'ADMIN_TOTAL' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (order of orders(); track order.id) {
+          <tr>
+            <td class="order-id">
+              <button
+                type="button"
+                class="order-detail-toggle"
+                [attr.aria-label]="'ADMIN_VIEW_ORDER' | translate"
+                (click)="openDetails(order)"
+              >
+                <span>#{{ order.id }}</span>
+                <i class="material-icons" aria-hidden="true">visibility</i>
+              </button>
+            </td>
+            <td class="order-date">
+              <span class="order-date__full">{{ order.orderDate | date: 'MMM d, y, h:mm a' }}</span>
+              <span class="order-date__mobile">
+                <i class="material-icons" aria-hidden="true">event</i>
+                {{ order.orderDate | date: 'MMM d, y' }}
+              </span>
+            </td>
+            <td class="order-email">{{ order.buyerEmail }}</td>
+            <td>{{ order.orderItems?.length ?? 0 }}</td>
+            <td>
+              <span class="order-status-badge" [class]="'order-status-badge ' + statusClass(order.status)">
+                <i class="material-icons" aria-hidden="true">{{ statusIcon(order.status) }}</i>
+                {{ statusKey(order.status) | translate }}
+              </span>
+            </td>
+            <td class="order-total">
+              {{ money(order.total) }}
+              @if (order.discount > 0) {
+                <small class="order-discount">−{{ money(order.discount) }} {{ 'ADMIN_COUPON' | translate }}</small>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="6" class="admin-empty">{{ loading() ? ('ADMIN_LOADING_ORDERS' | translate) : ('ADMIN_NO_ORDERS_FOUND' | translate) }}</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="admin-pager">
+    <button type="button" (click)="goToPage(pageNumber() - 1)" [disabled]="pageNumber() <= 1">‹</button>
+    <span>{{ 'ADMIN_PAGE' | translate }} {{ pageNumber() }} {{ 'ADMIN_OF' | translate }} {{ totalPages() }}</span>
+    <button type="button" (click)="goToPage(pageNumber() + 1)" [disabled]="pageNumber() >= totalPages()">›</button>
+  </div>
+</section>
+
+@if (selectedOrder(); as order) {
+  <div class="order-modal-backdrop" (click)="closeDetails()">
+    <aside class="order-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <header class="order-modal__head">
+        <div class="invoice-brand">
+          <img src="/images/logo.png" alt="Eco" width="42" height="42" />
+        </div>
+        <div class="order-modal__actions">
+          <button type="button" class="order-modal__print" (click)="printInvoice($event)">
+            <i class="material-icons" aria-hidden="true">print</i>
+            <span>{{ 'ADMIN_PRINT_INVOICE' | translate }}</span>
+          </button>
+          <button type="button" class="order-modal__close" [attr.aria-label]="'ADMIN_CLOSE' | translate" (click)="closeDetails()">×</button>
+        </div>
+      </header>
+      <div class="invoice-meta">
+        <div class="invoice-meta__date">
+          <span>{{ 'ADMIN_DATE' | translate }}</span>
+          <time>{{ order.orderDate | date: 'MMM d, y, h:mm a' }}</time>
+        </div>
+        <div class="invoice-meta__number">
+          <span>{{ 'ADMIN_INVOICE' | translate }}</span>
+          <strong>#{{ order.id }}</strong>
+        </div>
+      </div>
+      @if (detailsLoading()) {
+        <div class="admin-loading">{{ 'ADMIN_LOADING_ORDER' | translate }}</div>
+      } @else {
+        <div class="order-modal__summary">
+          <div class="summary-item"><span>{{ 'ADMIN_CUSTOMER' | translate }}</span><strong>{{ order.shippingAddress?.firstName || order.shippingAddress?.fristName }} {{ order.shippingAddress?.lastName || '' }}</strong></div>
+          <div class="summary-item"><span>{{ 'ADMIN_EMAIL' | translate }}</span><strong>{{ order.buyerEmail }}</strong></div>
+          <div class="summary-item"><span>{{ 'ADMIN_PHONE' | translate }}</span>
+            @if (order.buyerPhone) {
+              <a class="order-phone" [href]="'tel:' + order.buyerPhone">{{ order.buyerPhone }}</a>
+            } @else {
+              <strong>{{ 'ADMIN_NOT_AVAILABLE' | translate }}</strong>
+            }
+          </div>
+          <div class="summary-item order-modal__status">
+            <span>{{ 'ADMIN_STATUS' | translate }}</span>
+            <div class="detail-status-picker">
+              <button type="button" class="detail-status-picker__trigger" [class]="'detail-status-picker__trigger ' + statusClass(order.status)" (click)="toggleDetailStatus()" [disabled]="updatingId() === order.id" [attr.aria-expanded]="detailStatusOpen()">
+                <i class="material-icons" aria-hidden="true">{{ statusIcon(order.status) }}</i>
+                <span>{{ statusKey(order.status) | translate }}</span>
+                <i class="material-icons detail-status-picker__arrow" [class.is-open]="detailStatusOpen()" aria-hidden="true">expand_more</i>
+              </button>
+              @if (detailStatusOpen()) {
+                <div class="detail-status-picker__menu">
+                  @for (option of statusOptions.slice(1); track option.value) {
+                    <button type="button" class="detail-status-picker__option" [class]="'detail-status-picker__option detail-status-picker__option--' + option.value" [class.is-current]="option.value === order.status" (click)="chooseDetailStatus(order, option.value)">
+                      <i class="material-icons" aria-hidden="true">{{ statusIcon(option.value) }}</i>
+                      <span>{{ option.labelKey | translate }}</span>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+          <div class="summary-item"><span>{{ 'ADMIN_PAYMENT' | translate }}</span><strong class="order-payment-value"><i class="material-icons" aria-hidden="true">{{ paymentIcon(order.paymentMethod) }}</i>{{ order.paymentMethod || '—' }}</strong></div>
+          <div class="summary-item"><span>{{ 'ADMIN_DELIVERY' | translate }}</span><strong>{{ order.deliveryMethodName || '—' }}</strong></div>
+          <div class="summary-item order-modal__address"><span>{{ 'ADMIN_SHIPPING_ADDRESS' | translate }}</span><strong>{{ address(order) }}</strong></div>
+        </div>
+        <div class="order-modal__items">
+          <h3>{{ 'ADMIN_ITEMS' | translate }} <small>{{ order.orderItems?.length ?? 0 }}</small></h3>
+          @for (item of order.orderItems; track item.id) {
+            <div class="order-modal-item">
+              <img [src]="itemImage(item.mainImage)" [alt]="item.productName" />
+              <div><strong>{{ item.productName }}</strong><span>{{ item.quantity }} × {{ money(item.price) }}</span></div>
+              <b>{{ money(item.price * item.quantity) }}</b>
+            </div>
+          }
+        </div>
+        <div class="order-modal__totals">
+          <div><span>{{ 'ADMIN_SUBTOTAL' | translate }}</span><strong>{{ money(order.subTotal) }}</strong></div>
+          <div><span>{{ 'ADMIN_SHIPPING' | translate }}</span><strong>{{ moneyInteger(order.shippingPrice) }}</strong></div>
+          @if (order.discount > 0) { <div><span>{{ 'ADMIN_DISCOUNT' | translate }}</span><strong>−{{ money(order.discount) }}</strong></div> }
+          <div class="grand-total"><span>{{ 'ADMIN_TOTAL' | translate }}</span><strong>{{ money(order.total) }}</strong></div>
+        </div>
+      }
+    </aside>
+  </div>
+}
