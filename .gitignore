@@ -62,6 +62,7 @@ BenchmarkDotNet.Artifacts/
 project.lock.json
 project.fragment.lock.json
 artifacts/
+webhook-keys/
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
