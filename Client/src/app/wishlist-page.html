@@ -1,0 +1,110 @@
+<div class="main-content wishlist-page">
+  <div class="container">
+    <!-- Header -->
+    <div class="wishlist-header">
+      <div>
+        <span class="wishlist-eyebrow">{{ 'WISHLIST_EYEBROW' | translate }}</span>
+        <h1 class="wishlist-title">{{ 'WISHLIST_TITLE' | translate }}</h1>
+        <p class="wishlist-intro">{{ 'WISHLIST_INTRO' | translate }}</p>
+      </div>
+      @if (isLoggedIn() && totalCount() > 0) {
+        <span class="wishlist-count-chip">
+          <i class="material-icons">favorite</i>
+          {{ totalCount() }} {{ 'WISHLIST_COUNT' | translate }}
+        </span>
+      }
+    </div>
+
+    <!-- Guest state -->
+    @if (!isLoggedIn()) {
+      <div class="wishlist-empty-state">
+        <div class="empty-icon">
+          <i class="material-icons">lock_outline</i>
+        </div>
+        <h3>{{ 'WISHLIST_SIGNIN_TITLE' | translate }}</h3>
+        <p>{{ 'WISHLIST_SIGNIN_DESC' | translate }}</p>
+        <a routerLink="/account/login" class="wishlist-cta">
+          <i class="material-icons">login</i>
+          {{ 'WISHLIST_SIGNIN_CTA' | translate }}
+        </a>
+      </div>
+    }
+
+    <!-- Loading skeletons -->
+    @else if (loading()) {
+      <div class="wishlist-list">
+        @for (skeleton of [1, 2, 3]; track skeleton) {
+          <div class="wishlist-row wishlist-row--skeleton">
+            <div class="wishlist-row__img placeholder-glow"><span class="placeholder w-100 h-100 d-block"></span></div>
+            <div class="wishlist-row__info placeholder-glow">
+              <span class="placeholder col-6 d-block mb-2"></span>
+              <span class="placeholder col-3 d-block"></span>
+            </div>
+            <div class="wishlist-row__actions placeholder-glow">
+              <span class="placeholder col-12 d-block" style="height: 40px; width: 130px;"></span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Items -->
+    @else if (totalCount() > 0) {
+      <div class="wishlist-list">
+        @for (item of items(); track item.id) {
+          <div class="wishlist-row">
+            <a [routerLink]="['/shop/product', item.id]" class="wishlist-row__img">
+              <img [src]="getImageUrl(item.photos)" [alt]="item.name" loading="lazy" />
+            </a>
+
+            <div class="wishlist-row__info">
+              <a [routerLink]="['/shop/product', item.id]" class="wishlist-row__name">{{ item.name }}</a>
+              <div class="wishlist-row__prices">
+                <strong>{{ money(item.newPrice) }}</strong>
+                @if (item.oldPrice > item.newPrice) {
+                  <del>{{ money(item.oldPrice) }}</del>
+                  <span class="discount-chip">-{{ discountPercent(item) }}%</span>
+                }
+              </div>
+            </div>
+
+            <div class="wishlist-row__actions">
+              <button type="button" class="wishlist-add" (click)="addToBasket(item)">
+                <i class="material-icons">shopping_bag</i>
+                {{ 'SHOP_ADD_TO_CART' | translate }}
+              </button>
+              <button
+                type="button"
+                class="wishlist-remove"
+                (click)="remove(item)"
+                [attr.aria-label]="'WISHLIST_REMOVE' | translate"
+              >
+                <i class="material-icons">{{ isWishlisted(item.id) ? 'favorite' : 'favorite_border' }}</i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <a routerLink="/shop" class="wishlist-continue">
+        <i class="material-icons">arrow_back</i>
+        {{ 'BASKET_CONTINUE' | translate }}
+      </a>
+    }
+
+    <!-- Empty state -->
+    @else {
+      <div class="wishlist-empty-state">
+        <div class="empty-icon">
+          <i class="material-icons">favorite_border</i>
+        </div>
+        <h3>{{ 'WISHLIST_EMPTY_TITLE' | translate }}</h3>
+        <p>{{ 'WISHLIST_EMPTY_DESC' | translate }}</p>
+        <a routerLink="/shop" class="wishlist-cta">
+          <i class="material-icons">storefront</i>
+          {{ 'WISHLIST_EMPTY_CTA' | translate }}
+        </a>
+      </div>
+    }
+  </div>
+</div>

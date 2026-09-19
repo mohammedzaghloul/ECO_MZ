@@ -1,24 +1,38 @@
 <section class="pd-page">
-  <div class="container">
+  <div class="container pd-container">
 
-    <!-- Back Link -->
-    <a routerLink="/shop" class="pd-back-link">
-      <i class="material-icons" aria-hidden="true">arrow_back</i>
-      <span>Back to shop</span>
-    </a>
+    <!-- Breadcrumb Navigation -->
+    <nav class="pd-breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/" class="crumb-link">
+        <i class="material-icons">home</i>
+        <span>{{ 'NAV_HOME' | translate }}</span>
+      </a>
+      <span class="crumb-sep">/</span>
+      <a routerLink="/shop" class="crumb-link">{{ 'NAV_SHOP' | translate }}</a>
+      <span class="crumb-sep">/</span>
+      <span class="crumb-current">{{ product()?.name || ('SHOP_VIEW_DETAILS' | translate) }}</span>
+    </nav>
 
     <!-- Loading Skeleton -->
     @if (loading()) {
       <div class="pd-card pd-skeleton">
-        <div class="pd-img-col skeleton-block"></div>
+        <div class="pd-gallery-col">
+          <div class="skeleton-block main-img-skel"></div>
+          <div class="skeleton-thumbnails">
+            <div class="thumb-skel"></div>
+            <div class="thumb-skel"></div>
+            <div class="thumb-skel"></div>
+            <div class="thumb-skel"></div>
+          </div>
+        </div>
         <div class="pd-info-col">
-          <div class="skeleton-line short"></div>
-          <div class="skeleton-line title"></div>
-          <div class="skeleton-line"></div>
+          <div class="skeleton-line badge-skel"></div>
+          <div class="skeleton-line title-skel"></div>
+          <div class="skeleton-line rating-skel"></div>
+          <div class="skeleton-line price-skel"></div>
           <div class="skeleton-line"></div>
           <div class="skeleton-line medium"></div>
-          <div class="skeleton-line price"></div>
-          <div class="skeleton-line btn-line"></div>
+          <div class="skeleton-line btn-skel"></div>
         </div>
       </div>
     }
@@ -27,103 +41,393 @@
     @else if (product()) {
       <div class="pd-card">
 
-        <!-- Image Column -->
-        <div class="pd-img-col">
-          @if (calculateDiscount() > 0) {
-            <span class="pd-discount-badge">-{{ calculateDiscount() }}%</span>
-          }
-          <div class="pd-img-wrapper">
-            <img
-              [src]="getImageUrl()"
-              [alt]="product()!.name"
-              class="pd-img"
-              (error)="$any($event.target).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI2YxZjVmOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE2IiBmaWxsPSIjOTRhM2I4Ij5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='"
-            />
-          </div>
-        </div>
+        <!-- Left Column: Gallery -->
+        <div class="pd-gallery-col">
+          <div class="pd-main-display">
+            <!-- Discount Badge -->
+            @if (calculateDiscount() > 0) {
+              <span class="pd-discount-badge">-{{ calculateDiscount() }}% {{ 'PRODUCT_DISCOUNT' | translate }}</span>
+            }
 
-        <!-- Info Column -->
-        <div class="pd-info-col">
-          <span class="pd-eyebrow">Product Details</span>
-          <h1 class="pd-title">{{ product()!.name }}</h1>
+            <!-- Wishlist Button -->
+            <button
+              type="button"
+              class="pd-wishlist-toggle"
+              [class.active]="isWishlisted()"
+              (click)="toggleFavorite()"
+              [attr.aria-label]="(isWishlisted() ? 'WISHLIST_REMOVE' : 'WISHLIST_ADD') | translate"
+            >
+              <i class="material-icons">{{ isWishlisted() ? 'favorite' : 'favorite_border' }}</i>
+            </button>
 
-          <!-- Price -->
-          <div class="pd-price-row">
-            <span class="pd-new-price">\${{ product()!.newPrice.toFixed(2) }}</span>
-            @if (product()!.oldPrice > product()!.newPrice) {
-              <span class="pd-old-price">\${{ product()!.oldPrice.toFixed(2) }}</span>
-              <span class="pd-savings">
-                You save \${{ (product()!.oldPrice - product()!.newPrice).toFixed(2) }}
+            <!-- Main Image -->
+            <div class="pd-img-viewport">
+              <img
+                [src]="currentMainImage()"
+                [alt]="product()!.name"
+                class="pd-main-img"
+                loading="eager"
+                (error)="onImageError($event)"
+              />
+            </div>
+
+            <!-- Gallery Navigation Arrows -->
+            @if (photosList().length > 1) {
+              <button
+                type="button"
+                class="pd-nav-btn prev"
+                (click)="prevPhoto()"
+                [attr.aria-label]="'Previous photo'"
+              >
+                <i class="material-icons">chevron_left</i>
+              </button>
+              <button
+                type="button"
+                class="pd-nav-btn next"
+                (click)="nextPhoto()"
+                [attr.aria-label]="'Next photo'"
+              >
+                <i class="material-icons">chevron_right</i>
+              </button>
+
+              <!-- Image Counter -->
+              <span class="pd-img-counter">
+                <i class="material-icons">photo_library</i>
+                {{ selectedPhotoIndex() + 1 }} / {{ photosList().length }}
               </span>
             }
           </div>
 
+          <!-- Thumbnails Strip -->
+          @if (photosList().length > 1) {
+            <div class="pd-thumbnails-strip">
+              @for (photoUrl of photosList(); track $index) {
+                <button
+                  type="button"
+                  class="pd-thumb-btn"
+                  [class.active]="selectedPhotoIndex() === $index"
+                  (click)="selectPhoto($index)"
+                  [attr.aria-label]="'View photo ' + ($index + 1)"
+                >
+                  <img [src]="photoUrl" [alt]="product()!.name" (error)="onImageError($event)" />
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Right Column: Info & Purchase -->
+        <div class="pd-info-col">
+          <div class="pd-header-meta">
+            <span class="pd-category-eyebrow">{{ categoryLabel() }}</span>
+            <span class="pd-stock-pill">
+              <span class="dot"></span> {{ 'PRODUCT_IN_STOCK' | translate }}
+            </span>
+          </div>
+
+          <h1 class="pd-title">{{ product()!.name }}</h1>
+
+          <!-- Reviews & Ratings (Click to view reviews tab) -->
+          <div class="pd-rating-row" (click)="openReviewsTab()">
+            @if (reviewsCount() > 0) {
+              <div class="stars">
+                @for (s of [1, 2, 3, 4, 5]; track s) {
+                  <i class="material-icons" [class.star-active]="s <= averageFullStars()">star</i>
+                }
+              </div>
+              <span class="score">{{ averageRating() }}</span>
+            }
+            <span class="reviews-count">({{ reviewsCount() }} {{ 'PRODUCT_REVIEWS' | translate }})</span>
+          </div>
+
+          <!-- Price Row -->
+          <div class="pd-price-row">
+            <div class="price-group">
+              <span class="price-new">${{ product()!.newPrice.toFixed(2) }}</span>
+              @if (product()!.oldPrice > product()!.newPrice) {
+                <span class="price-old">${{ product()!.oldPrice.toFixed(2) }}</span>
+                <span class="pd-save-badge">
+                  {{ 'PRODUCT_SAVE' | translate }} ${{ (product()!.oldPrice - product()!.newPrice).toFixed(2) }}
+                </span>
+              }
+            </div>
+          </div>
+
           <!-- Description -->
           @if (product()!.description) {
-            <div class="pd-section">
-              <h3 class="pd-section-title">About this product</h3>
-              <p class="pd-description">{{ product()!.description }}</p>
+            <p class="pd-desc-text">{{ product()!.description }}</p>
+          }
+
+          <!-- Quantity & Purchase Action -->
+          <div class="pd-purchase-section">
+            <div class="qty-row">
+              <span class="qty-label">{{ 'CHECKOUT_QUANTITY' | translate }}:</span>
+              <div class="shop-qty-control">
+                <button
+                  type="button"
+                  class="qty-btn"
+                  (click)="decreaseQuantity()"
+                  [disabled]="quantity() <= 1"
+                  aria-label="Decrease quantity"
+                >
+                  <i class="material-icons">remove</i>
+                </button>
+                <span class="qty-num">{{ quantity() }}</span>
+                <button
+                  type="button"
+                  class="qty-btn"
+                  (click)="increaseQuantity()"
+                  [disabled]="quantity() >= 99"
+                  aria-label="Increase quantity"
+                >
+                  <i class="material-icons">add</i>
+                </button>
+              </div>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="pd-actions-group">
+              <button
+                type="button"
+                class="btn-shop-primary"
+                [class.added]="addedToCart()"
+                (click)="addToBasket()"
+                [attr.aria-label]="(addedToCart() ? 'PRODUCT_ADDED_TO_BASKET' : 'PRODUCT_ADD_TO_BASKET') | translate"
+              >
+                <i class="material-icons">
+                  {{ addedToCart() ? 'check_circle' : 'add_shopping_cart' }}
+                </i>
+                <span>{{ (addedToCart() ? 'PRODUCT_ADDED_TO_BASKET' : 'PRODUCT_ADD_TO_BASKET') | translate }}</span>
+              </button>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Tabs Section (With Reviews Support) -->
+      <div class="pd-tabs-card" id="product-tabs-anchor">
+        <div class="pd-tabs-nav">
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="activeTab() === 'desc'"
+            (click)="setTab('desc')"
+          >
+            <i class="material-icons">description</i>
+            <span>{{ 'PRODUCT_DESCRIPTION' | translate }}</span>
+          </button>
+
+          <button
+            type="button"
+            class="tab-btn tab-reviews-btn"
+            [class.active]="activeTab() === 'reviews'"
+            (click)="setTab('reviews')"
+          >
+            <i class="material-icons">reviews</i>
+            <span>{{ 'PRODUCT_REVIEWS_TAB' | translate }} ({{ reviewsCount() }})</span>
+          </button>
+        </div>
+
+        <div class="pd-tab-content">
+          <!-- Tab 1: Description -->
+          @if (activeTab() === 'desc') {
+            <div class="tab-pane">
+              @if (product()!.specifications?.length) {
+                <div class="product-description">
+                  <p class="pd-tab-description">{{ product()!.description }}</p>
+                  <div class="specifications-table" role="table" [attr.aria-label]="'PRODUCT_SPECIFICATIONS' | translate">
+                    @for (specification of product()!.specifications; track specification.sortOrder) {
+                      <div class="specification-row" role="row">
+                        <span role="cell">{{ specification.label }}</span>
+                        <strong role="cell">{{ specification.value }}</strong>
+                      </div>
+                    }
+                  </div>
+                </div>
+              } @else {
+                <p class="pd-tab-description">{{ product()!.description }}</p>
+              }
             </div>
           }
 
-          <!-- Delivery Info -->
-          <div class="pd-features">
-            <div class="pd-feature">
-              <i class="material-icons" aria-hidden="true">local_shipping</i>
-              <div>
-                <span class="pd-feature-label">Free Delivery</span>
-                <span class="pd-feature-sub">Delivered in 3–5 business days</span>
-              </div>
-            </div>
-            <div class="pd-feature">
-              <i class="material-icons" aria-hidden="true">autorenew</i>
-              <div>
-                <span class="pd-feature-label">Easy Returns</span>
-                <span class="pd-feature-sub">30-day hassle-free return policy</span>
-              </div>
-            </div>
-            <div class="pd-feature">
-              <i class="material-icons" aria-hidden="true">verified_user</i>
-              <div>
-                <span class="pd-feature-label">Secure Payment</span>
-                <span class="pd-feature-sub">Your payment info is always protected</span>
-              </div>
-            </div>
-          </div>
+          <!-- Tab 4: Customer Reviews & Rating -->
+          @else if (activeTab() === 'reviews') {
+            <div class="tab-pane reviews-pane">
 
-          <!-- Actions -->
-          <div class="pd-actions">
-            <a routerLink="/shop" class="pd-btn-outline">
-              <i class="material-icons" aria-hidden="true">store</i>
-              Continue Shopping
-            </a>
-          </div>
+              @if (reviewsCount() > 0) {
+                <div class="reviews-summary-card">
+                  <div class="score-box">
+                    <span class="big-score">{{ averageRating() }}</span>
+                    <div class="stars">
+                      <i class="material-icons">star</i>
+                      <i class="material-icons">star</i>
+                      <i class="material-icons">star</i>
+                      <i class="material-icons">star</i>
+                      <i class="material-icons">star</i>
+                    </div>
+                    <span class="total-label">{{ 'PRODUCT_BASED_ON_REVIEWS' | translate }} {{ reviewsCount() }}</span>
+                  </div>
+                  <div class="breakdown-box">
+                    @for (b of ratingBreakdown(); track b.stars) {
+                      <div class="bar-row">
+                        <span class="star-num">{{ b.stars }} <i class="material-icons">star</i></span>
+                        <div class="progress-track">
+                          <div class="progress-fill" [style.width.%]="b.percent"></div>
+                        </div>
+                        <span class="count-num">({{ b.count }})</span>
+                      </div>
+                    }
+                  </div>
+                  <div class="cta-box">
+                    <button type="button" class="btn-shop-primary write-rev-btn" (click)="toggleReviewForm()">
+                      <i class="material-icons">{{ showReviewForm() ? 'close' : 'rate_review' }}</i>
+                      <span>{{ (showReviewForm() ? 'PRODUCT_CANCEL_REVIEW' : 'PRODUCT_WRITE_REVIEW') | translate }}</span>
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <div class="reviews-empty-summary">
+                  <i class="material-icons">rate_review</i>
+                  <span>{{ 'PRODUCT_NO_REVIEWS_YET' | translate }}</span>
+                  <button type="button" class="btn-shop-primary write-rev-btn" (click)="toggleReviewForm()">
+                    <i class="material-icons">rate_review</i>
+                    <span>{{ 'PRODUCT_WRITE_REVIEW' | translate }}</span>
+                  </button>
+                </div>
+              }
+
+              <!-- Write a Review Form -->
+              @if (showReviewForm()) {
+                <div class="add-review-card">
+                  <h4 class="form-heading">{{ 'PRODUCT_LEAVE_REVIEW' | translate }}</h4>
+
+                  <!-- Interactive Star Rating -->
+                  <div class="interactive-rating-field">
+                    <label>{{ 'PRODUCT_OVERALL_RATING' | translate }}</label>
+                    <div class="star-rating-picker">
+                      @for (star of [1, 2, 3, 4, 5]; track star) {
+                        <i
+                          class="material-icons picker-star"
+                          [class.filled]="(hoverRating() || newReviewRating()) >= star"
+                          (mouseenter)="setHoverRating(star)"
+                          (mouseleave)="setHoverRating(0)"
+                          (click)="setRating(star)"
+                        >
+                          star
+                        </i>
+                      }
+                      <span class="rating-label-text">
+                        {{ (hoverRating() || newReviewRating()) }} {{ 'PRODUCT_OUT_OF_STARS' | translate }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Form Inputs -->
+                  <div class="review-inputs-grid">
+                    <div class="form-group">
+                      <label>{{ 'PRODUCT_REVIEWING_AS' | translate }}</label>
+                      <input
+                        type="text"
+                        class="shop-input"
+                        [value]="currentUserName()"
+                        disabled
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label>{{ 'PRODUCT_REVIEW_HEADLINE' | translate }}</label>
+                      <input
+                        type="text"
+                        class="shop-input"
+                        [placeholder]="'PRODUCT_REVIEW_TITLE_PLACEHOLDER' | translate"
+                        [value]="newReviewTitle()"
+                        (input)="newReviewTitle.set($any($event.target).value)"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-group mt-3">
+                    <label>{{ 'PRODUCT_REVIEW_EXPERIENCE' | translate }}</label>
+                    <textarea
+                      rows="4"
+                      class="shop-input shop-textarea"
+                      [placeholder]="'PRODUCT_REVIEW_PLACEHOLDER' | translate"
+                      [value]="newReviewComment()"
+                      (input)="newReviewComment.set($any($event.target).value)"
+                    ></textarea>
+                  </div>
+
+                  <div class="form-footer">
+                    <button type="button" class="btn-shop-primary" (click)="submitReview()" [disabled]="submittingReview()">
+                      <i class="material-icons">send</i>
+                      <span>{{ (submittingReview() ? 'PRODUCT_SUBMITTING_REVIEW' : 'PRODUCT_SUBMIT_REVIEW') | translate }}</span>
+                    </button>
+                    <button type="button" class="btn-shop-outline" (click)="toggleReviewForm()">
+                      {{ 'PRODUCT_CANCEL_REVIEW' | translate }}
+                    </button>
+                  </div>
+                </div>
+              }
+
+              <!-- Reviews Feed -->
+              @if (reviewsCount() > 0) {
+                <div class="reviews-feed">
+                  <h4 class="feed-title">{{ 'PRODUCT_CUSTOMER_FEEDBACK' | translate }} ({{ reviewsCount() }})</h4>
+                  @for (rev of reviews(); track rev.id) {
+                    <div class="review-card">
+                      <div class="rev-header">
+                        <div class="user-meta">
+                          <div class="user-avatar">{{ rev.userName.charAt(0).toUpperCase() }}</div>
+                          <div>
+                            <strong class="user-name">{{ rev.userName }}</strong>
+                            @if (rev.verified) {
+                              <span class="verified-badge">
+                                <i class="material-icons">verified</i> Verified Purchase
+                              </span>
+                            }
+                          </div>
+                        </div>
+                        <span class="rev-date">{{ rev.date }}</span>
+                      </div>
+                      <div class="rev-rating">
+                        <div class="stars">
+                          @for (s of [1, 2, 3, 4, 5]; track s) {
+                            <i class="material-icons" [class.active]="s <= rev.rating">star</i>
+                          }
+                        </div>
+                        <h5 class="rev-headline">{{ rev.title }}</h5>
+                      </div>
+                      <p class="rev-body">{{ rev.comment }}</p>
+                    </div>
+                  }
+                </div>
+              }
+
+            </div>
+          }
         </div>
-
       </div>
     }
 
     <!-- Error State -->
     @else if (errorMessage()) {
-      <div class="pd-state-card pd-error">
-        <div class="pd-state-icon">
-          <i class="material-icons">error_outline</i>
-        </div>
-        <h3>Something went wrong</h3>
+      <div class="pd-empty-state pd-error">
+        <i class="material-icons">error_outline</i>
+        <h3>{{ 'PRODUCT_LOAD_ERROR' | translate }}</h3>
         <p>{{ errorMessage() }}</p>
-        <a routerLink="/shop" class="pd-btn-primary">Back to Shop</a>
+        <a routerLink="/shop" class="btn-shop-primary" style="width: auto; padding: 0.75rem 2rem;">{{ 'SHOP_BROWSE' | translate }}</a>
       </div>
     }
 
     <!-- Not Found State -->
     @else {
-      <div class="pd-state-card">
-        <div class="pd-state-icon">
-          <i class="material-icons">search_off</i>
-        </div>
-        <h3>Product not found</h3>
-        <p>The product you're looking for doesn't exist or has been removed.</p>
-        <a routerLink="/shop" class="pd-btn-primary">Browse All Products</a>
+      <div class="pd-empty-state">
+        <i class="material-icons">search_off</i>
+        <h3>{{ 'PRODUCT_NOT_FOUND' | translate }}</h3>
+        <p>{{ 'PRODUCT_NOT_FOUND_DESC' | translate }}</p>
+        <a routerLink="/shop" class="btn-shop-primary" style="width: auto; padding: 0.75rem 2rem;">{{ 'PRODUCT_BROWSE_ALL' | translate }}</a>
       </div>
     }
 

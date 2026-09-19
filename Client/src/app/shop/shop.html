@@ -2,70 +2,66 @@
   <div class="container">
     <!-- Header Section -->
     <div class="shop-header row align-items-end mb-4" id="about" tabindex="-1">
-      <div class="col-md-6">
-        <span class="shop-eyebrow">Curated for everyday life</span>
-        <h1 class="fw-bold text-dark mb-2">Find your next favorite</h1>
-        <p class="text-muted mb-0">Discover quality products, thoughtfully selected for you.</p>
-      </div>
-      <div class="col-md-6 text-md-end mt-3 mt-md-0">
+      <div class="col-md-7">
+        <span class="shop-eyebrow">{{ 'SHOP_EYEBROW' | translate }}</span>
+        <h1 class="fw-bold text-dark mb-2">{{ 'SHOP_TITLE' | translate }}</h1>
+        <p class="text-muted mb-2">{{ 'SHOP_INTRO' | translate }}</p>
         <span class="shop-header-badge">
           <i class="fa fa-cubes me-1"></i>
-          {{ products().length }} Products Available
+          {{ totalCount() }} {{ 'SHOP_PRODUCTS_AVAILABLE' | translate }}
         </span>
       </div>
+
+      @if (products().length) {
+        <div class="col-md-5 shop-header-carousel">
+          @for (p of carouselProducts(); track p.id; let i = $index) {
+            <a
+              [routerLink]="['/shop/product', p.id]"
+              class="carousel-slide"
+              [class.carousel-slide--active]="carouselIndex() === i"
+              [attr.aria-hidden]="carouselIndex() !== i"
+              [tabindex]="carouselIndex() === i ? 0 : -1">
+              <img [src]="productImage(p)" [alt]="p.name" loading="lazy" />
+              <span class="carousel-slide__name">
+                <small>{{ 'SHOP_VIEW_DETAILS' | translate }}</small>
+                <strong>{{ p.name }}</strong>
+                <b>{{ p.newPrice | number:'1.0-2' }} {{ storeSettings.currency() }}</b>
+              </span>
+            </a>
+          }
+          <div class="carousel-dots">
+            @for (p of carouselProducts(); track p.id; let i = $index) {
+              <span class="carousel-dot" [class.carousel-dot--active]="carouselIndex() === i"></span>
+            }
+          </div>
+        </div>
+      }
+
+
     </div>
 
-    <!-- Search and Filter Section -->
+    <!-- Category chips: horizontally scrollable, always visible -->
+    <div class="chip-row" role="tablist" [attr.aria-label]="'NAV_CATEGORIES' | translate">
+      <button
+        type="button"
+        class="filter-chip"
+        [class.filter-chip--active]="selectedCategory() === null"
+        (click)="onCategorySelected(null)">
+        <i class="fa fa-th-large"></i>{{ 'SHOP_ALL' | translate }}
+      </button>
+      @for (category of categories(); track category.id) {
+        <button
+          type="button"
+          class="filter-chip"
+          [class.filter-chip--active]="selectedCategory() === category.id"
+          (click)="onCategorySelected(category.id)">
+          <i class="fa {{ getCategoryIcon(category.name) }}"></i>{{ category.name | translateValue }}
+        </button>
+      }
+    </div>
+
     <div class="row mb-4">
-      <aside class="col-md-3">
-        <div class="shop-sidebar">
-          <div class="shop-sidebar-heading">
-            <span class="shop-eyebrow">Browse</span>
-            <h2>Shopping</h2>
-          </div>
-
-          <!-- Sorting -->
-          <h5 class="filter-label">Sorting</h5>
-          <div class="shop-sort-field mb-4">
-            <i class="fa fa-sort"></i>
-            <select
-              class="form-select shop-select"
-              [ngModel]="selectedSort()"
-              (ngModelChange)="onSortChange($event)"
-              aria-label="Sort products"
-            >
-              <option value="name">Name</option>
-              <option value="priceAsc">Price: Min to Max</option>
-              <option value="priceDesc">Price: Max to Min</option>
-            </select>
-          </div>
-
-          <!-- Categories -->
-          <h5 class="filter-label">Categories</h5>
-          <ul class="list-group category-list">
-            <li
-              class="list-group-item list-group-item-action"
-              [class.active]="selectedCategory() === null"
-              style="cursor: pointer"
-              (click)="onCategorySelected(null)"
-            >
-              <i class="fa fa-th-large me-2"></i>All
-            </li>
-            @for (category of categories(); track category.id) {
-              <li
-                class="list-group-item list-group-item-action"
-                [class.active]="selectedCategory() === category.id"
-                style="cursor: pointer"
-                (click)="onCategorySelected(category.id)"
-              >
-                <i class="fa {{ getCategoryIcon(category.name) }} me-2"></i>{{ category.name }}
-              </li>
-            }
-          </ul>
-        </div>
-      </aside>
-
-      <div class="col-md-9">
+          <div class="col-12 order-md-2">
         <!-- Search Bar -->
         <div class="shop-toolbar">
           <div class="shop-search">
@@ -73,13 +69,51 @@
             <input
               type="search"
               class="shop-search-input"
-              placeholder="Search products..."
+              [placeholder]="'SHOP_SEARCH_PLACEHOLDER' | translate"
               [ngModel]="shopService.searchTerm()"
               (ngModelChange)="onSearchInput($event)"
             />
-            <button type="button" class="shop-search-btn" (click)="onSearch()" aria-label="Search">
+            <button type="button" class="shop-search-btn" (click)="onSearch()" [attr.aria-label]="'SHOP_SEARCH' | translate">
               <i class="material-icons">search</i>
             </button>
+          </div>
+
+          <div class="sort-chips" role="group" [attr.aria-label]="'SHOP_SORTING' | translate">
+            <button type="button" class="sort-chip" [class.sort-chip--active]="selectedSort() === 'name'" (click)="onSortChange('name')">{{ 'SHOP_SORT_NAME' | translate }}</button>
+            <button type="button" class="sort-chip" [class.sort-chip--active]="selectedSort() === 'priceAsc'" (click)="onSortChange('priceAsc')">{{ 'SHOP_SORT_PRICE_ASC' | translate }}</button>
+            <button type="button" class="sort-chip" [class.sort-chip--active]="selectedSort() === 'priceDesc'" (click)="onSortChange('priceDesc')">{{ 'SHOP_SORT_PRICE_DESC' | translate }}</button>
+          </div>
+          <div class="mobile-sort-field">
+            <button
+              type="button"
+              class="mobile-sort-trigger"
+              [attr.aria-expanded]="sortMenuOpen()"
+              [attr.aria-label]="'SHOP_SORTING' | translate"
+              (click)="toggleSortMenu()">
+              <span>
+                @if (selectedSort() === 'priceAsc') {
+                  {{ 'SHOP_SORT_PRICE_ASC' | translate }}
+                } @else if (selectedSort() === 'priceDesc') {
+                  {{ 'SHOP_SORT_PRICE_DESC' | translate }}
+                } @else {
+                  {{ 'SHOP_SORT_NAME' | translate }}
+                }
+              </span>
+              <i class="material-icons" aria-hidden="true">expand_more</i>
+            </button>
+            @if (sortMenuOpen()) {
+              <div class="mobile-sort-menu" role="menu">
+                <button type="button" role="menuitem" [class.active]="selectedSort() === 'name'" (click)="onSortChange('name')">
+                  {{ 'SHOP_SORT_NAME' | translate }}
+                </button>
+                <button type="button" role="menuitem" [class.active]="selectedSort() === 'priceAsc'" (click)="onSortChange('priceAsc')">
+                  {{ 'SHOP_SORT_PRICE_ASC' | translate }}
+                </button>
+                <button type="button" role="menuitem" [class.active]="selectedSort() === 'priceDesc'" (click)="onSortChange('priceDesc')">
+                  {{ 'SHOP_SORT_PRICE_DESC' | translate }}
+                </button>
+              </div>
+            }
           </div>
 
           <div class="shop-toolbar-meta">
@@ -88,23 +122,23 @@
             ) {
               <button type="button" class="shop-reset-btn" (click)="onReset()">
                 <i class="material-icons">refresh</i>
-                <span>Reset filters</span>
+                <span>{{ 'SHOP_RESET_FILTERS' | translate }}</span>
               </button>
             }
             <div class="results-badge">
-              <span class="results-count">{{ products().length }}</span>
-              <span class="results-text">of {{ totalCount() }} products</span>
+              <span class="results-count">{{ totalCount() }}</span>
+              <span class="results-text">{{ 'SHOP_PRODUCTS' | translate }}</span>
             </div>
           </div>
         </div>
 
         <!-- Loading State -->
         @if (loading() && products().length === 0) {
-          <div class="row g-4">
+          <div class="row g-3 g-md-4">
             @for (skeleton of [1, 2, 3, 4]; track skeleton) {
-              <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+              <div class="col-6 col-md-4 col-lg-3">
                 <div class="card product-card border-0 shadow-sm h-100 placeholder-glow">
-                  <div class="card-img-placeholder placeholder w-100" style="height: 220px"></div>
+                  <div class="card-img-placeholder placeholder w-100" style="height: 180px"></div>
                   <div class="card-body p-3">
                     <span class="placeholder col-4 mb-2"></span>
                     <h5 class="card-title placeholder col-8 mb-2"></h5>
@@ -122,13 +156,13 @@
             @if (loading()) {
               <div class="products-refreshing" aria-live="polite">
                 <span class="refresh-spinner" aria-hidden="true"></span>
-                <span>Updating products...</span>
+                <span>{{ 'SHOP_UPDATING' | translate }}</span>
               </div>
             }
 
-            <div class="row g-4" [class.loading-grid]="loading()">
+            <div class="row g-3 g-md-4" [class.loading-grid]="loading()">
               @for (item of products(); track item.id) {
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-6 col-md-4 col-lg-3">
                   <app-shop-item
                     [product]="item"
                     [categoryName]="getCategoryName(item.categoryId)"
@@ -140,7 +174,7 @@
           </div>
 
           <div class="pagination-wrap d-flex justify-content-center mt-4">
-            <nav class="shop-pagination" aria-label="Product pagination">
+            <nav class="shop-pagination" [attr.aria-label]="'SHOP_PAGINATION' | translate">
               <button
                 type="button"
                 class="page-link page-nav"
@@ -179,13 +213,13 @@
             <div class="empty-icon-wrapper mb-3">
               <i class="fa fa-shopping-bag fa-4x text-muted opacity-50"></i>
             </div>
-            <h4 class="fw-bold text-secondary">No Products Found</h4>
-            <p class="text-muted">There are currently no products available to display.</p>
+            <h4 class="fw-bold text-secondary">{{ 'SHOP_NO_PRODUCTS' | translate }}</h4>
+            <p class="text-muted">{{ 'SHOP_NO_PRODUCTS_DESC' | translate }}</p>
             <button
               class="btn btn-outline-primary rounded-pill px-4 mt-2"
               (click)="getAllProduct()"
             >
-              <i class="fa fa-refresh me-1"></i> Refresh Products
+          <i class="fa fa-refresh me-1"></i> {{ 'SHOP_REFRESH' | translate }}
             </button>
           </div>
         }

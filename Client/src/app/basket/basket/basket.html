@@ -1,0 +1,157 @@
+<div class="basket-page" [attr.dir]="languageService.currentLang() === 'ar' ? 'rtl' : 'ltr'">
+  <div class="container">
+    @if (basketService.offlineMessage()) {
+      <div class="basket-offline-notice" role="status">{{ basketService.offlineMessage() }}</div>
+    }
+    <!-- Header -->
+    <div class="basket-header">
+      <div class="basket-header__copy">
+        <span class="basket-eyebrow">{{ 'BASKET_EYEBROW' | translate }}</span>
+        <h1 class="basket-title">{{ 'BASKET_TITLE' | translate }}</h1>
+        <p class="basket-subtitle" *ngIf="basketService.itemCount() > 0">
+          {{ basketService.itemCount() }} {{ basketService.itemCount() === 1 ? ('BASKET_ITEM' | translate) : ('BASKET_ITEMS' | translate) }}
+        </p>
+      </div>
+      <div class="basket-header__actions" *ngIf="basketService.itemCount() > 0">
+        <button type="button" class="btn-clear-basket" (click)="basketService.clear()" [attr.aria-label]="'BASKET_CLEAR' | translate">
+          <svg viewBox="0 0 24 24" class="action-icon" aria-hidden="true">
+            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+          </svg>
+          {{ 'BASKET_CLEAR' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    @if (basketService.basket()?.basketItems?.length) {
+      <div class="basket-layout">
+
+        <!-- Items List -->
+        <section class="basket-items-card" [attr.aria-label]="'BASKET_ITEMS_LABEL' | translate">
+          <div class="basket-items-list">
+            @for (item of basketService.basket()!.basketItems; track item.id) {
+              <article class="basket-item">
+                <!-- Image -->
+                <a [routerLink]="['/shop/product', item.id]" class="basket-item__image-wrap">
+                  <img [src]="basketService.imageUrl(item.image)" [alt]="item.name" class="basket-item__image" loading="lazy" />
+                </a>
+
+                <!-- Details -->
+                <div class="basket-item__details">
+                  <a [routerLink]="['/shop/product', item.id]" class="basket-item__name">{{ item.name }}</a>
+                  <span class="basket-item__unit-price">${{ item.price.toFixed(2) }} {{ 'BASKET_EACH' | translate }}</span>
+                </div>
+
+                <!-- Quantity -->
+                <div class="basket-item__quantity">
+                  <div class="quantity-picker" role="group" [attr.aria-label]="('BASKET_QUANTITY_FOR' | translate) + ' ' + item.name">
+                    <button type="button" class="qty-btn" (click)="basketService.setQuantity(item.id, item.quantity - 1)" [attr.aria-label]="'BASKET_DECREASE' | translate">−</button>
+                    <span class="qty-display">{{ item.quantity }}</span>
+                    <button type="button" class="qty-btn" (click)="basketService.setQuantity(item.id, item.quantity + 1)" [attr.aria-label]="'BASKET_INCREASE' | translate">+</button>
+                  </div>
+                </div>
+
+                <!-- Subtotal -->
+                <div class="basket-item__subtotal">
+                  <strong>${{ (item.price * item.quantity).toFixed(2) }}</strong>
+                </div>
+
+                <!-- Remove -->
+                <div class="basket-item__remove">
+                  <button type="button" class="btn-remove-item" (click)="basketService.setQuantity(item.id, 0)" [attr.aria-label]="('BASKET_REMOVE' | translate) + ' ' + item.name">✕</button>
+                </div>
+              </article>
+            }
+          </div>
+
+          <div class="basket-items-footer">
+            <a routerLink="/shop" class="btn-continue-shopping">
+              <svg viewBox="0 0 24 24" class="btn-icon" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+              {{ 'BASKET_CONTINUE' | translate }}
+            </a>
+          </div>
+        </section>
+
+        <!-- Summary Sidebar -->
+        <aside class="basket-summary" [attr.aria-label]="'BASKET_SUMMARY' | translate">
+          <div class="summary-card">
+            <h2 class="summary-card__title">{{ 'BASKET_SUMMARY' | translate }}</h2>
+
+            <div class="summary-row">
+              <span class="label">{{ 'BASKET_SUBTOTAL' | translate }}</span>
+              <span class="value">${{ basketService.total().toFixed(2) }}</span>
+            </div>
+
+            <!-- Coupon -->
+            <div class="coupon-box">
+              @if (basketService.coupon(); as coupon) {
+                <div class="coupon-applied">
+                  <i class="material-icons" aria-hidden="true">local_offer</i>
+                  <span class="coupon-applied__code">{{ coupon.code }}</span>
+                  <span class="coupon-applied__desc">{{ coupon.isPercentage ? (coupon.value + '%') : ('$' + coupon.value) }} off</span>
+                  <button type="button" class="coupon-remove" (click)="basketService.removeCoupon()" aria-label="Remove coupon">✕</button>
+                </div>
+              } @else {
+                <input type="text" class="coupon-input" placeholder="Coupon code" #couponInput />
+                <button type="button" class="coupon-apply" [disabled]="basketService.couponApplying()" (click)="basketService.applyCoupon(couponInput.value)">
+                  {{ basketService.couponApplying() ? 'Applying…' : 'Apply' }}
+                </button>
+                @if (basketService.couponError(); as couponError) {
+                  <p class="coupon-error" role="alert">
+                    <i class="material-icons" aria-hidden="true">error_outline</i>
+                    {{ couponError }}
+                  </p>
+                }
+              }
+            </div>
+
+            <div class="summary-row">
+              <span class="label">{{ 'BASKET_SHIPPING' | translate }}</span>
+              <span class="value">
+                @if (shippingCost === 0) {
+                  {{ 'BASKET_FREE' | translate }}
+                } @else {
+                  <span class="shipping-note">{{ 'BASKET_SHIPPING_FROM' | translate }}</span> <span dir="ltr">${{ shippingCost.toFixed(2) }}</span>
+                }
+              </span>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            @if (discountAmount > 0) {
+              <div class="summary-row summary-row--discount">
+                <span class="label">Discount</span>
+                <span class="value discount-value">−${{ discountAmount.toFixed(2) }}</span>
+              </div>
+            }
+
+            <div class="summary-row summary-row--total">
+              <span class="label">{{ 'BASKET_TOTAL' | translate }}</span>
+              <span class="value">${{ grandTotal.toFixed(2) }}</span>
+            </div>
+
+            <a routerLink="/checkout" class="btn-checkout">
+              <span>{{ 'BASKET_CHECKOUT' | translate }}</span>
+              <svg viewBox="0 0 24 24" class="btn-icon" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            </a>
+          </div>
+        </aside>
+      </div>
+    } @else {
+      <!-- Empty State -->
+      <div class="basket-empty-card">
+        <div class="empty-icon-wrap" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="empty-icon">
+            <path d="M7 18a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm10 0a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM6.2 6h13.3l-1.6 7.3H8.3L6.2 6Zm-.7-2L4.1 4.5 3 2H1v2h1.2l2.2 9.4L7 17h12v-2H8.6l-.7-3h10.3l2-9H6.5Z"/>
+          </svg>
+        </div>
+        <h2 class="empty-title">{{ 'BASKET_EMPTY_TITLE' | translate }}</h2>
+        <p class="empty-subtitle">{{ 'BASKET_EMPTY_SUB' | translate }}</p>
+        <a routerLink="/shop" class="btn-browse-shop">
+          <svg viewBox="0 0 24 24" class="btn-icon" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+          {{ 'BASKET_EXPLORE' | translate }}
+        </a>
+      </div>
+    }
+  </div>
+</div>

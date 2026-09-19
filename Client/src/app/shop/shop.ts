@@ -1,10 +1,13 @@
 import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { ShopService } from './shop.service';
+import { BasketService } from '../basket/basket.service';
 import { Ipagination } from '../shared/Models/Pagnation';
 import { IProduct } from '../shared/Models/product';
 import { ICategory } from '../shared/Models/Category/Category.component';
-import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil, timeout } from 'rxjs';
+import { StoreSettingsService } from '../core/Services/store-settings.service';
 
 @Component({
   selector: 'app-shop',
@@ -17,34 +20,62 @@ export class Shop implements OnInit, OnDestroy {
   loading = signal<boolean>(true);
   totalCount = signal<number>(0);
   currentPage = signal<number>(1);
-  pageSize = signal<number>(8);
+  pageSize = signal<number>(12);
   selectedCategory = signal<number | null>(null);
   selectedSort = signal<string>('name');
+  sortMenuOpen = signal(false);
+  carouselIndex = signal(0);
+  private carouselTimer: any;
   categories = signal<ICategory[]>([]);
   categoryMap = signal<Record<number, string>>({});
   private destroy$ = new Subject<void>();
   private activeRequestId = 0;
 
+
   constructor(
     public shopService: ShopService,
+    public basketService: BasketService,
+    public storeSettings: StoreSettingsService,
+    private route: ActivatedRoute,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
+      this.carouselTimer = setInterval(() => {
+        const count = Math.min(this.products().length, 5);
+        if (count > 1) this.carouselIndex.update((i) => (i + 1) % count);
+      }, 3000);
       this.shopService
         .onSearchInput()
         .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
         .subscribe(() => this.getAllProduct());
 
-      this.getAllProduct();
+      this.route.queryParamMap
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((params) => {
+          const categoryParam = params.get('categoryId');
+          const categoryId = categoryParam ? Number(categoryParam) : null;
+          this.selectedCategory.set(Number.isInteger(categoryId) && categoryId > 0 ? categoryId : null);
+          this.currentPage.set(1);
+          this.getAllProduct();
+        });
       this.getCategories();
     }
   }
 
   ngOnDestroy(): void {
+    if (this.carouselTimer) clearInterval(this.carouselTimer);
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  productImage(product: IProduct): string {
+    return this.basketService.imageUrl(product.photos?.[0] ?? '');
+  }
+
+  carouselProducts(): IProduct[] {
+    return this.products().slice(0, 5);
   }
 
   getAllProduct() {
@@ -59,7 +90,7 @@ export class Shop implements OnInit, OnDestroy {
     params.PageNumber = this.currentPage();
     params.PageSize = this.pageSize();
 
-    this.shopService.getProduct(params).subscribe({
+    this.shopService.getProduct(params).pipe(timeout(10000)).subscribe({
       next: (value: any) => {
         if (requestId !== this.activeRequestId) {
           return;
@@ -76,6 +107,7 @@ export class Shop implements OnInit, OnDestroy {
         }
 
         console.error('Error fetching Product:', err);
+        this.products.set([]);
         this.loading.set(false);
       }
     });
@@ -110,23 +142,27 @@ export class Shop implements OnInit, OnDestroy {
   }
 
   getImageUrl(photos: string | string[] | undefined): string {
-    if (!photos) {
-      return this.getPlaceholderSvg();
+    const baseUrl = this.shopService.BaseUrl().replace('api/', '');
+
+    if (!photos) return this.getPlaceholderSvg();
+
+    const photo = Array.isArray(photos) ? photos[0] : photos;
+
+    if (!photo) return this.getPlaceholderSvg();
+
+    // Already a full URL
+    if (photo.startsWith('http')) return photo;
+
+    // Normalise backslashes → forward slashes
+    const normalised = photo.replace(/\\/g, '/');
+
+    // If the path already contains "Images/" it's a full relative path (uploaded file)
+    if (normalised.includes('Images/')) {
+      return `${baseUrl}${normalised}?v=2`;
     }
-    if (Array.isArray(photos)) {
-      if (photos.length > 0 && photos[0]) {
-        const photo = photos[0];
-        if (photo.startsWith('http')) {
-          return photo;
-        }
-        return `${this.shopService.BaseUrl().replace('api/', '')}Images/Products/${photo}`;
-      }
-      return this.getPlaceholderSvg();
-    }
-    if (photos.startsWith('http')) {
-      return photos;
-    }
-    return `${this.shopService.BaseUrl().replace('api/', '')}Images/Products/${photos}`;
+
+    // Seed data stores just the filename e.g. "product-1.jpg"
+    return `${baseUrl}Images/Products/${normalised}?v=2`;
   }
 
   onImageError(event: Event): void {
@@ -156,8 +192,13 @@ export class Shop implements OnInit, OnDestroy {
 
   onSortChange(value: string) {
     this.selectedSort.set(value);
+    this.sortMenuOpen.set(false);
     this.currentPage.set(1);
     this.getAllProduct();
+  }
+
+  toggleSortMenu(): void {
+    this.sortMenuOpen.update((open) => !open);
   }
 
   onCategorySelected(categoryId: number | null) {
