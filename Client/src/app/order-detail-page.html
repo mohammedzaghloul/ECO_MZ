@@ -1,0 +1,126 @@
+<div class="order-detail-page">
+  <div class="container py-5">
+
+    <!-- Back link -->
+    <a routerLink="/my-order" class="back-link">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      {{ 'ORDER_BACK_LIST' | translate }}
+    </a>
+
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-3 text-muted">{{ 'ORDER_LOADING' | translate }}</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @if (error()) {
+      <div class="alert-error">{{ 'ORDER_ERROR' | translate }}</div>
+    }
+
+    <!-- Content -->
+    @if (order() && !loading()) {
+      <div class="order-detail-layout">
+
+        <!-- Left: tracking + address -->
+        <div class="order-detail-main">
+
+          <!-- Tracking Card -->
+          <div class="detail-card">
+            <div class="detail-card__header">
+              <h2 class="detail-card__title">{{ 'ORDER_TRACKING_TITLE' | translate }}</h2>
+              <span class="order-badge" [class.badge--paid]="(order()?.status ?? '') !== 'Pending'"
+                                         [class.badge--delivered]="(order()?.status ?? '') === 'Delivered'"
+                                         [class.badge--shipped]="(order()?.status ?? '') === 'Shipped'"
+                                         [class.badge--pending]="(order()?.status ?? '') === 'Pending'">
+                {{ formatStatus(order()?.status) }}
+              </span>
+            </div>
+            <app-order-tracking [steps]="trackingSteps()"></app-order-tracking>
+          </div>
+
+          <!-- Shipping Address Card -->
+          <div class="detail-card">
+            <div class="detail-card__header">
+              <h2 class="detail-card__title">{{ 'ORDER_SHIPPING_ADDRESS' | translate }}</h2>
+            </div>
+            @if (order()?.shippingAddress) {
+              <address class="shipping-address">
+                <strong>{{ order().shippingAddress.firstName }} {{ order().shippingAddress.lastName }}</strong><br />
+                {{ order().shippingAddress.street }}<br />
+                {{ order().shippingAddress.city }}, {{ order().shippingAddress.state }} {{ order().shippingAddress.zipCode }}
+              </address>
+            }
+          </div>
+
+          @if (qrCodeDataUrl()) {
+            <div class="detail-card order-qr-card">
+              <div class="detail-card__header">
+                <h2 class="detail-card__title">{{ 'ORDER_QR_TITLE' | translate }}</h2>
+              </div>
+              <div class="order-qr">
+                <img [src]="qrCodeDataUrl()" [alt]="'ORDER_QR_ALT' | translate" width="180" height="180" />
+                <p>{{ 'ORDER_QR_HINT' | translate }}</p>
+              </div>
+            </div>
+          }
+
+        </div>
+
+        <!-- Right: order summary -->
+        <aside class="order-detail-aside">
+          <div class="detail-card">
+            <div class="detail-card__header">
+              <div>
+                <h2 class="detail-card__title">Order #{{ order()?.id }}</h2>
+                <span class="detail-card__date">{{ order()?.orderDate ? (order()?.orderDate | date: 'mediumDate') : '' }}</span>
+              </div>
+              <span class="order-badge" [class.badge--paid]="(order()?.status ?? '') !== 'Pending'"
+                                         [class.badge--pending]="(order()?.status ?? '') === 'Pending'">
+                {{ formatStatus(order()?.status) }}
+              </span>
+            </div>
+
+            <!-- Items -->
+            @if (order()?.orderItems?.length) {
+              <div class="order-items-list">
+                @for (item of order().orderItems; track item.id) {
+                  <div class="order-item">
+                    <div class="order-item__img-wrap">
+                      <img [src]="basketService.imageUrl(item.mainImage)" [alt]="item.productName" class="order-item__img" loading="lazy" />
+                    </div>
+                    <div class="order-item__info">
+                      <span class="order-item__name">{{ item.productName }}</span>
+                      <span class="order-item__meta">{{ 'ORDER_QTY' | translate }}: {{ item.quantity }}</span>
+                    </div>
+                    <span class="order-item__price">${{ (item.price * item.quantity).toFixed(2) }}</span>
+                  </div>
+                }
+              </div>
+              <div class="summary-divider"></div>
+            }
+
+            <!-- Totals -->
+            <div class="summary-row">
+              <span class="label">{{ 'ORDER_SUBTOTAL' | translate }}</span>
+              <span class="value">${{ (order()?.subTotal ?? 0).toFixed(2) }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">{{ 'ORDER_DELIVERY' | translate }} ({{ order()?.deliveryMethodName }})</span>
+              <span class="value">${{ (order()?.shippingPrice ?? 0).toFixed(0) }}</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-row summary-row--total">
+              <span class="label">{{ 'ORDER_TOTAL' | translate }}</span>
+              <span class="value">${{ ((order()?.total ?? ((order()?.subTotal ?? 0) + (order()?.shippingPrice ?? 0)))).toFixed(2) }}</span>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    }
+
+  </div>
+</div>

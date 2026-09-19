@@ -1,0 +1,348 @@
+<div class="checkout-page" [attr.dir]="languageService.currentLang() === 'ar' ? 'rtl' : 'ltr'">
+  <div class="container">
+
+    <!-- Page Header -->
+    <div class="checkout-header">
+      <a routerLink="/basket" class="back-link">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        {{ 'CHECKOUT_BACK' | translate }}
+      </a>
+      <div class="checkout-header__title">
+        <span class="checkout-eyebrow">{{ 'CHECKOUT_EYEBROW' | translate }}</span>
+        <h1 class="checkout-title">{{ 'CHECKOUT_TITLE' | translate }}</h1>
+      </div>
+    </div>
+
+    <!-- Error Banner -->
+    @if (error()) {
+      <div class="error-banner" role="alert">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        {{ error() }}
+      </div>
+    }
+
+    <div class="checkout-layout">
+
+      <!-- LEFT: Form -->
+      <div class="checkout-form-area">
+        <nav class="checkout-steps" aria-label="Checkout progress">
+          <button type="button" [class.active]="currentStep() === 1" [class.complete]="currentStep() > 1" (click)="currentStep.set(1)">
+            <span>1</span>
+            <strong>{{ 'CHECKOUT_STEP_SHIPPING' | translate }}</strong>
+          </button>
+          <div class="checkout-steps__line" [class.complete]="currentStep() > 1"></div>
+          <button type="button" [class.active]="currentStep() === 2" [class.complete]="currentStep() > 2" (click)="currentStep() > 1 && currentStep.set(2)">
+            <span>2</span>
+            <strong>{{ 'CHECKOUT_STEP_DELIVERY' | translate }}</strong>
+          </button>
+          <div class="checkout-steps__line" [class.complete]="currentStep() > 2"></div>
+          <button type="button" [class.active]="currentStep() === 3" (click)="currentStep() > 2 && currentStep.set(3)">
+            <span>3</span>
+            <strong>{{ 'CHECKOUT_STEP_PAYMENT' | translate }}</strong>
+          </button>
+        </nav>
+
+        <!-- Step 1: Shipping Address -->
+        @if (currentStep() === 1) {
+        <section class="checkout-card checkout-card--step">
+          <div class="checkout-card__header">
+            <span class="step-badge">1</span>
+            <div>
+              <h2 class="checkout-card__title">{{ 'CHECKOUT_STEP_SHIPPING' | translate }}</h2>
+              <p class="checkout-card__sub">{{ 'CHECKOUT_STEP_SHIPPING_SUB' | translate }}</p>
+            </div>
+          </div>
+
+          <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+            <div class="form-grid">
+              <!-- First Name -->
+              <div class="field" [class.field--error]="isInvalid('fristName')">
+                <label class="field__label" for="fristName">{{ 'CHECKOUT_FIRST_NAME' | translate }}</label>
+                <input id="fristName" type="text" class="field__input" formControlName="fristName" [placeholder]="'CHECKOUT_FIRST_NAME' | translate" autocomplete="given-name" />
+                <span class="field__error" *ngIf="isInvalid('fristName')">{{ 'CHECKOUT_FIRST_NAME_ERROR' | translate }}</span>
+              </div>
+
+              <!-- Last Name -->
+              <div class="field" [class.field--error]="isInvalid('lastName')">
+                <label class="field__label" for="lastName">{{ 'CHECKOUT_LAST_NAME' | translate }}</label>
+                <input id="lastName" type="text" class="field__input" formControlName="lastName" [placeholder]="'CHECKOUT_LAST_NAME' | translate" autocomplete="family-name" />
+                <span class="field__error" *ngIf="isInvalid('lastName')">{{ 'CHECKOUT_LAST_NAME_ERROR' | translate }}</span>
+              </div>
+
+              <!-- Street (full width) -->
+              <div class="field field--full" [class.field--error]="isInvalid('street')">
+                <label class="field__label" for="street">{{ 'CHECKOUT_STREET' | translate }}</label>
+                <input id="street" type="text" class="field__input" formControlName="street" [placeholder]="'CHECKOUT_STREET' | translate" autocomplete="street-address" />
+                <span class="field__error" *ngIf="isInvalid('street')">{{ 'CHECKOUT_STREET_ERROR' | translate }}</span>
+              </div>
+
+              <!-- City -->
+              <div class="field" [class.field--error]="isInvalid('city')">
+                <label class="field__label" for="city">{{ 'CHECKOUT_CITY' | translate }}</label>
+                <select id="city" class="field__input field__select" formControlName="city">
+                  <option value="">{{ 'CHECKOUT_SELECT_CITY' | translate }}</option>
+                  @for (city of citiesForGovernorate(); track city.value) {
+                    <option [value]="city.value">{{ localizedOption(city) }}</option>
+                  }
+                </select>
+                @if (!form.get('state')?.value) {
+                  <small class="field__hint">{{ 'CHECKOUT_SELECT_STATE_FIRST' | translate }}</small>
+                }
+                <span class="field__error" *ngIf="isInvalid('city')">{{ 'CHECKOUT_CITY_ERROR' | translate }}</span>
+              </div>
+
+              <!-- State -->
+              <div class="field" [class.field--error]="isInvalid('state')">
+                <label class="field__label" for="state">{{ 'CHECKOUT_STATE' | translate }}</label>
+                <select id="state" class="field__input field__select" formControlName="state">
+                  <option value="">{{ 'CHECKOUT_SELECT_STATE' | translate }}</option>
+                  @for (governorate of governorates(); track governorate.value) {
+                    <option [value]="governorate.value">{{ localizedOption(governorate) }}</option>
+                  }
+                </select>
+                <span class="field__error" *ngIf="isInvalid('state')">{{ 'CHECKOUT_STATE_ERROR' | translate }}</span>
+              </div>
+
+              <!-- Zip Code -->
+              <div class="field" [class.field--error]="isInvalid('zipCode')">
+                <label class="field__label" for="zipCode">{{ 'CHECKOUT_ZIP' | translate }}</label>
+                <input id="zipCode" type="text" class="field__input" formControlName="zipCode" placeholder="12345" autocomplete="postal-code" inputmode="numeric" />
+                <span class="field__error" *ngIf="isInvalid('zipCode')">{{ 'CHECKOUT_ZIP_ERROR' | translate }}</span>
+              </div>
+            </div>
+          </form>
+        </section>
+        <button type="button" class="step-action step-action--next" [disabled]="isSavingAddress()" (click)="nextStep()">
+          {{ isSavingAddress() ? ('CHECKOUT_SAVING_ADDRESS' | translate) : ('CHECKOUT_NEXT' | translate) }}
+          <span aria-hidden="true">{{ nextArrow() }}</span>
+        </button>
+        }
+
+        <!-- Step 2: Delivery Method -->
+        @if (currentStep() === 2) {
+        <section class="checkout-card checkout-card--step">
+          <div class="checkout-card__header">
+            <span class="step-badge">2</span>
+            <div>
+              <h2 class="checkout-card__title">{{ 'CHECKOUT_STEP_DELIVERY' | translate }}</h2>
+              <p class="checkout-card__sub">{{ 'CHECKOUT_STEP_DELIVERY_SUB' | translate }}</p>
+            </div>
+          </div>
+
+          @if (!cityShipping()) {
+            <div class="loading-methods">
+              <span>{{ 'CHECKOUT_SELECT_CITY' | translate }}</span>
+            </div>
+          } @else {
+            <div class="delivery-list">
+              @if (deliveryMethods().length > 0) {
+                @let method = deliveryMethods()[0];
+                <button
+                  type="button"
+                  class="delivery-option"
+                  [class.delivery-option--selected]="selectedDelivery()?.id === method.id && cityShipping()?.shippingAvailable"
+                  [class.delivery-option--unavailable]="!cityShipping()?.shippingAvailable"
+                  [disabled]="!cityShipping()?.shippingAvailable"
+                  (click)="selectDelivery(method)">
+                  <span class="delivery-option__radio">
+                    <span class="radio-dot"></span>
+                  </span>
+                  <span class="delivery-option__info">
+                    <span class="delivery-option__name">{{ 'CHECKOUT_CITY_DELIVERY' | translate }}</span>
+                    <span class="delivery-option__desc">
+                      {{ cityShipping()?.deliveryDays }}
+                      {{ cityShipping()?.deliveryDays === 1 ? ('CHECKOUT_BUSINESS_DAY' | translate) : ('CHECKOUT_BUSINESS_DAYS' | translate) }}
+                    </span>
+                  </span>
+                  <span class="delivery-option__price">
+                    {{ cityShipping()?.shippingAvailable ? ('$' + cityShipping()!.shippingPrice.toFixed(0)) : ('CHECKOUT_UNAVAILABLE' | translate) }}
+                  </span>
+                </button>
+                @if (!cityShipping()?.shippingAvailable) {
+                  <p class="delivery-unavailable">{{ 'CHECKOUT_UNAVAILABLE' | translate }}</p>
+                }
+              } @else {
+                <p class="field__hint">No delivery provider is configured.</p>
+              }
+            </div>
+          }
+        </section>
+        <div class="step-actions">
+          <button type="button" class="step-action step-action--back" (click)="previousStep()"><span aria-hidden="true">{{ backArrow() }}</span> {{ 'CHECKOUT_STEP_BACK' | translate }}</button>
+          <button type="button" class="step-action step-action--next" [disabled]="!selectedDelivery() || !cityShipping()?.shippingAvailable" (click)="nextStep()">{{ 'CHECKOUT_NEXT' | translate }} <span aria-hidden="true">{{ nextArrow() }}</span></button>
+        </div>
+        }
+
+        @if (currentStep() === 3) {
+        <section class="checkout-card checkout-card--step review-card">
+          <div class="checkout-card__header">
+            <span class="step-badge">3</span>
+            <div>
+              <h2 class="checkout-card__title">{{ 'CHECKOUT_STEP_PAYMENT' | translate }}</h2>
+              <p class="checkout-card__sub">{{ 'CHECKOUT_STEP_PAYMENT_SUB' | translate }}</p>
+            </div>
+          </div>
+
+          <!-- Payment Options -->
+          <div class="payment-methods-section">
+            <h3 class="section-subtitle">{{ 'CHECKOUT_PAYMENT_METHOD' | translate }}</h3>
+            <div class="payment-options-grid">
+              @for (option of paymentOptions; track option.id) {
+                <button
+                  type="button"
+                  class="payment-option-card"
+                  [class.payment-option-card--selected]="selectedPaymentMethod() === option.id"
+                  (click)="selectPaymentMethod(option.id)">
+                  <span class="payment-brand payment-brand--{{ option.brand }}" aria-hidden="true">
+                    @if (option.logo) {
+                      <img [src]="option.logo" alt="" />
+                    } @else {
+                      <span class="material-icons payment-brand__symbol">{{ option.icon }}</span>
+                    }
+                  </span>
+                  <span class="payment-option-card__radio">
+                    <span class="radio-dot"></span>
+                  </span>
+                  <span class="payment-option-card__info">
+                    <span class="payment-option-card__name">
+                      {{ option.labelKey | translate }}
+                    </span>
+                    <span class="payment-option-card__desc">{{ option.descKey | translate }}</span>
+                  </span>
+                </button>
+              }
+            </div>
+
+            <!-- Stripe Card input when Stripe is selected -->
+            @if (selectedPaymentMethod() === 'Stripe') {
+              <div class="payment-stripe-box">
+                <div class="payment-area" [class.payment-area--disabled]="stripeLoading()">
+                  <div id="card-element" class="stripe-card"></div>
+                  @if (stripeLoading()) {
+                    <div class="stripe-loading-text">Loading card inputs...</div>
+                  }
+                  @if (stripeError()) {
+                    <div class="field__error">{{ stripeError() }}</div>
+                  }
+                </div>
+                <div class="payment-note">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                  <span>{{ 'CHECKOUT_PAYMENT_SECURE' | translate }}</span>
+                </div>
+              </div>
+            }
+
+            <!-- Instructions for COD -->
+            @if (selectedPaymentMethod() === 'COD') {
+              <div class="payment-instructions-box">
+                <span class="material-icons instructions-icon">local_shipping</span>
+                <p>{{ 'CHECKOUT_COD_INSTRUCTIONS' | translate }}</p>
+              </div>
+            }
+
+            <!-- Instructions for Wallets -->
+            @if (selectedPaymentMethod() === 'InstaPay' || selectedPaymentMethod() === 'VodafoneCash') {
+              <div class="payment-instructions-box">
+                <span class="material-icons instructions-icon">account_balance_wallet</span>
+                <a class="wallet-whatsapp-link" href="https://wa.me/201009901702" target="_blank" rel="noopener noreferrer">
+                  {{ 'CHECKOUT_WALLET_INSTRUCTIONS_PREFIX' | translate }}
+                  <bdi dir="ltr">01009901702</bdi>
+                  {{ 'CHECKOUT_WALLET_INSTRUCTIONS_SUFFIX' | translate }}
+                </a>
+              </div>
+            }
+          </div>
+
+          <div class="review-divider"></div>
+          <div class="review-row">
+            <div>
+              <span class="review-label">{{ 'CHECKOUT_STEP_SHIPPING' | translate }}</span>
+              <p>
+                {{ form.value.fristName }} {{ form.value.lastName }}<br>
+                {{ form.value.street }}<br>
+                {{ form.value.city }}, {{ form.value.state }} {{ form.value.zipCode }}
+              </p>
+            </div>
+            <button type="button" class="review-edit" (click)="currentStep.set(1)">{{ 'CHECKOUT_EDIT' | translate }}</button>
+          </div>
+          <div class="review-row">
+            <div>
+              <span class="review-label">{{ 'CHECKOUT_STEP_DELIVERY' | translate }}</span>
+              <p>
+                {{ 'CHECKOUT_CITY_DELIVERY' | translate }} ·
+                {{ cityShipping()?.deliveryDays }}
+                {{ cityShipping()?.deliveryDays === 1 ? ('CHECKOUT_BUSINESS_DAY' | translate) : ('CHECKOUT_BUSINESS_DAYS' | translate) }}
+              </p>
+            </div>
+            <button type="button" class="review-edit" (click)="currentStep.set(2)">{{ 'CHECKOUT_EDIT' | translate }}</button>
+          </div>
+          <p class="review-note">{{ 'CHECKOUT_REVIEW_NOTE' | translate }}</p>
+          <button type="button" class="step-action step-action--back" (click)="previousStep()"><span aria-hidden="true">{{ backArrow() }}</span> {{ 'CHECKOUT_STEP_BACK' | translate }}</button>
+        </section>
+        }
+
+      </div><!-- /checkout-form-area -->
+
+      <!-- RIGHT: Order Summary -->
+      <aside class="checkout-summary">
+        <div class="summary-card">
+          <h2 class="summary-card__title">{{ 'BASKET_SUMMARY' | translate }}</h2>
+
+          <!-- Items -->
+          <div class="summary-items">
+            @for (item of basketService.basket()?.basketItems ?? []; track item.id) {
+              <div class="summary-item">
+                <div class="summary-item__img-wrap">
+                  <img [src]="basketService.imageUrl(item.image)" [alt]="item.name" class="summary-item__img" loading="lazy" />
+                  <span class="summary-item__qty">{{ item.quantity }}</span>
+                </div>
+                <span class="summary-item__name">{{ item.name }}</span>
+                <span class="summary-item__price">${{ (item.price * item.quantity).toFixed(2) }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <div class="summary-row">
+            <span class="label">{{ 'BASKET_SUBTOTAL' | translate }}</span>
+            <span class="value">${{ basketService.total().toFixed(2) }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">{{ 'CHECKOUT_DELIVERY' | translate }}</span>
+            <span class="value {{ shippingCost === 0 ? 'text-success' : '' }}">
+              {{ shippingCost === 0 ? ('BASKET_FREE' | translate) : ('$' + shippingCost.toFixed(0)) }}
+            </span>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <div class="summary-row summary-row--total">
+            <span class="label">{{ 'BASKET_TOTAL' | translate }}</span>
+            <span class="value">${{ orderTotal.toFixed(2) }}</span>
+          </div>
+
+          <!-- Place Order Button -->
+          @if (currentStep() === 3) {
+          <button type="button" class="btn-place-order" [disabled]="isSubmitting()" (click)="submit()">
+            @if (isSubmitting()) {
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              {{ 'CHECKOUT_PLACING' | translate }}
+            } @else {
+              <svg viewBox="0 0 24 24" class="btn-icon" aria-hidden="true"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+              {{ 'CHECKOUT_PLACE_ORDER' | translate }}
+            }
+          </button>
+          }
+
+          <p class="summary-legal">
+            {{ 'CHECKOUT_LEGAL_PREFIX' | translate }}
+            <a href="#" class="legal-link">{{ 'CHECKOUT_TERMS' | translate }}</a> {{ 'CHECKOUT_LEGAL_AND' | translate }}
+            <a href="#" class="legal-link">{{ 'FOOTER_PRIVACY' | translate }}</a>.
+          </p>
+        </div>
+      </aside>
+
+    </div><!-- /checkout-layout -->
+  </div>
+</div>
