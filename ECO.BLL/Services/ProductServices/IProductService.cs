@@ -1,19 +1,19 @@
-using ECO.BLL.DTO;
 using ECO.DAL.Sharing;
-using ECO.DAL.Entites.Product;
+using ECO.DAL.Entities.Product;
 using System.Linq.Expressions;
+using ECO.BLL.DTO.ProductDtos;
 
 namespace ECO.BLL.Services.ProductServices
 {
     public interface IProductService
     {
-        Task<ProductDto> AddAsync(AddProductDto dto);
-        Task<IReadOnlyList<ProductDto>> GetAllAsync(ProductParams? productParams);
-        Task<IReadOnlyList<ProductDto>> GetAllAsync(params Expression<Func<Product, object>>[] includes);
-        Task<ProductDto?> GetByIdAsync(int id);
-        Task<ProductDto?> GetByIdAsync(int id, params Expression<Func<Product, object>>[] includes);
-        Task<bool> UpdateAsync(UpdateProductDto dto);
-        Task<bool> DeleteAsync(int id);
-        Task<int> GetCountAsync(ProductParams? productParams);
+        Task<ProductDto> AddAsync(AddProductDto dto, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<ProductDto>> GetAllAsync(ProductParams? productParams, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<ProductDto>> GetAllAsync(Expression<Func<Product, object>>[] includes, CancellationToken cancellationToken = default);
+        Task<ProductDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<ProductDto?> GetByIdAsync(int id, Expression<Func<Product, object>>[] includes, CancellationToken cancellationToken = default);
+        Task<bool> UpdateAsync(UpdateProductDto dto, CancellationToken cancellationToken = default);
+        Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default);
+        Task<int> GetCountAsync(ProductParams? productParams, CancellationToken cancellationToken = default);
     }
 }

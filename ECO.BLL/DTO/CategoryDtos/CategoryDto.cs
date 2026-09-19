@@ -1,4 +1,4 @@
-namespace ECO.BLL.DTO
+namespace ECO.BLL.DTO.CategoryDtos
 {
     public record CategoryDto(
         int Id,
