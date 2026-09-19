@@ -2,8 +2,6 @@
 
 A full-stack e-commerce platform built with **Angular 21** and **.NET 10**, covering the complete shopping journey — from browsing products to checkout, payments, order tracking, and a full admin dashboard — plus a built-in **landing-page builder** with WhatsApp ordering and analytics.
 
-![Landing Page Preview](docs/images/landing-preview.png)
-
 ## Features
 
 ### Storefront (Angular)
