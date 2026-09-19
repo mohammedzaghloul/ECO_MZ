@@ -1,48 +1,56 @@
 <main class="home-page">
 
   <!-- Hero Section -->
-  <section class="home-hero container">
+  <section class="home-hero-band">
+    <div class="home-hero container">
     <div class="hero-copy">
-      <span class="home-eyebrow">Welcome to Eco</span>
-      <h1>Better products for<br />everyday living.</h1>
-      <p>
-        Discover thoughtfully selected essentials with a premium shopping
-        experience made for you.
-      </p>
+      <span class="home-eyebrow">
+        <img src="images/logo.png" alt="" width="28" height="28" aria-hidden="true" />
+        <span>{{ 'HOME_WELCOME' | translate }}</span>
+      </span>
+      <h1>{{ 'HOME_HERO_TITLE' | translate }}</h1>
+      <p>{{ 'HOME_HERO_SUBTITLE' | translate }}</p>
       <div class="hero-actions">
         <a routerLink="/shop" class="btn-hero-primary">
           <i class="material-icons" aria-hidden="true">storefront</i>
-          Shop now
+          {{ 'HOME_SHOP_NOW' | translate }}
         </a>
         <a routerLink="/best-sellers" class="btn-hero-outline">
-          Best sellers
+          {{ 'NAV_BEST_SELLERS' | translate }}
         </a>
       </div>
     </div>
 
-    <div class="hero-visual" aria-hidden="true">
-      <div class="hero-panel">
-        <span class="hero-panel-label">ECO</span>
-        <span class="hero-panel-title">Premium<br />store</span>
-        <div class="hero-panel-stats">
-          <div class="hero-stat">
-            <span class="hero-stat-num">500+</span>
-            <span class="hero-stat-label">Products</span>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">50+</span>
-            <span class="hero-stat-label">Brands</span>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">4.9★</span>
-            <span class="hero-stat-label">Rating</span>
+    <div class="hero-visual">
+      @if (showcaseList().length) {
+        <div class="hero-media">
+          @for (p of showcaseList(); track p.id; let i = $index) {
+            <a
+              [routerLink]="['/shop/product', p.id]"
+              class="hero-slide"
+              [class.hero-slide--active]="carouselIndex() === i"
+              [attr.aria-hidden]="carouselIndex() !== i"
+              [tabindex]="carouselIndex() === i ? 0 : -1">
+              <img [src]="imageUrl(p)" [alt]="p.name" [attr.loading]="i === 0 ? 'eager' : 'lazy'" />
+              <span class="hero-media__card">
+                <span class="hero-media__name">{{ p.name }}</span>
+                <span class="hero-media__price">{{ p.newPrice | storeCurrency }}</span>
+              </span>
+            </a>
+          }
+          <div class="hero-dots">
+            @for (p of showcaseList(); track p.id; let i = $index) {
+              <span class="hero-dot" [class.hero-dot--active]="carouselIndex() === i"></span>
+            }
           </div>
         </div>
-      </div>
+      } @else {
+        <div class="hero-media hero-media--fallback" aria-hidden="true"></div>
+      }
     </div>
+  </div>
   </section>
 
-  <!-- Features Section -->
   <section class="home-features">
     <div class="container">
       <div class="features-grid">
@@ -51,8 +59,8 @@
             <i class="material-icons" aria-hidden="true">local_shipping</i>
           </div>
           <div class="feature-text">
-            <h3>Free Shipping</h3>
-            <p>On all orders over $50. Fast and reliable delivery to your door.</p>
+            <h3>{{ 'HOME_FREE_SHIPPING' | translate }}</h3>
+            <p>{{ 'HOME_FREE_SHIPPING_DESC' | translate }}</p>
           </div>
         </div>
         <div class="feature-card">
@@ -60,8 +68,8 @@
             <i class="material-icons" aria-hidden="true">autorenew</i>
           </div>
           <div class="feature-text">
-            <h3>Easy Returns</h3>
-            <p>30-day hassle-free return policy. No questions asked.</p>
+            <h3>{{ 'HOME_EASY_RETURNS' | translate }}</h3>
+            <p>{{ 'HOME_EASY_RETURNS_DESC' | translate }}</p>
           </div>
         </div>
         <div class="feature-card">
@@ -69,8 +77,8 @@
             <i class="material-icons" aria-hidden="true">verified_user</i>
           </div>
           <div class="feature-text">
-            <h3>Secure Payment</h3>
-            <p>Your payment info is encrypted and always protected.</p>
+            <h3>{{ 'HOME_SECURE_PAYMENT' | translate }}</h3>
+            <p>{{ 'HOME_SECURE_PAYMENT_DESC' | translate }}</p>
           </div>
         </div>
         <div class="feature-card">
@@ -78,26 +86,71 @@
             <i class="material-icons" aria-hidden="true">support_agent</i>
           </div>
           <div class="feature-text">
-            <h3>24/7 Support</h3>
-            <p>Our team is here for you any time, any day of the week.</p>
+            <h3>{{ 'HOME_SUPPORT' | translate }}</h3>
+            <p>{{ 'HOME_SUPPORT_DESC' | translate }}</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- Featured categories -->
+  <section class="home-section" id="categories">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="home-eyebrow">{{ 'HOME_SHOP_BY_NEED' | translate }}</span><h2>{{ 'HOME_FEATURED_CATEGORIES' | translate }}</h2></div>
+        <a routerLink="/shop">{{ 'HOME_VIEW_ALL' | translate }} <i class="material-icons">arrow_forward</i></a>
+      </div>
+      <div class="category-grid">
+        @for (category of categories(); track category.id; let i = $index) {
+          <a class="category-tile" [class.category-tile--featured]="i === 0" [routerLink]="['/shop']" [queryParams]="{ categoryId: category.id }">
+            <span class="category-icon"><i class="material-icons">{{ categoryIcon(category) }}</i></span>
+            <span class="category-name">{{ category.name | translateValue }}</span>
+            <span class="category-go"><i class="material-icons">arrow_forward</i></span>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured products -->
+  <section class="home-section home-products">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="home-eyebrow">{{ 'HOME_CAREFULLY_SELECTED' | translate }}</span><h2>{{ 'SHOP_FEATURED' | translate }}</h2></div>
+        <a routerLink="/shop">{{ 'HOME_SHOP_ALL' | translate }} <i class="material-icons">arrow_forward</i></a>
+      </div>
+      <div class="home-product-grid">
+        @for (product of products(); track product.id) {
+          <a class="home-product" [routerLink]="['/shop/product', product.id]">
+            <div class="home-product-image"><img [src]="imageUrl(product)" [alt]="product.name" loading="lazy"></div>
+            <span class="product-category">{{ 'HOME_ECO_COLLECTION' | translate }}</span>
+            <h3>{{ product.name }}</h3>
+            <div class="home-product-price"><strong>{{ product.newPrice | storeCurrency }}</strong>@if (product.oldPrice > product.newPrice) {<del>{{ product.oldPrice | storeCurrency }}</del>}</div>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
   <!-- CTA Section -->
   <section class="home-cta">
     <div class="container">
       <div class="cta-card">
+        <div class="cta-background" aria-hidden="true">
+          <img src="images/banner-01.jpg" alt="" />
+          <img src="images/banner-02.jpg" alt="" />
+          <img src="images/banner-03.jpg" alt="" />
+        </div>
         <div class="cta-copy">
-          <span class="cta-eyebrow">Ready to shop?</span>
-          <h2>Find your next favorite product today.</h2>
-          <p>Browse hundreds of curated, premium products at unbeatable prices.</p>
+          <span class="cta-eyebrow">{{ 'HOME_READY' | translate }}</span>
+          <h2>{{ 'HOME_CTA_TITLE' | translate }}</h2>
+          <p>{{ 'HOME_CTA_DESC' | translate }}</p>
         </div>
         <a routerLink="/shop" class="btn-hero-primary cta-btn">
           <i class="material-icons" aria-hidden="true">shopping_bag</i>
-          Explore the Shop
+          {{ 'BASKET_EXPLORE' | translate }}
         </a>
       </div>
     </div>

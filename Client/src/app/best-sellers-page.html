@@ -1,8 +1,130 @@
-<section class="info-page container">
-  <div class="info-card">
-    <span class="info-eyebrow">Best Sellers</span>
-    <h1>Products our customers love.</h1>
-    <p>Discover popular picks from the Eco catalog, selected for quality, value, and everyday usefulness.</p>
-    <a routerLink="/shop" class="btn btn-primary rounded-pill">Browse all products</a>
+<div class="main-content">
+  <div class="container">
+    <section
+      class="best-sellers-hero"
+      id="best-sellers"
+      tabindex="-1"
+      [style.background-image]="heroBackground() || null"
+    >
+      <div class="best-sellers-hero-copy">
+        <span class="shop-eyebrow"><i class="fa fa-fire-flame-curved"></i>{{ 'BS_EYEBROW' | translate }}</span>
+        <h1>{{ 'BS_TITLE' | translate }}</h1>
+        <p>{{ 'BS_INTRO' | translate }}</p>
+        <div class="best-sellers-proof">
+          <span><i class="fa fa-check"></i>{{ 'BS_FEATURED_COUNT' | translate }}</span>
+          <span><i class="fa fa-star"></i>{{ 'BS_QUALITY_PROOF' | translate }}</span>
+        </div>
+      </div>
+      <div class="best-sellers-hero-art" aria-hidden="true">
+        <span class="hero-orbit orbit-one"></span>
+        <span class="hero-orbit orbit-two"></span>
+        <i class="fa fa-fire-flame-curved"></i>
+        <strong>{{ totalCount() }}</strong>
+        <small>{{ 'BS_FEATURED_COUNT' | translate }}</small>
+      </div>
+    </section>
+
+    <div class="best-sellers-toolbar">
+      <div>
+        <span class="best-sellers-kicker">{{ 'BS_EYEBROW' | translate }}</span>
+        <h2>{{ 'BS_TITLE' | translate }}</h2>
+      </div>
+      <span class="best-sellers-count">{{ totalCount() }} {{ 'BS_FEATURED_COUNT' | translate }}</span>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading() && products().length === 0) {
+      <div class="row g-3 g-md-4">
+        @for (skeleton of [1, 2, 3, 4]; track skeleton) {
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="card product-card border-0 shadow-sm h-100 placeholder-glow">
+              <div class="card-img-placeholder placeholder w-100" style="height: 180px"></div>
+              <div class="card-body p-3">
+                <span class="placeholder col-4 mb-2"></span>
+                <h5 class="card-title placeholder col-8 mb-2"></h5>
+                <p class="placeholder col-12 mb-1"></p>
+                <div class="placeholder col-6 mt-3"></div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @else if (products().length > 0) {
+      <div class="products-shell best-sellers-products">
+        @if (loading()) {
+          <div class="products-refreshing" aria-live="polite">
+            <span class="refresh-spinner" aria-hidden="true"></span>
+            <span>{{ 'BS_UPDATING' | translate }}</span>
+          </div>
+        }
+
+        <div class="row g-3 g-md-4" [class.loading-grid]="loading()">
+          @for (item of products(); track item.id; let index = $index) {
+            <div class="col-6 col-md-4 col-lg-3 best-seller-item" [style.--item-index]="index">
+              @if (index < 3 && currentPage() === 1) {
+                <span class="rank-badge"><i class="fa fa-trophy"></i> #{{ index + 1 }}</span>
+              }
+              <app-shop-item
+                [product]="item"
+                [categoryName]="getCategoryName(item.categoryId)"
+                [imageUrl]="getImageUrl(item.photos)"
+              ></app-shop-item>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="pagination-wrap d-flex justify-content-center mt-4">
+        <nav class="shop-pagination" aria-label="Product pagination">
+          <button
+            type="button"
+            class="page-link page-nav"
+            [disabled]="currentPage() === 1"
+            (click)="goToPage(currentPage() - 1)"
+          >
+            ‹
+          </button>
+
+          @for (page of pageNumbers(); track page) {
+            <button
+              type="button"
+              class="page-link"
+              [class.active]="page === currentPage()"
+              (click)="goToPage(page)"
+            >
+              {{ page }}
+            </button>
+          }
+
+          <button
+            type="button"
+            class="page-link page-nav"
+            [disabled]="currentPage() >= totalPages()"
+            (click)="goToPage(currentPage() + 1)"
+          >
+            ›
+          </button>
+        </nav>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @else {
+      <div class="text-center py-5 my-5">
+        <div class="empty-icon-wrapper mb-3">
+          <i class="fa fa-shopping-bag fa-4x text-muted opacity-50"></i>
+        </div>
+        <h4 class="fw-bold text-secondary">{{ 'BS_NO_PRODUCTS' | translate }}</h4>
+        <p class="text-muted">{{ 'BS_NO_PRODUCTS_DESC' | translate }}</p>
+        <button
+          class="btn btn-outline-primary rounded-pill px-4 mt-2"
+          (click)="getAllProduct()"
+        >
+          <i class="fa fa-refresh me-1"></i> {{ 'BS_REFRESH' | translate }}
+        </button>
+      </div>
+    }
   </div>
-</section>
+</div>
