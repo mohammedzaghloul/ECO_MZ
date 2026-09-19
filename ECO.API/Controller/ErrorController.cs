@@ -12,6 +12,10 @@ namespace ECO.Api.Controller
     public class ErrorController : ControllerBase
     {
         [HttpGet]
+        [HttpPost]
+        [HttpPut]
+        [HttpDelete]
+        [HttpPatch]
         public IActionResult Error(int StatusCode)
         {
            return new ObjectResult(new ResponseApi(StatusCode, $"Error {StatusCode} occurred"));    

@@ -1,5 +1,5 @@
 using ECO.BLL.Services.Basket;
-using ECO.DAL.Entites.Basket;
+using ECO.DAL.Entities.Basket;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECO.Api.Controller

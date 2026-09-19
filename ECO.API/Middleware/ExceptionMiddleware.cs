@@ -11,7 +11,8 @@ namespace ECO.Api.Middleware
         private readonly ILogger<ExceptionMiddleware> _logger;
         private readonly IHostEnvironment _env;
         private readonly IMemoryCache _memoryCache;
-        private readonly TimeSpan _RateLimitWindow= TimeSpan.FromSeconds(30);
+        private readonly TimeSpan _rateLimitWindow = TimeSpan.FromSeconds(30);
+        private const int MaxRequestsPerWindow = 120;
         public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env,IMemoryCache memoryCache)
         {
             _next = next;
@@ -29,7 +30,7 @@ namespace ECO.Api.Middleware
                 {
                     context.Response.ContentType = "application/json";
                     context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
-                    var response = new ExcepationsApi((int)HttpStatusCode.TooManyRequests, "Too many requests. Please try again later.");
+                    var response = new ExceptionApi((int)HttpStatusCode.TooManyRequests, "Too many requests. Please try again later.");
                     var jsonOptions = new JsonSerializerOptions
                     {
                         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -40,6 +41,18 @@ namespace ECO.Api.Middleware
                 }
                 await _next(context);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+
+                var response = new ExceptionApi((int)HttpStatusCode.Unauthorized, ex.Message);
+                var jsonOptions = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response, jsonOptions));
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unhandled Exception: {Message}", ex.Message);
@@ -47,9 +60,9 @@ namespace ECO.Api.Middleware
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-                var response = _env.IsDevelopment()? new ExcepationsApi(
+                var response = _env.IsDevelopment()? new ExceptionApi(
                         (int)HttpStatusCode.InternalServerError, ex.Message,ex.StackTrace): 
-                        new ExcepationsApi((int)HttpStatusCode.InternalServerError, "An unexpected internal server error occurred.");
+                        new ExceptionApi((int)HttpStatusCode.InternalServerError, "An unexpected internal server error occurred.");
 
                 var jsonOptions = new JsonSerializerOptions
                 {
@@ -63,24 +76,24 @@ namespace ECO.Api.Middleware
         private bool IsRequestAllowed(HttpContext context)
         {
             var ip = context.Connection.RemoteIpAddress?.ToString();
-            var cachKey=$"RateLimit_{ip}";
+            var cachKey = $"RateLimit_{ip}";
             var dateNow = DateTime.UtcNow;
             var (timestamp, count) = _memoryCache.GetOrCreate(cachKey, entry =>
             {
-                entry.AbsoluteExpirationRelativeToNow = _RateLimitWindow;
+                entry.AbsoluteExpirationRelativeToNow = _rateLimitWindow;
                 return (dateNow, 0);
             });
-            if (dateNow - timestamp < _RateLimitWindow)
+            if (dateNow - timestamp < _rateLimitWindow)
             {
-                if (count >= 60)
+                if (count >= MaxRequestsPerWindow)
                 {
                     return false;
                 }
-                _memoryCache.Set(cachKey, (timestamp, count += 1), _RateLimitWindow); 
+                _memoryCache.Set(cachKey, (timestamp, count + 1), _rateLimitWindow);
             }
             else
             {
-                _memoryCache.Set(cachKey, (timestamp, count), _RateLimitWindow);
+                _memoryCache.Set(cachKey, (dateNow, 1), _rateLimitWindow);
             }
             
 
