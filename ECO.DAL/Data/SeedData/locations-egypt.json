@@ -1,0 +1,32 @@
+[
+  {
+    "value": "Cairo",
+    "en": "Cairo",
+    "ar": "القاهرة",
+    "cities": [
+      { "value": "Nasr City", "en": "Nasr City", "ar": "مدينة نصر", "shippingPrice": 50, "deliveryDays": 2, "shippingAvailable": true },
+      { "value": "New Cairo", "en": "New Cairo", "ar": "القاهرة الجديدة", "shippingPrice": 55, "deliveryDays": 2, "shippingAvailable": true },
+      { "value": "Heliopolis", "en": "Heliopolis", "ar": "مصر الجديدة", "shippingPrice": 50, "deliveryDays": 2, "shippingAvailable": true }
+    ]
+  },
+  {
+    "value": "Giza",
+    "en": "Giza",
+    "ar": "الجيزة",
+    "cities": [
+      { "value": "Dokki", "en": "Dokki", "ar": "الدقي", "shippingPrice": 45, "deliveryDays": 2, "shippingAvailable": true },
+      { "value": "6th of October", "en": "6th of October", "ar": "السادس من أكتوبر", "shippingPrice": 60, "deliveryDays": 3, "shippingAvailable": true },
+      { "value": "Haram", "en": "Haram", "ar": "الهرم", "shippingPrice": 50, "deliveryDays": 2, "shippingAvailable": true }
+    ]
+  },
+  {
+    "value": "Dakahlia",
+    "en": "Dakahlia",
+    "ar": "الدقهلية",
+    "cities": [
+      { "value": "Mansoura", "en": "Mansoura", "ar": "المنصورة", "shippingPrice": 60, "deliveryDays": 3, "shippingAvailable": true },
+      { "value": "Talkha", "en": "Talkha", "ar": "طلخا", "shippingPrice": 60, "deliveryDays": 3, "shippingAvailable": true },
+      { "value": "Mit Ghamr", "en": "Mit Ghamr", "ar": "ميت غمر", "shippingPrice": 70, "deliveryDays": 5, "shippingAvailable": false }
+    ]
+  }
+]

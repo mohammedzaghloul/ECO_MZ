@@ -4,6 +4,7 @@ using ECO.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECO.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260917014740_AddLandingPageEvents")]
+    partial class AddLandingPageEvents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,20 +188,10 @@ namespace ECO.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AccentColor")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("FontFamily")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
 
                     b.Property<bool>("IsPublished")
                         .HasColumnType("bit");
@@ -211,11 +204,6 @@ namespace ECO.DAL.Migrations
                         .HasMaxLength(180)
                         .HasColumnType("nvarchar(180)");
 
-                    b.Property<string>("Template")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(180)
@@ -224,23 +212,8 @@ namespace ECO.DAL.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("VideoUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<int>("ViewCount")
                         .HasColumnType("int");
-
-                    b.Property<string>("WhatsAppMessage")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<string>("WhatsAppNumber")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
 
@@ -287,9 +260,7 @@ namespace ECO.DAL.Migrations
 
                     b.HasIndex("LandingPageId", "CreatedAt");
 
-                    b.HasIndex("LandingPageId", "EventType", "SessionId")
-                        .IsUnique()
-                        .HasFilter("[EventType] = 'visit'");
+                    b.HasIndex("LandingPageId", "EventType", "SessionId");
 
                     b.ToTable("LandingPageEvents");
                 });
@@ -894,166 +865,6 @@ namespace ECO.DAL.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("ECO.DAL.Entities.StoreSettings", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CurrencyCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailAccentColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailBackgroundColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailBrandName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailCtaText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailEyebrowText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailFooterNote")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailGreetingText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailHeaderStyle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailHeadingFont")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailInkColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailIntroText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailLogoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailPaperColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SmtpFrom")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SmtpHost")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SmtpPasswordProtected")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("SmtpPort")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("SmtpUseSsl")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SmtpUsername")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("StoreSettings");
-                });
-
-            modelBuilder.Entity("ECO.DAL.Entities.WebhookConfig", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("OwnerEmail")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Secret")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("SubscribedEventsJson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerEmail", "IsActive");
-
-                    b.ToTable("WebhookConfigs");
-                });
-
-            modelBuilder.Entity("ECO.DAL.Entities.WebhookLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Attempt")
-                        .HasColumnType("int");
-
-                    b.Property<string>("EventType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("ResponseStatusCode")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("SentAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Success")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("WebhookConfigId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WebhookConfigId", "SentAt");
-
-                    b.ToTable("WebhookLogs");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -1391,17 +1202,6 @@ namespace ECO.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ECO.DAL.Entities.WebhookLog", b =>
-                {
-                    b.HasOne("ECO.DAL.Entities.WebhookConfig", "WebhookConfig")
-                        .WithMany()
-                        .HasForeignKey("WebhookConfigId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("WebhookConfig");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

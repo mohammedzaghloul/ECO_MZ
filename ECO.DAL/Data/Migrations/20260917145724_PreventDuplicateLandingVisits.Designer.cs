@@ -4,6 +4,7 @@ using ECO.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECO.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260917145724_PreventDuplicateLandingVisits")]
+    partial class PreventDuplicateLandingVisits
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -906,72 +909,8 @@ namespace ECO.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EmailAccentColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailBackgroundColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailBrandName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailCtaText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailEyebrowText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailFooterNote")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailGreetingText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailHeaderStyle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailHeadingFont")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailInkColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailIntroText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailLogoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailPaperColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("OwnerEmail")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SmtpFrom")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SmtpHost")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SmtpPasswordProtected")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("SmtpPort")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("SmtpUseSsl")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SmtpUsername")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
