@@ -89,13 +89,13 @@
                 @for (item of order().orderItems; track item.id) {
                   <div class="order-item">
                     <div class="order-item__img-wrap">
-                      <img [src]="basketService.imageUrl(item.mainImage)" [alt]="item.productName" class="order-item__img" loading="lazy" />
+                      <img [src]="basketService.imageUrl(item.MainImage)" [alt]="item.ProductName" class="order-item__img" loading="lazy" />
                     </div>
                     <div class="order-item__info">
-                      <span class="order-item__name">{{ item.productName }}</span>
-                      <span class="order-item__meta">{{ 'ORDER_QTY' | translate }}: {{ item.quantity }}</span>
+                      <span class="order-item__name">{{ item.ProductName }}</span>
+                      <span class="order-item__meta">{{ 'ORDER_QTY' | translate }}: {{ item.Quantity }}</span>
                     </div>
-                    <span class="order-item__price">${{ (item.price * item.quantity).toFixed(2) }}</span>
+                    <span class="order-item__price">${{ (item.Price * item.Quantity).toFixed(2) }}</span>
                   </div>
                 }
               </div>
