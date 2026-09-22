@@ -4,6 +4,7 @@ using ECO.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECO.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260922150241_FixDeliveryMethodIdentity")]
+    partial class FixDeliveryMethodIdentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -521,10 +524,7 @@ namespace ECO.DAL.Migrations
             modelBuilder.Entity("ECO.DAL.Entities.OrderEntities.DeliveryMethod", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DeliveryTime")
                         .IsRequired()
@@ -548,6 +548,53 @@ namespace ECO.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DeliveryMethods");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DeliveryTime = "1-2 business days",
+                            Description = "Express delivery",
+                            LogoUrl = "https://cdn.simpleicons.org/dhl/FFCC00",
+                            Name = "DHL Express",
+                            Price = 30m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DeliveryTime = "2-3 business days",
+                            Description = "Reliable priority delivery",
+                            LogoUrl = "https://cdn.simpleicons.org/fedex/4D148C",
+                            Name = "FedEx",
+                            Price = 20m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DeliveryTime = "3-5 business days",
+                            Description = "Fast local delivery",
+                            LogoUrl = "https://cdn.simpleicons.org/aramex/D71920",
+                            Name = "Aramex",
+                            Price = 15m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DeliveryTime = "4-6 business days",
+                            Description = "Affordable doorstep delivery",
+                            LogoUrl = "https://cdn.simpleicons.org/bosta/111827",
+                            Name = "Bosta",
+                            Price = 10m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DeliveryTime = "5-7 business days",
+                            Description = "Economy delivery",
+                            LogoUrl = "https://cdn.simpleicons.org/egyptpost/0B5FA5",
+                            Name = "Egypt Post",
+                            Price = 5m
+                        });
                 });
 
             modelBuilder.Entity("ECO.DAL.Entities.OrderEntities.Order", b =>
@@ -568,9 +615,6 @@ namespace ECO.DAL.Migrations
                     b.Property<string>("BuyerPhone")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("CustomerName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DeliveryMethodId")
                         .HasColumnType("int");

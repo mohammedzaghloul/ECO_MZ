@@ -19,31 +19,19 @@ namespace ECO.Api.Controller
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(
-            [FromQuery] string? status,
-            [FromQuery] string? search,
-            [FromQuery] DateTime? fromDate,
-            [FromQuery] DateTime? toDate,
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10,
-            CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetAll( [FromQuery] GetOrderDto orderDto, CancellationToken cancellationToken = default)
         {
             var orders = await _adminOrderService.GetAllAsync(
-                status,
-                search,
-                fromDate,
-                toDate,
-                pageNumber,
-                pageSize,
+                orderDto.status,
+                orderDto.search,
+                orderDto.fromDate,
+                orderDto.toDate,
+                orderDto.pageNumber,
+                orderDto.pageSize,
                 cancellationToken);
-            var totalCount = await _adminOrderService.GetCountAsync(
-                status,
-                search,
-                fromDate,
-                toDate,
-                cancellationToken);
+            var totalCount = await _adminOrderService.GetCountAsync(orderDto. status, orderDto.search, orderDto.fromDate, orderDto.toDate, cancellationToken);
 
-            return Ok(new Pagination<OrderToReturnDto>(pageNumber, totalCount, pageSize, orders));
+            return Ok(new Pagination<OrderToReturnDto>(orderDto.pageNumber, totalCount, orderDto.pageSize, orders));
         }
 
         [HttpGet("{id:int}")]

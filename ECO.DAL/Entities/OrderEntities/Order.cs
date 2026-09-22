@@ -6,9 +6,9 @@ namespace ECO.DAL.Entities.OrderEntities
     {
         public Order()
         {
-            
+
         }
-        public Order(string buyerEmail, string basketId, decimal subTotal, ShippingAddress shippingAddress, DeliveryMethod deliveryMethod, IReadOnlyList<OrderItem> orderItems,string PaymentIntentId 
+        public Order(string buyerEmail, string basketId, decimal subTotal, ShippingAddress shippingAddress, DeliveryMethod deliveryMethod, IReadOnlyList<OrderItem> orderItems,string PaymentIntentId
             )
         {
             BuyerEmail = buyerEmail;
@@ -24,6 +24,7 @@ namespace ECO.DAL.Entities.OrderEntities
         public string PaymentMethod { get; set; } = "Stripe";
         public string BuyerEmail { get; set; }
         public string? BuyerPhone { get; set; }
+        public string? CustomerName { get; set; }
         public int? LandingPageId { get; set; }
         public virtual ECO.DAL.Entities.Landing.LandingPage? LandingPage { get; set; }
         public string? BasketId { get; set; }

@@ -64,12 +64,18 @@ public class GuestOrderService : IGuestOrderService
         if (deliveryMethod is null)
             throw new InvalidOperationException("No delivery method is configured.");
 
+        // Attach delivery method to prevent EF from trying to insert it
+        _unitOfWork.Repository<DeliveryMethod>().Attach(deliveryMethod);
+
         var orderItem = new OrderItem(
             product.Id,
             product.NewPrice,
             request.Quantity,
             product.Name,
-            product.Photos.FirstOrDefault()?.Name ?? string.Empty);
+            product.Photos.FirstOrDefault()?.Name ?? string.Empty)
+        {
+            MainImage = product.Photos.FirstOrDefault()?.Name ?? string.Empty
+        };
 
         var order = new Order(
             GuestEmail,
@@ -88,6 +94,7 @@ public class GuestOrderService : IGuestOrderService
             "COD")
         {
             BuyerPhone = request.Phone,
+            CustomerName = request.CustomerName.Trim(),
             LandingPageId = request.LandingPageId,
             PaymentMethod = "COD",
             ShippingPrice = city.ShippingPrice,

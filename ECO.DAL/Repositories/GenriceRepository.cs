@@ -78,5 +78,10 @@ namespace ECO.DAL.Repositories
             dbContext.Set<T>().Update(entity);
             return Task.CompletedTask;
         }
+
+        public void Attach(T entity)
+        {
+            dbContext.Set<T>().Attach(entity);
+        }
     }
 }
