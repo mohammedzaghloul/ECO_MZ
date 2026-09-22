@@ -191,10 +191,6 @@ namespace ECO.BLL.Services.Identity
             return false;
         }
 
-        /// <summary>
-        /// Sends the activation / password-reset email using the branded template
-        /// (theme + per-type/language copy from the DB). Same link shape as EmailStringBody.
-        /// </summary>
         private async Task SendAccountEmailAsync(ApplicationUser user, string token, bool isReset)
         {
             var look = await emailAppearanceService.GetAsync();

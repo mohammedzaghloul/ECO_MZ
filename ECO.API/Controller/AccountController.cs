@@ -1,26 +1,18 @@
 using ECO.Api.Helper;
 using ECO.BLL.DTO.AddressDtos;
 using ECO.BLL.DTO.Auth;
-
 using ECO.BLL.DTO.Order;
 using ECO.BLL.DTO.UserDtos;
 using ECO.BLL.Services.Identity;
-
 using ECO.BLL.Services.Token;
 using ECO.BLL.Services.UserInfo;
 using ECO.DAL.Entities;
 using Microsoft.AspNetCore.Authentication;
-
 using Microsoft.AspNetCore.Authentication.Google;
-
 using Microsoft.AspNetCore.Authorization;
-
 using Microsoft.AspNetCore.Http;
-
 using Microsoft.AspNetCore.Identity;
-
 using Microsoft.AspNetCore.Mvc;
-
 using System.Security.Claims;
 
 
@@ -30,40 +22,27 @@ namespace ECO.Api.Controller
 {
 
     public class AccountController : BaseController
-
     {
-
         private readonly IAuthService _auth;
-
         private readonly ICurrentUserService _userService;
-
         private readonly IAddressService _addressService;
-
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IGenerateToken _generateToken;
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly IConfiguration _configuration;
 
-
-        public AccountController(
-
-            IAuthService Auth,
-
+        public AccountController( 
+            IAuthService Auth, 
             ICurrentUserService userService,
-
             IAddressService addressService,
             UserManager<ApplicationUser> userManager,
             IGenerateToken generateToken,
             IRefreshTokenService refreshTokenService,
             IConfiguration configuration)
         {
-
             _auth = Auth;
-
             _userService = userService;
-
             _addressService = addressService;
-
             _userManager = userManager;
             _generateToken = generateToken;
             _refreshTokenService = refreshTokenService;
@@ -73,7 +52,6 @@ namespace ECO.Api.Controller
 
 
         [HttpGet("google-challenge")]
-
         public IActionResult GoogleChallenge()
 
         {
@@ -95,150 +73,88 @@ namespace ECO.Api.Controller
 
         }
 
-
-
         [HttpGet("google-callback")]
-
         public async Task<IActionResult> GoogleCallback()
-
         {
-
             var result = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
 
             if (!result.Succeeded || result.Principal is null)
-
                 return Redirect("/account/login?socialError=failed");
-
-
 
             var email = result.Principal.FindFirstValue(ClaimTypes.Email);
 
             if (string.IsNullOrWhiteSpace(email))
-
                 return Redirect("/account/login?socialError=noemail");
-
-
-
             var user = await _userManager.FindByEmailAsync(email);
-
             if (user is null)
-
             {
 
-                var displayName = result.Principal.FindFirstValue(ClaimTypes.GivenName)
-
-                    ?? result.Principal.FindFirstValue(ClaimTypes.Name)
-
-                    ?? email.Split('@')[0];
-
-
-
+                var displayName = result.Principal.FindFirstValue(ClaimTypes.GivenName) ?? result.Principal.FindFirstValue(ClaimTypes.Name)
+                                                                                               ?? email.Split('@')[0];
                 user = new ApplicationUser
-
                 {
-
-                    UserName = email,
-
+                    UserName = displayName,
                     Email = email,
-
                     EmailConfirmed = true,
 
                     DisplayName = displayName
-
                 };
-
                 var created = await _userManager.CreateAsync(user);
 
                 if (!created.Succeeded)
-
                     return Redirect("/account/login?socialError=failed");
-
             }
-
-
-
             await IssueTokensAsync(user);
-
-
-
             var frontendUrl = _configuration["FrontendUrl"]?.TrimEnd('/');
             return Redirect(string.IsNullOrWhiteSpace(frontendUrl) ? "/" : $"{frontendUrl}/");
-
         }
 
         [HttpPost("register")]
-
         public async Task <IActionResult> Register(RegisterDto registerDto)
-
         {
 
             var result =await _auth.RegisterAsync(registerDto);
 
             if (result == null)
-
                 return BadRequest(new ResponseApi(400,result));
 
             if (!string.IsNullOrWhiteSpace(result))
-
                 return BadRequest(new ResponseApi(400, result));
-
-
 
             return Ok(new ResponseApi(200, "Registration successful. Please confirm your email."));
 
         }
 
-
-
         [HttpPost("Login")]
-
         public async Task<IActionResult> Login(LoginDto loginDto)
-
         {
 
             var result = await _auth.LoginAsync(loginDto);
 
             if (result == null)
-
                 return BadRequest(new ResponseApi(400, result));
 
-
-
             if (result.StartsWith("Please ", StringComparison.OrdinalIgnoreCase))
-
                 return Unauthorized(new ResponseApi(401, result));
 
-
-
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
+
             if (user is null)
                 return Unauthorized(new ResponseApi(401, "User not found"));
 
             await IssueTokensAsync(user, result);
-
-
 
             return Ok(new ResponseApi(200));
 
         }
 
 
-
         [HttpPost("ActiveAccount")]
-
         public async Task<IActionResult> Active(ActiveAccountDto activeAccount)
-
         {
-
             var result=await _auth.ActiveAccount(activeAccount);
-
             return result ? Ok(new ResponseApi(200)) : BadRequest(new ResponseApi(400));
-
-
-
         }
-
-
 
         [HttpPost("Reset-Password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPassword)
@@ -252,24 +168,16 @@ namespace ECO.Api.Controller
             var result = await _auth.ResetPassword(resetPassword);
             if (result != null && result.Contains("Success"))
                 return Ok(new ResponseApi(200, result));
+
             return BadRequest(new ResponseApi(400, result));
         }
 
         [HttpGet("Send-Email-Or-Get-Password")]
-
         public async Task<IActionResult> forget(string email)
-
         {
-
-            var result=await _auth.SendEmailAndForgetPassword(email);
-
+            var result = await _auth.SendEmailAndForgetPassword(email);
             return result ? Ok(new ResponseApi(200)) : BadRequest(new ResponseApi(400));
-
-
-
         }
-
-
 
         [HttpPost("Logout")]
         public async Task<IActionResult> Logout()
@@ -303,25 +211,18 @@ namespace ECO.Api.Controller
         [Authorize]
         [HttpGet("GetCurrentUser")]
         public async Task<ActionResult<UserDto>> GetUser()
-
         {
-
             var currentUser = await _userService.GetCurrentUser();
-
             return Ok(new GenericResponseApi<UserDto>(200, "GetCurrentUser", currentUser));
-
         }
 
 
 
         [Authorize]
-
         [HttpGet("GetAddress")]
 
         public async Task<ActionResult<AddressDto>> GetAddress()
-
         {
-
             var address = await _addressService.GetUserAddressAsync();
 
             return Ok(new GenericResponseApi<AddressDto>(200, "Address", address));
@@ -343,9 +244,7 @@ namespace ECO.Api.Controller
 
         [Authorize(Roles = "Admin")]
         [HttpPost("UpdateAddressByEmail")]
-        public async Task<ActionResult<AddressDto>> UpdateAddressByEmail(
-            [FromQuery] string email,
-            [FromBody] ShippingAddressDto shippingAddressDto)
+        public async Task<ActionResult<AddressDto>> UpdateAddressByEmail( [FromQuery] string email, [FromBody] ShippingAddressDto shippingAddressDto)
         {
             try
             {
@@ -390,10 +289,7 @@ namespace ECO.Api.Controller
             };
         }
 
-        private async Task IssueTokensAsync(
-            ApplicationUser user,
-            string? accessToken = null,
-            string? refreshToken = null)
+        private async Task IssueTokensAsync(ApplicationUser user,string? accessToken = null,  string? refreshToken = null)
         {
             accessToken ??= await _generateToken.GenerateTokenAsync(user, _userManager);
             if (refreshToken is null)

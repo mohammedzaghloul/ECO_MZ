@@ -39,10 +39,7 @@ public sealed class RefreshTokenService : IRefreshTokenService
             ExpiresAtUtc = DateTime.UtcNow.Add(lifetime)
         });
         await dbContext.SaveChangesAsync();
-        return new RefreshTokenResult(
-            user,
-            await tokenGenerator.GenerateTokenAsync(user, userManager),
-            rawToken);
+        return new RefreshTokenResult( user, await tokenGenerator.GenerateTokenAsync(user, userManager), rawToken);
     }
 
     public async Task<RefreshTokenResult?> RotateAsync(string refreshToken)

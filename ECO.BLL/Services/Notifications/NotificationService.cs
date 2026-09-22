@@ -90,9 +90,7 @@ namespace ECO.BLL.Services.Notifications
             return true;
         }
 
-        public async Task<int> ClearForUserAsync(
-            string recipientEmail,
-            CancellationToken cancellationToken = default)
+        public async Task<int> ClearForUserAsync( string recipientEmail,   CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(recipientEmail))
                 throw new ArgumentException("Recipient email is required", nameof(recipientEmail));

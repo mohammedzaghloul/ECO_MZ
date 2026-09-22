@@ -14,7 +14,7 @@ namespace ECO.BLL.Services.Upload
         public async Task<List<string>> AddImageAsync(IFormFileCollection files, string src)
         {
             var images = new List<string>();
-            var ImageDictionaries = Path.Combine("wwwroot", "Images", src);
+            var ImageDictionaries = Path.Combine("wwwroot", "Images", src); // wwwroot/images/${src}
             if (!Directory.Exists(ImageDictionaries))
             {
                 Directory.CreateDirectory(ImageDictionaries);
@@ -22,16 +22,13 @@ namespace ECO.BLL.Services.Upload
             foreach (var image in files)
             {
                 if (image.Length > 0)
-                {
-                    {
-                        var filePath = Path.Combine(ImageDictionaries, image.FileName);
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
+                { 
+                        var filePath = Path.Combine(ImageDictionaries, image.FileName); //  wwwroot/images/${src}/image name 
+                   using (var stream = new FileStream(filePath, FileMode.Create))
+                         {
                             await image.CopyToAsync(stream);
-                        }
-                        images.Add(Path.Combine("Images", src, image.FileName));
-
-                    }
+                         }
+                        images.Add(Path.Combine(ImageDictionaries, image.FileName));  
                 }
             }
                 return images;

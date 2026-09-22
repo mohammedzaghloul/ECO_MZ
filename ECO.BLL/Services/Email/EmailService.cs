@@ -5,9 +5,6 @@ using MailKit.Security;
 using ECO.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.DataProtection;
-
-
-//using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.Text;
