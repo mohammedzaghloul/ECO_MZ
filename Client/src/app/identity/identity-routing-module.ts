@@ -11,7 +11,7 @@ const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'active', component: Active },
   { path: 'forgot-password', component: ForgotPassword },
-  { path: 'reset-password', component: ResetPasswordPage, caseInsensitive: true },
+  { path: 'reset-password', component: ResetPasswordPage },
 ];
 
 @NgModule({

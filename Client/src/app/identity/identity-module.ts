@@ -7,10 +7,11 @@ import { Login } from './login/login';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Active } from './active/active';
 import { ForgotPassword } from './forgot-password/forgot-password';
+import { ResetPasswordPage } from './reset-password/reset-password';
 import { SharedModule } from '../shared/shared-module';
 
 @NgModule({
-  declarations: [Register, Login, Active, ForgotPassword],
+  declarations: [Register, Login, Active, ForgotPassword, ResetPasswordPage],
   imports: [CommonModule, RouterModule, IdentityRoutingModule, ReactiveFormsModule, SharedModule],
 })
 export class IdentityModule {}
