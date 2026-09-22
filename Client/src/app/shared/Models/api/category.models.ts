@@ -1,6 +1,7 @@
 export interface AddCategoryDto {
   name: string;
   description: string;
+  parentCategoryId?: number | null;
 }
 
 export interface UpdateCategoryDto extends AddCategoryDto {
@@ -12,4 +13,6 @@ export interface CategoryDto {
   id: number;
   name: string;
   description: string;
+  parentCategoryId?: number | null;
+  parentCategoryName?: string | null;
 }

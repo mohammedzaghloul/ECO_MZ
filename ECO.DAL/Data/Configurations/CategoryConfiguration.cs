@@ -13,6 +13,12 @@ namespace ECO.DAL.Data.Configurations
             builder.HasKey(c => c.Id);
             builder.Property(c => c.Name).IsRequired().HasMaxLength(100);
             builder.Property(c => c.Description).HasMaxLength(500);
+
+            // Self-referencing relationship for parent-child categories
+            builder.HasOne(c => c.ParentCategory)
+                .WithMany(c => c.SubCategories)
+                .HasForeignKey(c => c.ParentCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

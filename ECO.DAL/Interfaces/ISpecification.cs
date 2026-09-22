@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace ECO.DAL.Specifications
+namespace ECO.DAL.Interfaces
 {
     public interface ISpecification<T>
     {

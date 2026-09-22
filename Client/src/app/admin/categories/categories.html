@@ -63,6 +63,26 @@
           </span>
         }
       </div>
+
+      <div class="admin-field">
+        <label for="c-parent-category">
+          <i class="material-icons">account_tree</i>
+          <span>{{ 'ADMIN_PARENT_CATEGORY' | translate }}</span>
+        </label>
+        <div class="input-with-icon">
+          <select
+            id="c-parent-category"
+            formControlName="parentCategoryId"
+          >
+            <option [value]="null">{{ 'ADMIN_NO_PARENT' | translate }}</option>
+            @for (category of categories(); track category.id) {
+              @if (editingId !== category.id) {
+                <option [value]="category.id">{{ category.name }}</option>
+              }
+            }
+          </select>
+        </div>
+      </div>
     </div>
 
     <div class="admin-actions">
@@ -112,13 +132,14 @@
         <tr>
           <th>{{ 'ADMIN_NAME' | translate }}</th>
           <th>{{ 'ADMIN_DESCRIPTION' | translate }}</th>
+          <th>{{ 'ADMIN_PARENT_CATEGORY' | translate }}</th>
           <th class="th-actions">إجراءات</th>
         </tr>
       </thead>
       <tbody>
         @if (loading()) {
           <tr>
-            <td colspan="3" class="table-state-cell">
+            <td colspan="4" class="table-state-cell">
               <div class="loading-spinner-wrap">
                 <i class="material-icons is-spinning">sync</i>
                 <span>{{ 'ADMIN_LOADING_CATEGORIES' | translate }}</span>
@@ -138,6 +159,9 @@
               </td>
               <td>
                 <span class="category-desc-text">{{ category.description }}</span>
+              </td>
+              <td>
+                <span class="category-parent-text">{{ category.parentCategoryName ?? '—' }}</span>
               </td>
               <td class="td-actions">
                 <div class="action-buttons-group">
@@ -164,7 +188,7 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="3" class="table-state-cell">
+              <td colspan="4" class="table-state-cell">
                 <div class="empty-state-wrap">
                   <i class="material-icons">folder_off</i>
                   <p>{{ search() ? 'لا توجد نتائج مطابقة لبحثك' : ('ADMIN_NO_CATEGORIES' | translate) }}</p>

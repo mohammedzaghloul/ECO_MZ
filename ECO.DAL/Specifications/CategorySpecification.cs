@@ -8,12 +8,14 @@ namespace ECO.DAL.Specifications
         public CategorySpecification()
         {
             AddInclude(category => category.Products);
+            AddInclude(category => category.ParentCategory);
         }
 
         public CategorySpecification(int id)
         {
             ApplyCriteria(category => category.Id == id);
             AddInclude(category => category.Products);
+            AddInclude(category => category.ParentCategory);
         }
 
         public CategorySpecification WithIncludes(IEnumerable<Expression<Func<Category, object>>> includes)

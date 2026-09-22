@@ -46,7 +46,9 @@ namespace ECO.BLL.AutoMapper
                     options => options.MapFrom(source => source.DeliveryMethod.Name))
                 .ForMember(destination => destination.ShippingAddress,
                     options => options.MapFrom(source => source.ShippingAddress));
-            CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<Category, CategoryDto>()
+                .ForMember(dest => dest.ParentCategoryName, opt => opt.MapFrom(src => src.ParentCategory != null ? src.ParentCategory.Name : null))
+                .ReverseMap();
 
             CreateMap<Category, UpdateCategoryDto>().ReverseMap();
 

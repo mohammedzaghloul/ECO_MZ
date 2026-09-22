@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { CategoryService } from '../../core/Services/category.service';
 import { CategoryDto } from '../../shared/Models/api/category.models';
+import { LanguageService } from '../../core/Services/language.service';
 
 @Component({
   selector: 'app-admin-categories',
@@ -22,13 +23,15 @@ export class AdminCategories implements OnInit {
   constructor(
     private fb: FormBuilder,
     private categoryService: CategoryService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private langService: LanguageService
   ) {}
 
   ngOnInit(): void {
     this.categoryForm = this.fb.group({
       name: ['', Validators.required],
-      description: ['', Validators.required]
+      description: ['', Validators.required],
+      parentCategoryId: [null]
     });
     this.load();
   }
@@ -42,7 +45,7 @@ export class AdminCategories implements OnInit {
       },
       error: () => {
         this.loading.set(false);
-        this.toastr.error('Could not load categories.', 'Categories');
+        this.toastr.error(this.langService.t('ADMIN_CATEGORIES_LOAD_ERROR'), this.langService.t('ADMIN_CATEGORIES'));
       }
     });
   }
@@ -55,7 +58,7 @@ export class AdminCategories implements OnInit {
   save(): void {
     if (this.categoryForm.invalid) {
       this.categoryForm.markAllAsTouched();
-      this.toastr.warning('Please fill in the highlighted fields.', 'Categories');
+      this.toastr.warning(this.langService.t('ADMIN_CATEGORIES_FILL_FIELDS'), this.langService.t('ADMIN_CATEGORIES'));
       return;
     }
     this.saving.set(true);
@@ -65,12 +68,12 @@ export class AdminCategories implements OnInit {
       : this.categoryService.create(value);
     request.subscribe({
       next: () => {
-        this.toastr.success(this.editingId ? 'Category updated.' : 'Category created.', 'Categories');
+        this.toastr.success(this.editingId ? this.langService.t('ADMIN_CATEGORY_UPDATED') : this.langService.t('ADMIN_CATEGORY_CREATED'), this.langService.t('ADMIN_CATEGORIES'));
         this.reset();
       },
       error: (error) => {
         this.saving.set(false);
-        this.toastr.error(error?.error?.message ?? 'Could not save the category.', 'Categories');
+        this.toastr.error(error?.error?.message ?? this.langService.t('ADMIN_CATEGORY_SAVE_ERROR'), this.langService.t('ADMIN_CATEGORIES'));
       }
     });
   }
@@ -82,13 +85,13 @@ export class AdminCategories implements OnInit {
   }
 
   remove(id: number): void {
-    if (!confirm('Delete this category? Products in it will keep working but lose their category.')) return;
+    if (!confirm(this.langService.t('ADMIN_CATEGORY_DELETE_CONFIRM'))) return;
     this.categoryService.delete(id).subscribe({
       next: () => {
-        this.toastr.success('Category deleted.', 'Categories');
+        this.toastr.success(this.langService.t('ADMIN_CATEGORY_DELETED'), this.langService.t('ADMIN_CATEGORIES'));
         this.load();
       },
-      error: () => this.toastr.error('Could not delete the category.', 'Categories')
+      error: () => this.toastr.error(this.langService.t('ADMIN_CATEGORY_DELETE_ERROR'), this.langService.t('ADMIN_CATEGORIES'))
     });
   }
 

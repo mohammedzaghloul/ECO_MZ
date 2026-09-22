@@ -57,16 +57,41 @@ namespace ECO.DAL.Data
                 if (!await context.Categories.AnyAsync())
                 {
                     var categoriesData = await File.ReadAllTextAsync(Path.Combine(seedPath, "categories.json"));
-                    var categories = JsonSerializer.Deserialize<List<Category>>(categoriesData, new JsonSerializerOptions
+                    var categories = JsonSerializer.Deserialize<List<SeedCategory>>(categoriesData, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
 
                     if (categories != null && categories.Count > 0)
                     {
-                        await context.Categories.AddRangeAsync(categories);
+                        // First, insert all categories without parent relationships
+                        var categoryEntities = categories.Select(c => new Category
+                        {
+                            Name = c.Name,
+                            Description = c.Description
+                        }).ToList();
+
+                        await context.Categories.AddRangeAsync(categoryEntities);
                         await context.SaveChangesAsync();
-                        logger?.LogInformation("Categories seeded successfully.");
+
+                        // Create a mapping of category names to their generated IDs
+                        var categoryMap = categoryEntities.ToDictionary(c => c.Name, c => c.Id);
+
+                        // Now update categories with parent relationships
+                        foreach (var category in categories.Where(c => !string.IsNullOrEmpty(c.ParentCategoryName)))
+                        {
+                            if (categoryMap.TryGetValue(category.ParentCategoryName!, out var parentId))
+                            {
+                                var entity = categoryEntities.FirstOrDefault(c => c.Name == category.Name);
+                                if (entity != null)
+                                {
+                                    entity.ParentCategoryId = parentId;
+                                }
+                            }
+                        }
+
+                        await context.SaveChangesAsync();
+                        logger?.LogInformation("Categories seeded successfully with parent-child relationships.");
                     }
                 }
 
@@ -233,6 +258,13 @@ namespace ECO.DAL.Data
             public decimal ShippingPrice { get; set; }
             public int DeliveryDays { get; set; }
             public bool ShippingAvailable { get; set; } = true;
+        }
+
+        private sealed class SeedCategory
+        {
+            public string Name { get; set; } = string.Empty;
+            public string Description { get; set; } = string.Empty;
+            public string? ParentCategoryName { get; set; }
         }
     }
 }

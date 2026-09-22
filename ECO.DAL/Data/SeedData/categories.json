@@ -1,14 +1,47 @@
 ﻿[
   {
     "Name": "Electronics",
-    "Description": "Electronic devices, computers, smartphones, and gadgets"
+    "Description": "Electronic devices, computers, smartphones, and gadgets",
+    "ParentCategoryName": null
+  },
+  {
+    "Name": "Smartphones",
+    "Description": "Mobile phones and accessories",
+    "ParentCategoryName": "Electronics"
+  },
+  {
+    "Name": "Laptops",
+    "Description": "Portable computers and accessories",
+    "ParentCategoryName": "Electronics"
   },
   {
     "Name": "Clothing",
-    "Description": "Men, women, and children fashion apparel and accessories"
+    "Description": "Men, women, and children fashion apparel and accessories",
+    "ParentCategoryName": null
+  },
+  {
+    "Name": "Men's Fashion",
+    "Description": "Clothing and accessories for men",
+    "ParentCategoryName": "Clothing"
+  },
+  {
+    "Name": "Women's Fashion",
+    "Description": "Clothing and accessories for women",
+    "ParentCategoryName": "Clothing"
   },
   {
     "Name": "Books",
-    "Description": "Educational books, novels, and literature"
+    "Description": "Educational books, novels, and literature",
+    "ParentCategoryName": null
+  },
+  {
+    "Name": "Fiction",
+    "Description": "Novels and fiction literature",
+    "ParentCategoryName": "Books"
+  },
+  {
+    "Name": "Educational",
+    "Description": "Textbooks and educational materials",
+    "ParentCategoryName": "Books"
   }
 ]
