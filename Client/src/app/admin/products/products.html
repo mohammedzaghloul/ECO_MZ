@@ -16,87 +16,122 @@
 @if (showForm()) {
 <section class="admin-panel">
   <div class="product-form-heading">
+    <div class="product-form-icon">
+      <i class="material-icons">{{ editingId ? 'edit' : 'inventory_2' }}</i>
+    </div>
     <div>
       <h2 class="admin-panel-title">{{ editingId ? ('ADMIN_PRODUCT_EDIT' | translate) + ' #' + editingId : ('ADMIN_PRODUCT_NEW' | translate) }}</h2>
+      <p class="product-form-subtitle">{{ editingId ? 'تعديل تفاصيل المنتج' : 'إضافة منتج جديد للكتالوج' }}</p>
     </div>
   </div>
   <form class="admin-form product-form" [formGroup]="productForm" (ngSubmit)="save()" novalidate>
-    <div class="admin-field">
-      <label for="p-name">{{ 'ADMIN_PRODUCT_NAME' | translate }}</label>
-      <input id="p-name" type="text" formControlName="name" [placeholder]="'ADMIN_PRODUCT_NAME_PLACEHOLDER' | translate" [class.is-invalid]="showError('name')" />
-      @if (showError('name')) { <span class="admin-field-error">{{ 'ADMIN_PRODUCT_NAME_REQUIRED' | translate }}</span> }
-    </div>
-    <div class="admin-field">
-      <label for="p-category">{{ 'ADMIN_PRODUCT_CATEGORY' | translate }}</label>
-      <div class="product-select" [class.is-invalid]="showError('categoryId')" [class.is-open]="categoryMenuOpen()">
-        <button
-          id="p-category"
-          type="button"
-          class="product-select__trigger"
-          [attr.aria-expanded]="categoryMenuOpen()"
-          aria-haspopup="listbox"
-          (click)="toggleCategoryMenu()"
-        >
-          <span [class.is-placeholder]="!productForm.get('categoryId')?.value">{{ selectedCategoryName() }}</span>
-          <span class="product-select__chevron">⌄</span>
-        </button>
-        @if (categoryMenuOpen()) {
-          <div class="product-select__menu" role="listbox">
-            <button type="button" class="product-select__option is-placeholder" role="option" disabled>
-              {{ 'ADMIN_PRODUCT_SELECT_CATEGORY' | translate }}
-            </button>
-            @for (category of categories(); track category.id) {
-              <button
-                type="button"
-                class="product-select__option"
-                [class.is-selected]="productForm.get('categoryId')?.value === category.id"
-                role="option"
-                (click)="selectCategory(category.id)"
-              >
-                {{ categoryName(category.name) }}
-              </button>
-            }
-          </div>
-        }
+    <!-- Basic Information -->
+    <div class="product-form-section">
+      <div class="product-section-title">
+        <i class="material-icons">info</i>
+        <span>المعلومات الأساسية</span>
       </div>
-      @if (showError('categoryId')) { <span class="admin-field-error">{{ 'ADMIN_PRODUCT_CATEGORY_REQUIRED' | translate }}</span> }
-    </div>
-    <div class="admin-field admin-field-row">
-      <div>
-        <label for="p-new-price">{{ 'ADMIN_PRODUCT_CURRENT_PRICE' | translate }}</label>
-        <input id="p-new-price" type="number" min="0" step="0.01" formControlName="newPrice" placeholder="0.00" [class.is-invalid]="showError('newPrice')" />
-        @if (showError('newPrice')) { <span class="admin-field-error">{{ 'ADMIN_PRODUCT_PRICE_REQUIRED' | translate }}</span> }
-      </div>
-      <div>
-        <label for="p-old-price">{{ 'ADMIN_PRODUCT_ORIGINAL_PRICE' | translate }}</label>
-          <input id="p-old-price" type="number" min="0" step="0.01" formControlName="oldPrice" [placeholder]="'ADMIN_PRODUCT_OPTIONAL' | translate" />
-      </div>
-    </div>
-    <div class="product-inventory">
-      <label class="product-check">
-        <input type="checkbox" formControlName="trackStock" />
-        <span>{{ 'ADMIN_PRODUCT_TRACK_STOCK' | translate }}</span>
-      </label>
       <div class="admin-field">
-        <label for="p-stock">{{ 'ADMIN_PRODUCT_QUANTITY' | translate }}</label>
-        <input id="p-stock" type="number" min="0" step="1" formControlName="stockQuantity" placeholder="25" />
+        <label for="p-name">{{ 'ADMIN_PRODUCT_NAME' | translate }}</label>
+        <input id="p-name" type="text" formControlName="name" [placeholder]="'ADMIN_PRODUCT_NAME_PLACEHOLDER' | translate" [class.is-invalid]="showError('name')" />
+        @if (showError('name')) { <span class="admin-field-error">{{ 'ADMIN_PRODUCT_NAME_REQUIRED' | translate }}</span> }
+      </div>
+      <div class="admin-field">
+        <label for="p-category">{{ 'ADMIN_PRODUCT_CATEGORY' | translate }}</label>
+        <div class="product-select" [class.is-invalid]="showError('categoryId')" [class.is-open]="categoryMenuOpen()">
+          <button
+            id="p-category"
+            type="button"
+            class="product-select__trigger"
+            [attr.aria-expanded]="categoryMenuOpen()"
+            aria-haspopup="listbox"
+            (click)="toggleCategoryMenu()"
+          >
+            <span [class.is-placeholder]="!productForm.get('categoryId')?.value">{{ selectedCategoryName() }}</span>
+            <span class="product-select__chevron">⌄</span>
+          </button>
+          @if (categoryMenuOpen()) {
+            <div class="product-select__menu" role="listbox">
+              <button type="button" class="product-select__option is-placeholder" role="option" disabled>
+                {{ 'ADMIN_PRODUCT_SELECT_CATEGORY' | translate }}
+              </button>
+              @for (category of categories(); track category.id) {
+                <button
+                  type="button"
+                  class="product-select__option"
+                  [class.is-selected]="productForm.get('categoryId')?.value === category.id"
+                  role="option"
+                  (click)="selectCategory(category.id)"
+                >
+                  {{ categoryName(category.name) }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+        @if (showError('categoryId')) { <span class="admin-field-error">{{ 'ADMIN_PRODUCT_CATEGORY_REQUIRED' | translate }}</span> }
+      </div>
+      <div class="admin-field">
+        <label for="p-description">{{ 'ADMIN_PRODUCT_DESCRIPTION' | translate }}</label>
+        <textarea id="p-description" rows="3" formControlName="description" [placeholder]="'ADMIN_PRODUCT_DESCRIPTION_PLACEHOLDER' | translate" [class.is-invalid]="showError('description')"></textarea>
+        @if (showError('description')) { <span class="admin-field-error">{{ 'ADMIN_PRODUCT_DESCRIPTION_REQUIRED' | translate }}</span> }
       </div>
     </div>
-    @if (isClothingCategory()) {
-      <div class="admin-field product-size-inventory">
-        <label for="p-size-inventory">المقاسات والمخزون</label>
-        <textarea
-          id="p-size-inventory"
-          rows="5"
-          formControlName="sizeInventory"
-          placeholder="S:5&#10;M:12&#10;L:8&#10;XL:3"
-        ></textarea>
-        <small class="admin-hint">اكتب كل مقاس في سطر بالشكل: المقاس:الكمية. مثال: M:12</small>
+
+    <!-- Pricing -->
+    <div class="product-form-section">
+      <div class="product-section-title">
+        <i class="material-icons">payments</i>
+        <span>التسعير</span>
       </div>
-    }
-    <div class="product-dimensions">
-      <div class="product-section-label">
-        <span>{{ 'ADMIN_PRODUCT_PACKAGE_DETAILS' | translate }}</span>
+      <div class="admin-field admin-field-row">
+        <div>
+          <label for="p-new-price">{{ 'ADMIN_PRODUCT_CURRENT_PRICE' | translate }}</label>
+          <input id="p-new-price" type="number" min="0" step="0.01" formControlName="newPrice" placeholder="0.00" [class.is-invalid]="showError('newPrice')" />
+          @if (showError('newPrice')) { <span class="admin-field-error">{{ 'ADMIN_PRODUCT_PRICE_REQUIRED' | translate }}</span> }
+        </div>
+        <div>
+          <label for="p-old-price">{{ 'ADMIN_PRODUCT_ORIGINAL_PRICE' | translate }}</label>
+            <input id="p-old-price" type="number" min="0" step="0.01" formControlName="oldPrice" [placeholder]="'ADMIN_PRODUCT_OPTIONAL' | translate" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory -->
+    <div class="product-form-section">
+      <div class="product-section-title">
+        <i class="material-icons">warehouse</i>
+        <span>المخزون</span>
+      </div>
+      <div class="product-inventory">
+        <label class="product-check">
+          <input type="checkbox" formControlName="trackStock" />
+          <span>{{ 'ADMIN_PRODUCT_TRACK_STOCK' | translate }}</span>
+        </label>
+        <div class="admin-field">
+          <label for="p-stock">{{ 'ADMIN_PRODUCT_QUANTITY' | translate }}</label>
+          <input id="p-stock" type="number" min="0" step="1" formControlName="stockQuantity" placeholder="25" />
+        </div>
+      </div>
+      @if (isClothingCategory()) {
+        <div class="admin-field product-size-inventory">
+          <label for="p-size-inventory">المقاسات والمخزون</label>
+          <textarea
+            id="p-size-inventory"
+            rows="5"
+            formControlName="sizeInventory"
+            placeholder="S:5&#10;M:12&#10;L:8&#10;XL:3"
+          ></textarea>
+          <small class="admin-hint">اكتب كل مقاس في سطر بالشكل: المقاس:الكمية. مثال: M:12</small>
+        </div>
+      }
+    </div>
+
+    <!-- Shipping -->
+    <div class="product-form-section">
+      <div class="product-section-title">
+        <i class="material-icons">local_shipping</i>
+        <span>بيانات الشحن</span>
         <small>{{ 'ADMIN_PRODUCT_OPTIONAL' | translate }} · cm / kg</small>
       </div>
       <div class="admin-field-row product-measurements">
@@ -118,14 +153,51 @@
         </div>
       </div>
     </div>
-    <div class="admin-field">
-      <label for="p-description">{{ 'ADMIN_PRODUCT_DESCRIPTION' | translate }}</label>
-      <textarea id="p-description" rows="3" formControlName="description" [placeholder]="'ADMIN_PRODUCT_DESCRIPTION_PLACEHOLDER' | translate" [class.is-invalid]="showError('description')"></textarea>
-      @if (showError('description')) { <span class="admin-field-error">{{ 'ADMIN_PRODUCT_DESCRIPTION_REQUIRED' | translate }}</span> }
+
+    <!-- Images -->
+    <div class="product-form-section">
+      <div class="product-section-title">
+        <i class="material-icons">image</i>
+        <span>الصور</span>
+        <small>{{ editingId ? ('ADMIN_PRODUCT_REPLACE_IMAGES' | translate) : '' }}</small>
+      </div>
+      <div class="admin-field">
+        <label
+          class="product-upload"
+          [class.is-dragging]="isDragOver()"
+          for="p-photos"
+          (dragover)="onFilesDragOver($event)"
+          (dragleave)="onFilesDragLeave($event)"
+          (drop)="onFilesDrop($event)"
+        >
+          <span class="product-upload__icon">+</span>
+          <span>
+            <strong>{{ 'ADMIN_PRODUCT_CHOOSE_IMAGES' | translate }}</strong>
+            <small>{{ 'ADMIN_PRODUCT_DROP_IMAGES' | translate }}</small>
+          </span>
+          <small>{{ 'ADMIN_PRODUCT_IMAGE_TYPES' | translate }}</small>
+        </label>
+        <input id="p-photos" class="product-file-input" type="file" multiple accept="image/*" (change)="chooseFiles($event)" aria-label="Choose product images" />
+        @if (!editingId) { <span class="admin-hint">{{ 'ADMIN_PRODUCT_IMAGE_REQUIRED' | translate }}</span> }
+        @if (previews().length || existingPhotos().length) {
+          <div class="admin-photos">
+            <span class="admin-photos__count">{{ previews().length + existingPhotos().length }} {{ 'ADMIN_PRODUCT_PREVIEW_COUNT' | translate }}</span>
+            @for (url of previews(); track $index) {
+              <img [src]="url" alt="Selected image preview" />
+            }
+            @if (existingPhotos().length) {
+              @for (url of existingPhotos(); track url) { <img [src]="url" alt="Existing product image" /> }
+            }
+          </div>
+        }
+      </div>
     </div>
+
+    <!-- Advanced Specs -->
     <details class="product-advanced">
       <summary>
         <span class="product-advanced__title">
+          <i class="material-icons">tune</i>
           <span>{{ 'ADMIN_PRODUCT_MORE_SPECS' | translate }}</span>
         </span>
         <span class="product-advanced__meta">
@@ -149,37 +221,7 @@
         <span class="admin-hint">{{ 'ADMIN_PRODUCT_SPECS_FORMAT' | translate }}</span>
       </div>
     </details>
-    <div class="admin-field">
-      <label for="p-photos">{{ 'ADMIN_PRODUCT_IMAGES' | translate }} {{ editingId ? ('ADMIN_PRODUCT_REPLACE_IMAGES' | translate) : '' }}</label>
-      <label
-        class="product-upload"
-        [class.is-dragging]="isDragOver()"
-        for="p-photos"
-        (dragover)="onFilesDragOver($event)"
-        (dragleave)="onFilesDragLeave($event)"
-        (drop)="onFilesDrop($event)"
-      >
-        <span class="product-upload__icon">+</span>
-        <span>
-          <strong>{{ 'ADMIN_PRODUCT_CHOOSE_IMAGES' | translate }}</strong>
-          <small>{{ 'ADMIN_PRODUCT_DROP_IMAGES' | translate }}</small>
-        </span>
-        <small>{{ 'ADMIN_PRODUCT_IMAGE_TYPES' | translate }}</small>
-      </label>
-      <input id="p-photos" class="product-file-input" type="file" multiple accept="image/*" (change)="chooseFiles($event)" aria-label="Choose product images" />
-      @if (!editingId) { <span class="admin-hint">{{ 'ADMIN_PRODUCT_IMAGE_REQUIRED' | translate }}</span> }
-      @if (previews().length || existingPhotos().length) {
-        <div class="admin-photos">
-          <span class="admin-photos__count">{{ previews().length + existingPhotos().length }} {{ 'ADMIN_PRODUCT_PREVIEW_COUNT' | translate }}</span>
-          @for (url of previews(); track $index) {
-            <img [src]="url" alt="Selected image preview" />
-          }
-          @if (existingPhotos().length) {
-            @for (url of existingPhotos(); track url) { <img [src]="url" alt="Existing product image" /> }
-          }
-        </div>
-      }
-    </div>
+
     <div class="admin-actions">
       <button class="admin-btn" type="submit" [disabled]="saving()">
         <i class="material-icons">{{ saving() ? 'hourglass_top' : editingId ? 'save' : 'add_circle' }}</i>
