@@ -11,6 +11,7 @@ import { WishlistService } from '../../shared/Services/wishlist.service';
 import { BasketService } from '../../basket/basket.service';
 import { ToastrService } from 'ngx-toastr';
 import { finalize, timeout } from 'rxjs';
+import { LanguageService } from '../../core/Services/language.service';
 
 export interface IReview {
   id: number;
@@ -120,6 +121,7 @@ export class ProductDetails implements OnInit {
     public wishlistService: WishlistService,
     private basketService: BasketService,
     private toastr: ToastrService,
+    private langService: LanguageService,
     @Inject(PLATFORM_ID) private platformId: object
   ) {}
 
@@ -303,10 +305,13 @@ export class ProductDetails implements OnInit {
 
     this.addedToCart.set(true);
     if (isPlatformBrowser(this.platformId)) {
-      this.toastr.success(`${qty}x "${p.name}" added to your cart!`, 'Cart Updated', {
-        timeOut: 1000,
-        closeButton: false,
-        progressBar: false,
+      this.toastr.success(
+        this.langService.t('CART_ADDED_MESSAGE', { qty, name: p.name }),
+        this.langService.t('CART_UPDATED'),
+        {
+          timeOut: 1000,
+          closeButton: false,
+          progressBar: false,
       });
     }
 
