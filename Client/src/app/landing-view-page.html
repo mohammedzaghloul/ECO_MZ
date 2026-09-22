@@ -365,12 +365,7 @@
                 @if (product(); as p) {
                   <!-- Card Header (gradient) -->
                   <div class="lp-checkout-header">
-                    <div class="lp-checkout-badge">
-                      <i class="material-icons">local_shipping</i>
-                      <span>{{ text('طلب سريع • الدفع عند الاستلام', 'Fast Order • Cash on Delivery') }}</span>
-                    </div>
-                    <h3>{{ text('أدخل بيانات التوصيل وسنتواصل معك فوراً', 'Enter delivery details') }}</h3>
-                    <p>{{ text('شحن سريع للمحافظات والدفع كاش بعد فحص ومعاينة المنتج 📦', 'Fast delivery, pay cash after inspecting your package') }}</p>
+                    <h3>{{ text('أدخل بياناتك لإتمام الطلب', 'Enter your details to complete the order') }}</h3>
                   </div>
 
                   <!-- Card Body -->
@@ -388,37 +383,18 @@
                       <a routerLink="/" class="lp-btn lp-btn--outline" style="margin-top: 1.25rem;">{{ text('العودة إلى المتجر', 'Back to Store') }}</a>
                     </div>
                   } @else {
-                    <!-- Product Summary Bar -->
+                    <!-- Compact Product Summary Bar: small image + name + qty + total -->
                     <div class="lp-checkout-summary-bar">
-                      <div class="lp-checkout-product-info">
-                        <img class="lp-checkout-product-img" [src]="resolveImage(productPhotos()[0])" [alt]="p.name" (error)="onImageError($event)" />
-                        <div class="lp-checkout-product-meta">
-                          <h4 class="lp-checkout-product-title">{{ p.name }}</h4>
-                          <div class="lp-checkout-price-row">
-                            <strong class="lp-checkout-current-price">{{ p.newPrice | storeCurrency }}</strong>
-                            @if (p.oldPrice > p.newPrice) {
-                              <del class="lp-checkout-original-price">{{ p.oldPrice | storeCurrency }}</del>
-                              <span class="lp-checkout-discount-badge">{{ text('وفر', 'Save') }} {{ calculateDiscount() }}%</span>
-                            }
-                          </div>
-                        </div>
+                      <img class="lp-checkout-product-img" [src]="resolveImage(productPhotos()[0])" [alt]="p.name" (error)="onImageError($event)" />
+                      <h4 class="lp-checkout-product-title">{{ p.name }}</h4>
+
+                      <div class="lp-qty-control">
+                        <button type="button" (click)="decreaseQuantity()" aria-label="تقليل الكمية">−</button>
+                        <span class="lp-qty-count">{{ quantity() }}</span>
+                        <button type="button" (click)="increaseQuantity()" aria-label="زيادة الكمية">+</button>
                       </div>
 
-                      <div class="lp-checkout-controls">
-                        <div class="lp-checkout-qty-selector">
-                          <span class="lp-checkout-qty-label">{{ text('الكمية:', 'Qty:') }}</span>
-                          <div class="lp-qty-control">
-                            <button type="button" (click)="decreaseQuantity()" aria-label="تقليل الكمية">−</button>
-                            <span class="lp-qty-count">{{ quantity() }}</span>
-                            <button type="button" (click)="increaseQuantity()" aria-label="زيادة الكمية">+</button>
-                          </div>
-                        </div>
-
-                        <div class="lp-checkout-total-box">
-                          <span class="lp-checkout-total-label">{{ text('الإجمالي:', 'Total:') }}</span>
-                          <strong class="lp-checkout-total-amount">{{ orderTotal() | storeCurrency }}</strong>
-                        </div>
-                      </div>
+                      <strong class="lp-checkout-total-amount">{{ orderTotal() | storeCurrency }}</strong>
                     </div>
 
                     <!-- Concise Form Fields -->
@@ -503,10 +479,9 @@
                           [placeholder]="text('الشارع، العمارة، الشقة', 'Street, building, apartment')" />
                       </div>
 
-                      <!-- Optional Notes -->
-                      <button type="button" class="lp-toggle-notes-btn" (click)="showNotes.set(!showNotes())">
-                        <i class="material-icons">{{ showNotes() ? 'remove_circle_outline' : 'add_circle_outline' }}</i>
-                        <span>{{ text('ملاحظات (اختياري)', 'Notes (Optional)') }}</span>
+                      <!-- Optional Notes: quiet text link, not a bordered button -->
+                      <button type="button" class="lp-notes-toggle" (click)="showNotes.set(!showNotes())">
+                        {{ showNotes() ? text('− إخفاء الملاحظات', '− Hide notes') : text('+ إضافة ملاحظات', '+ Add notes') }}
                       </button>
 
                       @if (showNotes()) {
@@ -532,15 +507,13 @@
                           <span>{{ text('جارٍ تأكيد طلبك...', 'Confirming your order...') }}</span>
                         } @else {
                           <i class="material-icons">check_circle</i>
-                          <span>{{ text('تأكيد الطلب الآن • الدفع عند الاستلام', 'Confirm Order • Cash on Delivery') }}</span>
-                          <span class="lp-btn-amount">({{ orderTotal() | storeCurrency }})</span>
+                          <span>{{ text('تأكيد الطلب', 'Confirm Order') }} • {{ orderTotal() | storeCurrency }}</span>
                         }
                       </button>
 
                       <div class="lp-checkout-guarantee-pills">
-                        <span><i class="material-icons">verified</i> {{ text('معاينة وفحص قبل الدفع', 'Inspect Before Paying') }}</span>
-                        <span><i class="material-icons">payments</i> {{ text('دفع كاش عند الاستلام', 'Cash on Delivery') }}</span>
-                        <span><i class="material-icons">sync</i> {{ text('ضمان 14 يوم للاستبدال', '14-Day Free Exchange') }}</span>
+                        <span>✓ {{ text('معاينة عند الاستلام', 'Inspect on delivery') }}</span>
+                        <span>✓ {{ text('ضمان 14 يوم', '14-day guarantee') }}</span>
                       </div>
 
                       @if (whatsAppUrl()) {
