@@ -449,13 +449,15 @@ export class LandingViewPage implements OnInit {
   private orderSections(sections: RenderSection[]): RenderSection[] {
     const priority: Record<string, number> = {
       hero: 0,
-      showcase: 1,
-      orderform: 2,
-      trustbar: 3,
-      features: 4,
-      reviews: 5,
-      faq: 6,
-      cta: 7,
+      trustbar: 1,
+      showcase: 2,
+      features: 3,
+      reviews: 4,
+      faq: 5,
+      cta: 6,
+      // The order form always renders last: the customer sees benefits,
+      // guarantees, reviews and FAQ before being asked for delivery details.
+      orderform: 7,
     };
     return [...sections].sort((a, b) => (priority[a.type] ?? 99) - (priority[b.type] ?? 99));
   }
@@ -467,6 +469,17 @@ export class LandingViewPage implements OnInit {
   sectionImage(section: RenderSection): string {
     const url = section.imageUrl || (this.product() ? this.productPhotos()[0] : '');
     return this.resolveImage(url);
+  }
+
+  // Avoid repeating the hero photo: when a showcase section points at the
+  // same main image, show the next product photo instead.
+  showcaseImage(section: RenderSection): string {
+    const photos = this.productPhotos();
+    const fallback = this.sectionImage(section);
+    if (photos.length > 1 && fallback === this.resolveImage(photos[0])) {
+      return this.resolveImage(photos[1]);
+    }
+    return fallback;
   }
 
   productPhotos(): string[] {

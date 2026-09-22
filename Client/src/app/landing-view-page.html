@@ -272,7 +272,7 @@
             <div class="lp-container lp-showcase__grid">
               <div class="lp-showcase__media">
                 <div class="lp-gallery__frame">
-                  <img [src]="sectionImage(section)" [alt]="section.content.headline || section.title" (error)="onImageError($event)" />
+                  <img [src]="showcaseImage(section)" [alt]="section.content.headline || section.title" (error)="onImageError($event)" />
                 </div>
               </div>
               <div class="lp-showcase__copy">
