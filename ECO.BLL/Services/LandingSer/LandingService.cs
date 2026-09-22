@@ -234,6 +234,49 @@ namespace ECO.BLL.Services.LandingSer
                 }
             });
 
+            var trustbarJson = System.Text.Json.JsonSerializer.Serialize(new
+            {
+                items = new[]
+                {
+                    new { icon = "local_shipping", title = "شحن سريع لكل المحافظات" },
+                    new { icon = "payments", title = "الدفع عند الاستلام" },
+                    new { icon = "sync", title = "استبدال خلال 14 يوم" },
+                    new { icon = "support_agent", title = "دعم عملاء طوال الأسبوع" }
+                }
+            });
+
+            // Real customer reviews for this product — the section is skipped
+            // entirely when the product has none (no fabricated reviews).
+            var productReviews = await _unitOfWork.Repository<ECO.DAL.Entities.Product.Review>()
+                .ListAsync(new ECO.DAL.Specifications.ReviewSpecification(generateDefaultForProduct.productId), cancellationToken);
+
+            var reviewItems = productReviews
+                .Select((review, index) => new
+                {
+                    name = review.User?.DisplayName ?? review.User?.UserName ?? $"عميل ECO #{index + 1}",
+                    rating = review.Rating,
+                    text = review.Comment
+                })
+                .ToList();
+
+            string? reviewsJson = reviewItems.Count > 0
+                ? System.Text.Json.JsonSerializer.Serialize(new { headline = "آراء عملائنا", items = reviewItems })
+                : null;
+
+            // Default FAQ answers the purchase objections customers actually ask about.
+            var faqJson = System.Text.Json.JsonSerializer.Serialize(new
+            {
+                headline = "أسئلة قبل الطلب",
+                items = new[]
+                {
+                    new { question = "هل يوجد دفع عند الاستلام؟", answer = "نعم، تدفع كاش للمندوب بعد فحص ومعاينة المنتج بنفسك." },
+                    new { question = "التوصيل بياخد قد إيه؟", answer = "من 2 إلى 5 أيام عمل حسب المحافظة، وهنتواصل معك هاتفياً لتأكيد الطلب قبل الشحن." },
+                    new { question = "هل يوجد ضمان على المنتج؟", answer = "نعم، المنتج مضمون ضد عيوب الصناعة، وفي حالة أي عيب مصنعي هيتم استبداله." },
+                    new { question = "هل يمكن الاستبدال أو الاسترجاع؟", answer = "نعم، يحق لك الاستبدال أو الاسترجاع خلال 14 يوم من الاستلام بنفس حالة المنتج." },
+                    new { question = "ماذا لو وصل المنتج تالفًا أو فيه مشكلة؟", answer = "تواصل معنا فورًا وهنستبدله لك بالكامل على حسابنا بدون أي تكلفة إضافية." }
+                }
+            });
+
             var orderFormJson = System.Text.Json.JsonSerializer.Serialize(new
             {
                 headline = "طلب مباشر وسريع",
@@ -271,24 +314,62 @@ namespace ECO.BLL.Services.LandingSer
                 new()
                 {
                     LandingPageId = landingPage.Id,
-                    SectionType = "features",
-                    Title = "المميزات",
+                    SectionType = "trustbar",
+                    Title = "ضماناتنا",
                     SortOrder = 1,
                     IsVisible = true,
                     ImageUrl = string.Empty,
-                    ContentJson = featuresJson
+                    ContentJson = trustbarJson
                 },
                 new()
                 {
                     LandingPageId = landingPage.Id,
-                    SectionType = "orderform",
-                    Title = "اطلب الآن",
+                    SectionType = "features",
+                    Title = "المميزات",
                     SortOrder = 2,
                     IsVisible = true,
                     ImageUrl = string.Empty,
-                    ContentJson = orderFormJson
+                    ContentJson = featuresJson
                 }
             };
+
+            if (reviewsJson != null)
+            {
+                sections.Add(new LandingPageSection
+                {
+                    LandingPageId = landingPage.Id,
+                    SectionType = "reviews",
+                    Title = "آراء العملاء",
+                    SortOrder = 3,
+                    IsVisible = true,
+                    ImageUrl = string.Empty,
+                    ContentJson = reviewsJson
+                });
+            }
+
+            sections.Add(new LandingPageSection
+            {
+                LandingPageId = landingPage.Id,
+                SectionType = "faq",
+                Title = "أسئلة شائعة",
+                SortOrder = 4,
+                IsVisible = true,
+                ImageUrl = string.Empty,
+                ContentJson = faqJson
+            });
+
+            // The order form stays last: the customer sees benefits, guarantees,
+            // reviews and FAQ before being asked for delivery details.
+            sections.Add(new LandingPageSection
+            {
+                LandingPageId = landingPage.Id,
+                SectionType = "orderform",
+                Title = "اطلب الآن",
+                SortOrder = 5,
+                IsVisible = true,
+                ImageUrl = string.Empty,
+                ContentJson = orderFormJson
+            });
 
             foreach (var section in sections)
             {
