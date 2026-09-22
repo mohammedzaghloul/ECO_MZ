@@ -190,24 +190,18 @@ namespace ECO.BLL.Services.LandingSer
             return true;
         }
 
-        public async Task<LandingPageDto> GenerateDefaultForProductAsync(
-            int productId,
-            string productName,
-            string? description,
-            decimal price,
-            string? mainImageUrl,
-            CancellationToken cancellationToken = default)
+        public async Task<LandingPageDto> GenerateDefaultForProductAsync(GenerateDefaultForProductDto generateDefaultForProduct, CancellationToken cancellationToken = default)
         {
             var existing = await _unitOfWork.Repository<LandingPage>()
-                .FirstOrDefaultAsync(LandingPageSpecification.ForProduct(productId), cancellationToken);
+                .FirstOrDefaultAsync(LandingPageSpecification.ForProduct(generateDefaultForProduct.productId), cancellationToken);
             if (existing != null)
             {
                 return await GetByIdAsync(existing.Id, cancellationToken) ?? MapToDto(existing);
             }
 
-            var baseSlug = GenerateSlug(productName);
+            var baseSlug = GenerateSlug(generateDefaultForProduct.productName);
             if (string.IsNullOrWhiteSpace(baseSlug))
-                baseSlug = $"product-{productId}";
+                baseSlug = $"product-{generateDefaultForProduct.productId}";
 
             var slug = baseSlug;
             var counter = 1;
@@ -217,13 +211,13 @@ namespace ECO.BLL.Services.LandingSer
                 slug = $"{baseSlug}-{counter++}";
             }
 
-            var cleanDesc = !string.IsNullOrWhiteSpace(description)
-                ? description
+            var cleanDesc = !string.IsNullOrWhiteSpace(generateDefaultForProduct.description)
+                ? generateDefaultForProduct.description
                 : "تصميم أنيق وبسيط يعكس الجودة العالية والاهتمام بأدق التفاصيل.";
 
             var heroJson = System.Text.Json.JsonSerializer.Serialize(new
             {
-                headline = productName,
+                headline = generateDefaultForProduct.productName,
                 body = cleanDesc,
                 buttonText = "اطلب الآن مباشرة",
                 buttonLink = "#orderform"
@@ -248,9 +242,9 @@ namespace ECO.BLL.Services.LandingSer
 
             var landingPage = new LandingPage
             {
-                Title = productName,
+                Title = generateDefaultForProduct.productName,
                 Slug = slug,
-                ProductId = productId,
+                ProductId = generateDefaultForProduct.productId,
                 Template = "minimal",
                 AccentColor = "#2d5a43", // Calm Korean Sage / Earth Green Accent
                 FontFamily = "system",
@@ -271,7 +265,7 @@ namespace ECO.BLL.Services.LandingSer
                     Title = "نظرة عامة",
                     SortOrder = 0,
                     IsVisible = true,
-                    ImageUrl = mainImageUrl ?? string.Empty,
+                    ImageUrl = generateDefaultForProduct.mainImageUrl ?? string.Empty,
                     ContentJson = heroJson
                 },
                 new()

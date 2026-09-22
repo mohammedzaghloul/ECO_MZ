@@ -319,14 +319,14 @@
   }
 
   &--primary {
-    background: var(--lp-accent, #2d5a43);
+    background: linear-gradient(135deg, #10b981, #059669);
     color: #ffffff;
-    box-shadow: 0 4px 14px rgba(45, 90, 67, 0.25);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
 
     &:hover {
-      filter: brightness(1.08);
+      filter: brightness(1.1);
       transform: translateY(-2px);
-      box-shadow: 0 8px 22px rgba(45, 90, 67, 0.35);
+      box-shadow: 0 8px 22px rgba(16, 185, 129, 0.45);
     }
 
     &:disabled {
@@ -423,7 +423,7 @@
   position: relative;
   background: #ffffff;
   border-bottom: 1px solid #f4f4f5;
-  padding: clamp(1.25rem, 2.5vw, 2rem) 0;
+  padding: clamp(2rem, 3vw, 3rem) 0;
 
   &__grid {
     display: grid;
@@ -452,6 +452,63 @@
     margin: 0 0 1.5rem;
   }
 
+  &__social-proof {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    background: #f4f4f5;
+    border-radius: 12px;
+    border: 1px solid #e4e4e7;
+  }
+}
+
+.lp-social-proof-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: #52525b;
+  font-weight: 500;
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: #fbbf24;
+    color: #78350f;
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+
+    .material-icons {
+      font-size: 16px;
+    }
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-radius: 8px;
+
+    .material-icons {
+      font-size: 18px;
+    }
+  }
+
+  &__text {
+    font-weight: 600;
+  }
+}
+
+.lp-hero {
   &__offer {
     display: flex;
     align-items: baseline;
@@ -460,26 +517,28 @@
   }
 
   &__price {
-    font-size: 2.2rem;
+    font-size: 2.8rem;
     font-weight: 900;
     color: #18181b;
     letter-spacing: -0.02em;
   }
 
   &__old-price {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     color: #a1a1aa;
     text-decoration: line-through;
+    font-weight: 500;
   }
 
   .lp-discount-chip {
-    background: #f4f4f5;
-    color: var(--lp-accent, #2d5a43);
-    font-size: 0.82rem;
-    font-weight: 700;
-    padding: 0.25rem 0.65rem;
-    border-radius: 6px;
-    border: 1px solid rgba(45, 90, 67, 0.15);
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #78350f;
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 0.35rem 0.85rem;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
   }
 
   &__proof {
@@ -504,11 +563,40 @@
 
   &__actions {
     display: flex;
-    align-items: center;
-    gap: 0.85rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
     flex-wrap: wrap;
   }
 
+  &__trust-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+}
+
+.lp-trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: #52525b;
+  font-weight: 600;
+  padding: 0.4rem 0.75rem;
+  background: rgba(45, 90, 67, 0.06);
+  border-radius: 8px;
+  border: 1px solid rgba(45, 90, 67, 0.1);
+
+  .material-icons {
+    font-size: 16px;
+    color: var(--lp-accent, #2d5a43);
+  }
+}
+
+.lp-hero {
   &__media {
     width: 100%;
     display: flex;
@@ -768,7 +856,7 @@
 /* ============ Features ============ */
 .lp-features {
   background: #ffffff;
-  padding: clamp(1.5rem, 2.5vw, 2.5rem) 0;
+  padding: clamp(2.5rem, 4vw, 3.5rem) 0;
 
   &__grid {
     display: grid;
@@ -777,46 +865,73 @@
   }
 
   .lp-feature-card {
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    padding: 1rem 1.25rem;
-    box-shadow: none;
+    background: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 16px;
+    padding: 1.75rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     text-align: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
-      transform: translateY(-3px);
-      box-shadow: none;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      border-color: var(--lp-accent, #2d5a43);
     }
 
     &__icon {
       display: inline-grid;
       place-items: center;
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      background: rgba(45, 90, 67, 0.08);
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(45, 90, 67, 0.12), rgba(45, 90, 67, 0.06));
       color: var(--lp-accent, #2d5a43);
-      margin-bottom: 0.85rem;
+      margin-bottom: 1.25rem;
 
       .material-icons {
-        font-size: 24px;
+        font-size: 36px;
       }
     }
 
     h3 {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 800;
       color: #18181b;
-      margin: 0 0 0.5rem;
+      margin: 0 0 0.75rem;
+      line-height: 1.3;
     }
 
     p {
-      font-size: 0.94rem;
+      font-size: 0.95rem;
       line-height: 1.7;
       color: #71717a;
       margin: 0;
+    }
+  }
+
+  // Highlight first 3 features
+  .lp-feature-card:nth-child(-n+3) {
+    background: linear-gradient(135deg, rgba(45, 90, 67, 0.04), rgba(45, 90, 67, 0.01));
+    border: 2px solid rgba(45, 90, 67, 0.15);
+
+    .lp-feature-card__icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--lp-accent, #2d5a43), rgba(45, 90, 67, 0.7));
+
+      .material-icons {
+        font-size: 40px;
+        color: white;
+      }
+    }
+
+    h3 {
+      font-size: 1.4rem;
     }
   }
 }
@@ -826,7 +941,7 @@
   background: #ffffff;
   border-top: 1px solid #f4f4f5;
   border-bottom: 1px solid #f4f4f5;
-  padding: clamp(1.5rem, 2.5vw, 2.5rem) 0;
+  padding: clamp(2.5rem, 4vw, 3.5rem) 0;
 
   &__grid {
     display: grid;
@@ -884,7 +999,7 @@
 /* ============ Reviews ============ */
 .lp-reviews {
   background: #ffffff;
-  padding: clamp(1.5rem, 2.5vw, 2.5rem) 0;
+  padding: clamp(2.5rem, 4vw, 3.5rem) 0;
 
   &__grid {
     display: grid;
@@ -902,11 +1017,31 @@
     flex-direction: column;
     justify-content: space-between;
 
+    &__header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .lp-review-avatar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
     .lp-stars {
       display: flex;
       gap: 2px;
       color: #f59e0b;
-      margin-bottom: 0.85rem;
+      margin-left: auto;
 
       .material-icons {
         font-size: 18px;
@@ -959,7 +1094,7 @@
 .lp-faq {
   background: #ffffff;
   border-top: 1px solid #f4f4f5;
-  padding: clamp(1.5rem, 2.5vw, 2.5rem) 0;
+  padding: clamp(2.5rem, 4vw, 3.5rem) 0;
 
   &__list {
     display: flex;
@@ -1261,6 +1396,33 @@
   .lp-modern-form {
     display: flex;
     flex-direction: column;
+
+    &--compact {
+      .lp-input-row {
+        gap: 0.85rem;
+        margin-bottom: 0.85rem;
+      }
+
+      .lp-field {
+        margin-bottom: 0.85rem;
+      }
+
+      .lp-field-label {
+        font-size: 0.78rem;
+        gap: 0.35rem;
+      }
+
+      .lp-input {
+        padding: 0.75rem 0.85rem;
+        font-size: 0.95rem;
+      }
+
+      .lp-toggle-notes-btn {
+        margin-top: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+      }
+    }
 
     .lp-input-row {
       display: grid;
@@ -1768,6 +1930,35 @@
   }
 
   .lp-hero { padding-block: 2rem 2.75rem; }
+
+  .lp-hero__price {
+    font-size: 2.2rem;
+  }
+
+  .lp-hero__old-price {
+    font-size: 1.1rem;
+  }
+
+  .lp-hero__social-proof {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.85rem;
+  }
+
+  .lp-social-proof-item {
+    font-size: 0.8rem;
+  }
+
+  .lp-hero__trust-badges {
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .lp-trust-badge {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.6rem;
+  }
+
   .lp-hero__actions {
     flex-direction: column;
     align-items: stretch;

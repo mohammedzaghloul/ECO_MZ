@@ -62,13 +62,15 @@ namespace ECO.BLL.Services.ProductServices
             try
             {
                 var mainImage = savedProduct?.Photos?.FirstOrDefault()?.Name;
-                await _landingService.GenerateDefaultForProductAsync(
-                    product.Id,
-                    product.Name,
-                    product.Description,
-                    product.NewPrice,
-                    mainImage,
-                    cancellationToken);
+                var generateDefaultForProductDto = new ECO.BLL.DTO.LandingDtos.GenerateDefaultForProductDto
+                {
+                    productId = product.Id,
+                    productName = product.Name,
+                    description = product.Description,
+                    price = product.NewPrice,
+                    mainImageUrl = mainImage
+                };
+                await _landingService.GenerateDefaultForProductAsync(generateDefaultForProductDto, cancellationToken);
             }
             catch
             {

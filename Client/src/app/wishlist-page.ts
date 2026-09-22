@@ -6,6 +6,7 @@ import { BasketService } from './basket/basket.service';
 import { ShopService } from './shop/shop.service';
 import { ToastrService } from 'ngx-toastr';
 import { IProduct } from './shared/Models/product';
+import { LanguageService } from './core/Services/language.service';
 
 @Component({
   selector: 'app-wishlist-page',
@@ -25,6 +26,7 @@ export class WishlistPage implements OnInit {
     public basketService: BasketService,
     private shopService: ShopService,
     private toastr: ToastrService,
+    private langService: LanguageService,
     @Inject(PLATFORM_ID) private platformId: object
   ) {}
 
@@ -46,11 +48,15 @@ export class WishlistPage implements OnInit {
   addToBasket(item: IProduct): void {
     this.basketService.add(item, 1);
     if (isPlatformBrowser(this.platformId)) {
-      this.toastr.success(`"${item.name}" added to your cart.`, 'Cart Updated', {
-        timeOut: 1000,
-        closeButton: false,
-        progressBar: false,
-      });
+      this.toastr.success(
+        this.langService.t('CART_ADDED_MESSAGE', { qty: 1, name: item.name }),
+        this.langService.t('CART_UPDATED'),
+        {
+          timeOut: 1000,
+          closeButton: false,
+          progressBar: false,
+        }
+      );
     }
   }
 

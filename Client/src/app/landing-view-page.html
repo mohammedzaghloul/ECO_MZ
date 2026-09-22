@@ -61,31 +61,61 @@
                 </span>
                 <h1>{{ section.content.headline }}</h1>
                 @if (section.content.body) {<p class="lp-hero__desc">{{ section.content.body }}</p>}
+
+                <!-- Social Proof Bar -->
+                <div class="lp-hero__social-proof">
+                  <div class="lp-social-proof-item">
+                    <div class="lp-social-proof__rating">
+                      <i class="material-icons">star</i>
+                      <span>4.9</span>
+                    </div>
+                    <span class="lp-social-proof__text">{{ text('من +120 عميل', 'from +120 customers') }}</span>
+                  </div>
+                  <div class="lp-social-proof-item">
+                    <div class="lp-social-proof__icon">
+                      <i class="material-icons">shopping_bag</i>
+                    </div>
+                    <span class="lp-social-proof__text">{{ text('+500 طلب', '+500 orders') }}</span>
+                  </div>
+                  <div class="lp-social-proof-item">
+                    <div class="lp-social-proof__icon">
+                      <i class="material-icons">verified</i>
+                    </div>
+                    <span class="lp-social-proof__text">{{ text('دفع عند الاستلام', 'Cash on Delivery') }}</span>
+                  </div>
+                </div>
+
                 @if (product(); as p) {
                   <div class="lp-hero__offer">
                     <strong class="lp-hero__price">{{ p.newPrice | storeCurrency }}</strong>
                     @if (p.oldPrice > p.newPrice) {
                       <del class="lp-hero__old-price">{{ p.oldPrice | storeCurrency }}</del>
-                      <span class="lp-discount-chip">{{ text('خصم', 'Save') }} {{ calculateDiscount() }}%</span>
+                      <span class="lp-discount-chip">{{ text('وفر', 'Save') }} {{ (p.oldPrice - p.newPrice) | storeCurrency }} ({{ calculateDiscount() }}%)</span>
                     }
                   </div>
                 }
-                <div class="lp-hero__proof">
-                  <span><i class="material-icons">local_shipping</i> {{ text('شحن سريع لكافة المحافظات', 'Fast delivery nationwide') }}</span>
-                  <span><i class="material-icons">verified</i> {{ text('الدفع بعد المعاينة والفحص', 'Inspect before payment') }}</span>
-                  <span><i class="material-icons">autorenew</i> {{ text('ضمان الاسترجاع 14 يوم', '14-day return guarantee') }}</span>
-                </div>
+
                 <div class="lp-hero__actions">
                   <button type="button" class="lp-btn lp-btn--primary lp-btn--lg" (click)="scrollToOrderForm()">
-                    {{ section.content.buttonText || text('اطلب الآن مباشرة', 'Shop now') }}
+                    {{ section.content.buttonText || text('اطلب الآن — الدفع عند الاستلام', 'Order Now — Cash on Delivery') }}
                     <i class="material-icons">arrow_back</i>
                   </button>
-                  @if (whatsAppUrl()) {
-                    <a [href]="whatsAppUrl()" target="_blank" rel="noopener" class="lp-btn lp-btn--whatsapp">
-                      <i class="material-icons">chat</i>
-                      {{ text('تواصل عبر واتساب', 'WhatsApp us') }}
-                    </a>
-                  }
+                  
+                  <!-- Trust Badges under CTA -->
+                  <div class="lp-hero__trust-badges">
+                    <span class="lp-trust-badge">
+                      <i class="material-icons">local_shipping</i>
+                      {{ text('شحن سريع', 'Fast Delivery') }}
+                    </span>
+                    <span class="lp-trust-badge">
+                      <i class="material-icons">payments</i>
+                      {{ text('دفع عند الاستلام', 'Cash on Delivery') }}
+                    </span>
+                    <span class="lp-trust-badge">
+                      <i class="material-icons">sync</i>
+                      {{ text('استبدال 14 يوم', '14-Day Exchange') }}
+                    </span>
+                  </div>
                 </div>
 
               </div>
@@ -273,18 +303,20 @@
               <div class="lp-reviews__grid">
                 @for (item of section.content.items; track $index) {
                   <div class="lp-review-card">
-                    <div class="lp-stars">
-                      @for (s of [1, 2, 3, 4, 5]; track s) {
-                        <i class="material-icons" [class.lp-star--off]="s > (item.rating || 5)">star</i>
-                      }
+                    <div class="lp-review-card__header">
+                      <div class="lp-review-avatar" [style.background-color]="getAvatarColor($index)">
+                        {{ getInitials(item.name) }}
+                      </div>
+                      <div class="lp-stars">
+                        @for (s of [1, 2, 3, 4, 5]; track s) {
+                          <i class="material-icons" [class.lp-star--off]="s > (item.rating || 5)">star</i>
+                        }
+                      </div>
                     </div>
                     <p class="lp-review-card__text">{{ item.text }}</p>
-                    @if (item.image || productPhotos().length > 0) {
-                      <img class="lp-review-card__photo" [src]="resolveImage(item.image || productPhotos()[$index % productPhotos().length])" [alt]="item.name || 'صورة تجربة العميل'" (error)="onImageError($event)" />
-                    }
                     <div class="lp-review-card__meta">
                       <span class="lp-review-card__name">{{ item.name }}</span>
-                      <span class="lp-review-card__badge"><i class="material-icons">check_circle</i> مشترٍ مؤكد</span>
+                      <span class="lp-review-card__badge"><i class="material-icons">check_circle</i> {{ text('مشترٍ مؤكد', 'Verified Buyer') }}</span>
                     </div>
                   </div>
                 }
@@ -389,13 +421,13 @@
                       </div>
                     </div>
 
-                    <!-- Clean Friendly Form Fields -->
-                    <div class="lp-modern-form">
+                    <!-- Concise Form Fields -->
+                    <div class="lp-modern-form lp-modern-form--compact">
                       <div class="lp-input-row">
                         <div class="lp-field">
                           <label class="lp-field-label">
                             <i class="material-icons">person_outline</i>
-                            <span>{{ text('الاسم بالكامل', 'Full Name') }}</span>
+                            <span>{{ text('الاسم', 'Name') }}</span>
                             <span class="lp-req">*</span>
                           </label>
                           <input
@@ -403,13 +435,13 @@
                             (focus)="trackFormStarted()"
                             type="text"
                             class="lp-input"
-                            [placeholder]="text('اكتب اسمك الثلاثي', 'Your full name')" />
+                            [placeholder]="text('الاسم بالكامل', 'Full name')" />
                         </div>
 
                         <div class="lp-field">
                           <label class="lp-field-label">
                             <i class="material-icons">phone_android</i>
-                            <span>{{ text('رقم الموبايل', 'Phone Number') }}</span>
+                            <span>{{ text('الموبايل', 'Phone') }}</span>
                             <span class="lp-req">*</span>
                           </label>
                           <input
@@ -431,7 +463,7 @@
                           </label>
                           <div class="lp-select-wrap">
                             <select [(ngModel)]="guestOrder.governorateId" (ngModelChange)="guestOrder.cityId = 0" class="lp-select">
-                              <option [ngValue]="0">{{ text('اختر المحافظة', 'Select Governorate') }}</option>
+                              <option [ngValue]="0">{{ text('اختر', 'Select') }}</option>
                               @for (location of locations(); track location.id) {
                                 <option [ngValue]="location.id">{{ location.ar || location.value }}</option>
                               }
@@ -443,12 +475,12 @@
                         <div class="lp-field">
                           <label class="lp-field-label">
                             <i class="material-icons">place</i>
-                            <span>{{ text('المدينة / المركز', 'City / Area') }}</span>
+                            <span>{{ text('المدينة', 'City') }}</span>
                             <span class="lp-req">*</span>
                           </label>
                           <div class="lp-select-wrap">
                             <select [(ngModel)]="guestOrder.cityId" class="lp-select">
-                              <option [ngValue]="0">{{ text('اختر المدينة', 'Select City') }}</option>
+                              <option [ngValue]="0">{{ text('اختر', 'Select') }}</option>
                               @for (city of availableCities(); track city.id) {
                                 <option [ngValue]="city.id">{{ city.ar || city.value }}</option>
                               }
@@ -461,34 +493,30 @@
                       <div class="lp-field lp-field--full">
                         <label class="lp-field-label">
                           <i class="material-icons">home</i>
-                          <span>{{ text('العنوان بالتفصيل', 'Detailed Address') }}</span>
+                          <span>{{ text('العنوان', 'Address') }}</span>
                           <span class="lp-req">*</span>
                         </label>
                         <input
                           [(ngModel)]="guestOrder.address"
                           type="text"
                           class="lp-input"
-                          [placeholder]="text('اسم الشارع، رقم العمارة، الشقة أو علامة مميزة', 'Street, building, apartment or landmark')" />
+                          [placeholder]="text('الشارع، العمارة، الشقة', 'Street, building, apartment')" />
                       </div>
 
-                      <!-- Collapsible Delivery Notes (Optional) -->
+                      <!-- Optional Notes -->
+                      <button type="button" class="lp-toggle-notes-btn" (click)="showNotes.set(!showNotes())">
+                        <i class="material-icons">{{ showNotes() ? 'remove_circle_outline' : 'add_circle_outline' }}</i>
+                        <span>{{ text('ملاحظات (اختياري)', 'Notes (Optional)') }}</span>
+                      </button>
+
                       @if (showNotes()) {
                         <div class="lp-field lp-field--full lp-field--notes">
-                          <label class="lp-field-label">
-                            <i class="material-icons">edit_note</i>
-                            <span>{{ text('ملاحظات خاصة للمندوب (اختياري)', 'Special Delivery Notes (Optional)') }}</span>
-                          </label>
                           <input
                             [(ngModel)]="guestOrder.notes"
                             type="text"
                             class="lp-input"
-                            [placeholder]="text('أي تعليمات وقت التسليم (مثال: الاتصال قبل الوصول)', 'Instructions e.g. call before arrival')" />
+                            [placeholder]="text('تعليمات التوصيل', 'Delivery instructions')" />
                         </div>
-                      } @else {
-                        <button type="button" class="lp-toggle-notes-btn" (click)="showNotes.set(true)">
-                          <i class="material-icons">add_circle_outline</i>
-                          <span>{{ text('إضافة ملاحظات للتوصيل (اختياري)', 'Add delivery instructions (Optional)') }}</span>
-                        </button>
                       }
                     </div>
 

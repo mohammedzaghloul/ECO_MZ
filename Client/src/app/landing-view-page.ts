@@ -549,11 +549,15 @@ export class LandingViewPage implements OnInit {
 
     this.basketService.add(product, this.quantity());
     if (isPlatformBrowser(this.platformId)) {
-      this.toastr.success(`${this.quantity()}x "${product.name}" added to your cart!`, 'Cart Updated', {
-        timeOut: 1000,
-        closeButton: false,
-        progressBar: false,
-      });
+      this.toastr.success(
+        this.languageService.t('CART_ADDED_MESSAGE', { qty: this.quantity(), name: product.name }),
+        this.languageService.t('CART_UPDATED'),
+        {
+          timeOut: 1000,
+          closeButton: false,
+          progressBar: false,
+        }
+      );
     }
   }
 
@@ -613,5 +617,26 @@ export class LandingViewPage implements OnInit {
   scrollToSection(id: string): void {
     if (!isPlatformBrowser(this.platformId)) return;
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  getInitials(name: string): string {
+    if (!name) return '؟';
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) {
+      return parts[0].charAt(0).toUpperCase();
+    }
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  }
+
+  getAvatarColor(index: number): string {
+    const colors = [
+      '#2d5a43', // Primary green
+      '#3b82f6', // Blue
+      '#8b5cf6', // Purple
+      '#ec4899', // Pink
+      '#f59e0b', // Orange
+      '#10b981', // Emerald
+    ];
+    return colors[index % colors.length];
   }
 }

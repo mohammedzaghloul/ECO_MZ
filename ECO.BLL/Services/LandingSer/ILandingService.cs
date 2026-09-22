@@ -11,7 +11,7 @@ namespace ECO.BLL.Services.LandingSer
         Task<LandingPageDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
         Task<LandingPageDto?> GetBySlugAsync(string slug, bool countView = false, CancellationToken cancellationToken = default);
         Task<LandingPageDto> SaveAsync(SaveLandingPageDto dto, CancellationToken cancellationToken = default);
-        Task<LandingPageDto> GenerateDefaultForProductAsync(int productId, string productName, string? description, decimal price, string? mainImageUrl, CancellationToken cancellationToken = default);
+        Task<LandingPageDto> GenerateDefaultForProductAsync(GenerateDefaultForProductDto generateDefaultForProduct, CancellationToken cancellationToken = default);
         Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default);
     }
 }
